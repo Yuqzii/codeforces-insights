@@ -1,15 +1,11 @@
 const url = '/api/'
 
 export async function fetchUserInfo(handle) {
-	let endpoint = 'users/' + handle
+	const endpoint = `users/${handle}`;
 
-	fetch(url + endpoint).then(response => {
+		const response = await fetch(url + endpoint);
 		if (!response.ok)
-			throw new Error('response not ok:', response.statusText)
-		return response.json();
-	}).then(data => {
-		console.log(data)
-	}).catch(error => {
-		console.error(error)
-	});
+			throw new Error(`response not ok: ${response.statusText}`);
+
+		return await response.json();
 }
