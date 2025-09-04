@@ -6,7 +6,7 @@ export async function fetchUserInfo(handle) {
 	fetch(url + endpoint).then(response => {
 		if (!response.ok)
 			throw new Error('response not ok:', response.statusText)
-		return response.json;
+		return response.json();
 	}).then(data => {
 		console.log(data)
 	}).catch(error => {
