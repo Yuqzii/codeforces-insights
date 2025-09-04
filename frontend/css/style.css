@@ -10,3 +10,29 @@ h5,
 h6 {
 	font-family: "Inconsolata";
 }
+
+.user-info-container {
+	margin: 50px auto;
+
+	display: grid;
+	grid-template-columns: 400px 400px 400px 400px;
+	grid-template-rows: 400px 400px;
+	gap: 15px;
+}
+
+.user-info-item {
+	padding: 25px;
+
+	border: 2px solid gray;
+	border-radius: 10px;
+	box-shadow: 0 0 10px 3px rgba(100, 100, 100, 0.3);
+}
+
+.user-info-item h2 {
+	margin-top: 0;
+}
+
+.user-stats {
+	margin: 0;
+	padding-left: 15px;
+}
