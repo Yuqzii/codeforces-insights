@@ -4,38 +4,59 @@
 <head>
 	<meta charset="UTF-8">
 	<title>CF Stats</title>
+
+	<script src="js/main.js" type="module"></script>
 </head>
 
 <body>
 	<h1>Codeforces Stats</h1>
 	<p>Write your handle here:</p>
-	<input type="text" name="handle-input" value="">
+	<form id="user-form">
+		<input type="text" id="handle-input" placeholder="Enter Codeforces username">
+		<button type="submit">Show Stats</button>
+	</form>
+
+	<section>
+		<header>
+			<h2>User Info</h2>
+			<img id="user-avatar" src="" alt="User Avatar">
+			<h3 id="username">Placeholder</h3>
+		</header>
+		<div id="user-details">
+			<ul class="user-stats">
+				<li>Rating: <span id="user-rating">0</span></li>
+				<li>Peak rating: <span id="user-peak-rating">0</span></li>
+				<li>Country: <span id="user-country"></span></li>
+			</ul>
+		</div>
+	</section>
 
 	<canvas id="chart"></canvas>
-</body>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-	const ctx = document.getElementById('chart');
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		const ctx = document.getElementById('chart');
 
-	new Chart(ctx, {
-		type: 'bar',
-		data: {
-			labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-			datasets: [{
-				label: '# of Votes',
-				data: [12, 19, 3, 5, 2, 3],
-				borderWidth: 1
-			}]
-		},
-		options: {
-			scales: {
-				y: {
-					beginAtZero: true
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+				datasets: [{
+					label: '# of Votes',
+					data: [12, 19, 3, 5, 2, 3],
+					borderWidth: 1
+				}]
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
 				}
 			}
-		}
-	});
-</script>
+		});
+	</script>
+</body>
+
 
 </html>
