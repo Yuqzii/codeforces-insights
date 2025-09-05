@@ -22,7 +22,14 @@ export async function updateSolvedRatingsChart(handle) {
 				y: {
 					beginAtZero: true
 				}
-			}
+			},
+			elements: {
+				bar: {
+					borderRadius: 8
+				}
+			},
+			maintainAspectRatio: false,
+			responsive: true
 		}
 	});
 }

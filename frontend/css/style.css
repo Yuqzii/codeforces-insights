@@ -37,6 +37,9 @@ main {
 	border: 1.5px solid gray;
 	border-radius: 10px;
 	box-shadow: 0 0 8px 2px rgba(100, 100, 100, 0.3);
+
+	display: flex;
+	flex-direction: column;
 }
 
 .user-info-item h2 {
@@ -46,4 +49,9 @@ main {
 .user-stats {
 	margin: 0;
 	padding-left: 15px;
+}
+
+.chart-container {
+	position: relative;
+	flex: 1;
 }
