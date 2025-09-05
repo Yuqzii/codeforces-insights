@@ -26,7 +26,7 @@ main {
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings";
 
-		margin-top: 20px;
+	margin-top: 20px;
 	align-items: stretch;
 	justify-items: stretch;
 }
@@ -40,7 +40,7 @@ main {
 }
 
 .user-info-item h2 {
-	margin-top: 0;
+	margin: 0;
 }
 
 .user-stats {
