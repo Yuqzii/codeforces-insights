@@ -9,3 +9,13 @@ export async function fetchUserInfo(handle) {
 
 	return await response.json();
 }
+
+export async function fetchSolvedRatings(handle) {
+	const endpoint = `users/solved-ratings/${handle}`;
+
+	const response = await fetch(url + endpoint);
+	if (!response.ok)
+		throw new Error(`response not ok: ${response.statusText}`);
+
+	return await response.json();
+}
