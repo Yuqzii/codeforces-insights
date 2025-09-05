@@ -12,6 +12,8 @@
 		rel="stylesheet">
 
 	<link rel="stylesheet" href="css/style.css">
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script src="js/main.js" type="module"></script>
 </head>
 
@@ -25,7 +27,7 @@
 		</form>
 
 		<div class="user-info-grid">
-			<div id="user-details" class="user-info-item">
+			<div id="user-details" class="user-info-item" style="grid-area: user-info">
 				<header>
 					<h2>User Info</h2>
 					<img id="user-avatar" src="" alt="User Avatar">
@@ -39,8 +41,11 @@
 					</ul>
 				</div>
 			</div>
-			<div class="user-info-item">
-				<h2>Placeholder</h2>
+			<div id="solved-ratings" class="user-info-item" style="grid-area: solved-ratings">
+				<h2>Rating distribution of solved problems</h2>
+					<div class="chart-container">
+						<canvas id="solved-ratings-chart"></canvas>
+					</div>
 			</div>
 			<div class="user-info-item">
 				<h2>Placeholder</h2>
@@ -53,32 +58,6 @@
 			</div>
 		</div>
 	</main>
-
-	<canvas id="chart"></canvas>
-
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script>
-		const ctx = document.getElementById('chart');
-
-		new Chart(ctx, {
-			type: 'bar',
-			data: {
-				labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-				datasets: [{
-					label: '# of Votes',
-					data: [12, 19, 3, 5, 2, 3],
-					borderWidth: 1
-				}]
-			},
-			options: {
-				scales: {
-					y: {
-						beginAtZero: true
-					}
-				}
-			}
-		});
-	</script>
 </body>
 
 

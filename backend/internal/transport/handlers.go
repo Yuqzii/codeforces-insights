@@ -7,19 +7,21 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/stats"
 )
 
-type API interface {
+type Client interface {
 	GetUser(context.Context, string) (*codeforces.User, error)
+	GetSubmissions(context.Context, string) ([]codeforces.Submission, error)
 }
 
 type Handler struct {
-	api API
+	client Client
 }
 
-func NewHandler(api API) *Handler {
+func NewHandler(api Client) *Handler {
 	return &Handler{
-		api: api,
+		client: api,
 	}
 }
 
@@ -29,12 +31,31 @@ func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	user, err := h.api.GetUser(context.TODO(), handle)
+	user, err := h.client.GetUser(context.TODO(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	j, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
+
+func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	solved := stats.FilterSolved(s)
+	ratings := stats.SolvedRatings(solved)
+
+	j, err := json.Marshal(ratings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
