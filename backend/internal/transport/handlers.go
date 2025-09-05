@@ -63,3 +63,22 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(j)
 }
+
+func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	solved := stats.FilterSolved(s)
+	tags := stats.SolvedTags(solved)
+
+	j, err := json.Marshal(tags)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}

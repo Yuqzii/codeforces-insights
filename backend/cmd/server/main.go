@@ -27,6 +27,7 @@ func main() {
 	mux.HandleFunc("/", h.HandleRoot)
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
 	mux.HandleFunc("GET /users/solved-ratings/{handle}", h.HandleGetRatings)
+	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
 
 	fmt.Println("Server listening on port :8080")
 	http.ListenAndServe(":8080", mux)
