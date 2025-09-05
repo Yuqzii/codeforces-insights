@@ -33,7 +33,9 @@ func (s *service) Ratings(handle string) (map[int]int, error) {
 	solved := filterSolved(sub)
 	res := make(map[int]int)
 	for _, s := range solved {
-		res[s.Problem.Rating]++
+		if s.Problem.Rating != 0 {
+			res[s.Problem.Rating]++
+		}
 	}
 	return res, nil
 }
