@@ -6,10 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"golang.org/x/time/rate"
 )
@@ -85,8 +83,8 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	endpoint := "user.status?"
 	params := url.Values{}
 	params.Set("handle", handle)
-	params.Set("from", "1")                          // Get submissions starting from most recent
-	params.Set("count", strconv.Itoa(math.MaxInt32)) // Get all submissions
+	params.Set("from", "1")           // Get submissions starting from most recent
+	params.Set("count", "1000000000") // Max allowed from Codeforces
 
 	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
 	if err != nil {
