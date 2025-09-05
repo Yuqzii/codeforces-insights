@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"golang.org/x/time/rate"
 )
@@ -54,6 +56,7 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	endpoint := "user.info?"
 	params := url.Values{}
 	params.Set("handles", handle)
+
 	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
 	if err != nil {
 		return nil, fmt.Errorf("getting user from Codeforces: %w", err)
@@ -76,4 +79,31 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	}
 
 	return &apiResp.Result[0], nil
+}
+
+func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submission, error) {
+	endpoint := "user.status?"
+	params := url.Values{}
+	params.Set("handle", handle)
+	params.Set("from", "1")                          // Get submissions starting from most recent
+	params.Set("count", strconv.Itoa(math.MaxInt32)) // Get all submissions
+
+	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("getting submissions from Codeforces: %w", err)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiResp apiResponse[Submission]
+	json.Unmarshal(body, &apiResp)
+
+	if apiResp.Status != "OK" {
+		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
+	}
+
+	return apiResp.Result, nil
 }
