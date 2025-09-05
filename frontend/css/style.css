@@ -1,5 +1,7 @@
 body {
 	font-family: "Fira Code";
+	margin: auto;
+	width: auto;
 }
 
 h1,
@@ -11,13 +13,20 @@ h6 {
 	font-family: "Inconsolata";
 }
 
-.user-info-container {
-	margin: 50px auto;
+.main-content {
+	margin: auto;
+	width: 90%;
+}
 
+.user-info-grid {
 	display: grid;
-	grid-template-columns: 400px 400px 400px 400px;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 400px 400px;
 	gap: 15px;
+
+	margin-top: 20px;
+	align-items: stretch;
+	justify-items: stretch;
 }
 
 .user-info-item {
