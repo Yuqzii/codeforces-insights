@@ -1,0 +1,47 @@
+body {
+	font-family: "Fira Code";
+	margin: auto;
+	width: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: "Inconsolata";
+}
+
+main {
+	margin: auto;
+	width: 90%;
+}
+
+.user-info-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-rows: 400px 400px;
+	gap: 15px;
+
+	margin-top: 20px;
+	align-items: stretch;
+	justify-items: stretch;
+}
+
+.user-info-item {
+	padding: 25px;
+
+	border: 1.5px solid gray;
+	border-radius: 10px;
+	box-shadow: 0 0 8px 2px rgba(100, 100, 100, 0.3);
+}
+
+.user-info-item h2 {
+	margin-top: 0;
+}
+
+.user-stats {
+	margin: 0;
+	padding-left: 15px;
+}
