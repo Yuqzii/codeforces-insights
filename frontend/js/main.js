@@ -1,4 +1,5 @@
 import { fetchUserInfo } from "./api.js";
+import { updateSolvedRatingsChart } from "./charts.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -9,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const handle = input.value.trim();
 		if (!handle) return;
 
-		updateUserInfo(handle)
+		updateUserInfo(handle);
+		updateSolvedRatingsChart(handle);
 	});
 });
 
@@ -28,3 +30,4 @@ async function updateUserInfo(username) {
 	document.getElementById('user-peak-rating').textContent = data.maxRating;
 	document.getElementById('user-country').textContent = data.country;
 }
+

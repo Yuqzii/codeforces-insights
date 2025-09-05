@@ -23,8 +23,10 @@ main {
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 400px 400px;
 	gap: 15px;
+	grid-template-areas:
+		"user-info solved-ratings solved-ratings";
 
-	margin-top: 20px;
+		margin-top: 20px;
 	align-items: stretch;
 	justify-items: stretch;
 }
