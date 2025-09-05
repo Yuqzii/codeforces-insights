@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/stats"
 	"github.com/yuqzii/cf-stats/internal/transport"
 )
 
@@ -23,9 +22,7 @@ func main() {
 		cfRequestsPerSecond,
 		cfMaxBurst)
 
-	s := stats.NewService(cfClient)
-
-	h := transport.NewHandler(cfClient, s)
+	h := transport.NewHandler(cfClient)
 
 	mux.HandleFunc("/", h.HandleRoot)
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
