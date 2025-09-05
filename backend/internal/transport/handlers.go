@@ -9,17 +9,17 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-type API interface {
+type Client interface {
 	GetUser(context.Context, string) (*codeforces.User, error)
 }
 
 type Handler struct {
-	api API
+	client Client
 }
 
-func NewHandler(api API) *Handler {
+func NewHandler(api Client) *Handler {
 	return &Handler{
-		api: api,
+		client: api,
 	}
 }
 
@@ -29,7 +29,7 @@ func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	user, err := h.api.GetUser(context.TODO(), handle)
+	user, err := h.client.GetUser(context.TODO(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
