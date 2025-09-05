@@ -13,13 +13,20 @@ type Client interface {
 	GetUser(context.Context, string) (*codeforces.User, error)
 }
 
-type Handler struct {
-	client Client
+type StatsService interface {
+	Categories(string) (map[string]int, error)
+	Ratings(string) (map[int]int, error)
 }
 
-func NewHandler(api Client) *Handler {
+type Handler struct {
+	client Client
+	stats  StatsService
+}
+
+func NewHandler(api Client, stats StatsService) *Handler {
 	return &Handler{
 		client: api,
+		stats:  stats,
 	}
 }
 
@@ -35,6 +42,22 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	j, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
+
+func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	ratings, err := h.stats.Ratings(handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	j, err := json.Marshal(ratings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
