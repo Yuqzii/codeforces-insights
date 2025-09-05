@@ -18,7 +18,7 @@ func SolvedTags(solved []codeforces.Submission) map[string]int {
 
 // Gets the count of each rating of the user's solved problems
 // @param solved Slice of Submission to be evaluated. Should use FilterSolved before passing to this.
-func Ratings(solved []codeforces.Submission) map[int]int {
+func SolvedRatings(solved []codeforces.Submission) map[int]int {
 	res := make(map[int]int)
 	for _, s := range solved {
 		if s.Problem.Rating != 0 {

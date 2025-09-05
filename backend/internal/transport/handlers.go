@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/stats"
 )
 
 type Client interface {
@@ -46,10 +47,13 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	ratings, err := h.client.GetSubmissions(context.TODO(), handle)
+	s, err := h.client.GetSubmissions(context.TODO(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
+	solved := stats.FilterSolved(s)
+	ratings := stats.SolvedRatings(solved)
 
 	j, err := json.Marshal(ratings)
 	if err != nil {
