@@ -47,7 +47,7 @@ button {
 	display: inline-block;
 	border: 1px solid var(--gray-dark);
 	border-radius: 7px;
-	box-shadow: 0 0 3px 1px var(--shadow);
+	box-shadow: 0 0 2px 1px var(--shadow);
 
 	text-align: center;
 	font-size: 14px;
@@ -57,7 +57,7 @@ button {
 
 button:hover {
 	background-color: var(--bg2);
-	box-shadow: 0 0 4px 2px var(--shadow);
+	box-shadow: 0 0 3px 2px var(--shadow);
 }
 
 button:active {
@@ -82,7 +82,7 @@ button:active {
 
 	border: 1.5px solid var(--gray-dark);
 	border-radius: 10px;
-	box-shadow: 0 0 8px 2px var(--shadow);
+	box-shadow: 0 0 5px 2px var(--shadow);
 	display: flex;
 	flex-direction: column;
 }
