@@ -82,3 +82,31 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(j)
 }
+
+func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	solved := stats.FilterSolved(s)
+	tags := stats.SolvedTags(solved)
+	ratings := stats.SolvedRatings(solved)
+
+	type tagsAndRatings struct {
+		Tags    map[string]int `json:"tags"`
+		Ratings map[int]int    `json:"ratings"`
+	}
+	combined := tagsAndRatings{
+		Tags:    tags,
+		Ratings: ratings,
+	}
+	j, err := json.Marshal(combined)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
