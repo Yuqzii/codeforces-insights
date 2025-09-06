@@ -1,18 +1,43 @@
 package stats
 
 import (
+	"fmt"
+	"slices"
+
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-// Gets the count of each category/tag of the user's solved problems
+type Tag struct {
+	Tag   string `json:"tag"`
+	Count int    `json:"count"`
+}
+
+// Gets the count of each category/tag of the user's solved problems.
 // @param solved Slice of Submission to be evaluated. Should use FilterSolved before passing to this.
-func SolvedTags(solved []codeforces.Submission) map[string]int {
-	res := make(map[string]int)
+// @return Sorted slice of Tag based on count.
+func SolvedTags(solved []codeforces.Submission) []Tag {
+	m := make(map[string]int)
 	for _, s := range solved {
 		for _, t := range s.Problem.Tags {
-			res[t]++
+			m[t]++
 		}
 	}
+
+	res := make([]Tag, 0, len(m))
+	for t, c := range m {
+		res = append(res, Tag{Tag: t, Count: c})
+	}
+
+	fmt.Println(res)
+	slices.SortFunc(res, func(a, b Tag) int {
+		if a.Count < b.Count {
+			return -1
+		} else if a.Count > b.Count {
+			return 1
+		}
+		return 0
+	})
+	fmt.Println(res)
 	return res
 }
 

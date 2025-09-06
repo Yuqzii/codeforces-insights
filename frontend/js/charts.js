@@ -47,20 +47,21 @@ async function updateSolvedTagsChart(data) {
 	if (solvedTagsChart != null)
 		solvedTagsChart.destroy();
 
-	const keys = [];
-	const values = [];
-	for (const key in data) {
-		keys.push(key);
-		values.push(data[key]);
+	const tags = [];
+	const counts = [];
+	for (const element of data) {
+		console.log(element);
+		tags.push(element.tag);
+		counts.push(element.count);
 	}
 
 	solvedTagsChart = new Chart(ctx, {
 		type: 'pie',
 		data: {
 			datasets: [{
-				data: values
+				data: counts
 			}],
-			labels: keys
+			labels: tags
 		},
 		options: {
 			plugins: {
