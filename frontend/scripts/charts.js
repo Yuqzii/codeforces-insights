@@ -7,7 +7,7 @@ var fgColor, bgColor, shadowColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 var grayDarkColor, blueDarkColor;
 
-await getColors();
+getColors();
 Chart.defaults.borderColor = grayDarkColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
@@ -52,7 +52,7 @@ async function updateSolvedRatingsChart(data) {
 	});
 }
 
-async function getColors() {
+function getColors() {
 	var style = window.getComputedStyle(document.body);
 	fgColor = style.getPropertyValue('--fg');
 	bgColor = style.getPropertyValue('--bg');
