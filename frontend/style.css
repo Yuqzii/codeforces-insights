@@ -108,6 +108,31 @@ button:active {
 	padding-left: 15px;
 }
 
+#handle-input {
+	padding: 5px 10px;
+	background-color: var(--bg1);
+	border: 1px solid var(--gray-dark);
+	border-radius: 5px;
+	display: inline-block;
+	box-shadow: 0 0 2px 0.5px var(--shadow);
+
+	color: var(--fg);
+	font-size: 16px;
+
+	transition-duration: 100ms;
+}
+
+#handle-input:hover {
+	background-color: var(--bg2);
+	box-shadow: 0 0 3px 0.5px var(--shadow);
+}
+
+#handle-input:focus {
+	background-color: var(--bg3);
+	box-shadow: 0 0 3px 1px var(--shadow);
+	outline: none;
+}
+
 #user-avatar {
 	border-radius: 8px;
 	width: 150px;
