@@ -8,6 +8,7 @@ var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aqua
 var grayDarkColor, blueDarkColor;
 
 getColors();
+Chart.defaults.color = fgColor;
 Chart.defaults.borderColor = grayDarkColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
