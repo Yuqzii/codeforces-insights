@@ -35,4 +35,3 @@ async function updateUserInfo(username) {
 	document.getElementById('user-peak-rating').textContent = data.maxRating;
 	document.getElementById('user-country').textContent = data.country;
 }
-
