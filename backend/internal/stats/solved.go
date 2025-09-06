@@ -1,7 +1,6 @@
 package stats
 
 import (
-	"fmt"
 	"slices"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -28,7 +27,6 @@ func SolvedTags(solved []codeforces.Submission) []Tag {
 		res = append(res, Tag{Tag: t, Count: c})
 	}
 
-	fmt.Println(res)
 	slices.SortFunc(res, func(a, b Tag) int {
 		if a.Count < b.Count {
 			return -1
@@ -37,7 +35,6 @@ func SolvedTags(solved []codeforces.Submission) []Tag {
 		}
 		return 0
 	})
-	fmt.Println(res)
 	return res
 }
 

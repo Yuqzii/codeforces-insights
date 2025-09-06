@@ -105,7 +105,6 @@ func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request
 		Tags    []stats.Tag `json:"tags"`
 		Ratings map[int]int `json:"ratings"`
 	}
-	fmt.Println(tags)
 	combined := tagsAndRatings{
 		Tags:    tags,
 		Ratings: ratings,
