@@ -1,13 +1,15 @@
 import { fetchSolvedTagsAndRatings } from "./api.js";
+import { updateSolvedTagsChart, updateTagsChartData } from "./solvedTags.js";
 
 var solvedRatingsChart;
-var solvedTagsChart;
 
 export async function updateSolvedTagsAndRatingsCharts(handle) {
 	const data = await fetchSolvedTagsAndRatings(handle);
 
 	updateSolvedRatingsChart(data.ratings);
-	updateSolvedTagsChart(data.tags);
+
+	updateTagsChartData(data.tags);
+	updateSolvedTagsChart();
 }
 
 async function updateSolvedRatingsChart(data) {
@@ -41,36 +43,3 @@ async function updateSolvedRatingsChart(data) {
 	});
 }
 
-async function updateSolvedTagsChart(data) {
-	const ctx = document.getElementById('solved-tags-chart');
-
-	if (solvedTagsChart != null)
-		solvedTagsChart.destroy();
-
-	const tags = [];
-	const counts = [];
-	for (const element of data) {
-		console.log(element);
-		tags.push(element.tag);
-		counts.push(element.count);
-	}
-
-	solvedTagsChart = new Chart(ctx, {
-		type: 'pie',
-		data: {
-			datasets: [{
-				data: counts
-			}],
-			labels: tags
-		},
-		options: {
-			plugins: {
-				legend: {
-					display: false
-				}
-			},
-			borderWidth: 1,
-			responsive: true
-		}
-	});
-}

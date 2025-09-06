@@ -1,5 +1,6 @@
 import { fetchUserInfo } from "./api.js";
 import { updateSolvedTagsAndRatingsCharts } from "./charts.js";
+import { toggleShowOtherTags } from "./solvedTags.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -12,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		await updateSolvedTagsAndRatingsCharts(handle);
 		updateUserInfo(handle);
+	});
+
+	document.getElementById('toggle-other-tags').addEventListener('click', () => {
+		toggleShowOtherTags();
 	});
 });
 
