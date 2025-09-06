@@ -11,10 +11,10 @@
 		href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inconsolata:wght@200..900&display=swap"
 		rel="stylesheet">
 
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="style.css">
 
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script src="js/main.js" type="module"></script>
+	<script src="scripts/main.js" type="module"></script>
 </head>
 
 <body>
@@ -43,12 +43,18 @@
 			</div>
 			<div id="solved-ratings" class="user-info-item" style="grid-area: solved-ratings">
 				<h2>Rating distribution of solved problems</h2>
-					<div class="chart-container">
-						<canvas id="solved-ratings-chart"></canvas>
-					</div>
+				<div class="chart-container">
+					<canvas id="solved-ratings-chart"></canvas>
+				</div>
 			</div>
 			<div class="user-info-item">
-				<h2>Placeholder</h2>
+				<div class="user-info-header">
+					<h2>Solved Tags</h2>
+					<button id="toggle-other-tags" type="button">Toggle Other</button>
+				</div>
+				<div class="chart-container" style="align-self: center">
+					<canvas id="solved-tags-chart"></canvas>
+				</div>
 			</div>
 			<div class="user-info-item">
 				<h2>Placeholder</h2>
@@ -59,6 +65,5 @@
 		</div>
 	</main>
 </body>
-
 
 </html>

@@ -46,12 +46,19 @@ main {
 	margin: 0;
 }
 
-.user-stats {
-	margin: 0;
-	padding-left: 15px;
-}
-
 .chart-container {
 	position: relative;
 	flex: 1;
+}
+
+.user-info-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1em;
+}
+
+.user-stats {
+	margin: 0;
+	padding-left: 15px;
 }

@@ -1,10 +1,19 @@
-import { fetchSolvedRatings } from "./api.js";
+import { fetchSolvedTagsAndRatings } from "./api.js";
+import { updateSolvedTagsChart, updateTagsChartData } from "./solvedTags.js";
 
 var solvedRatingsChart;
 
-export async function updateSolvedRatingsChart(handle) {
+export async function updateSolvedTagsAndRatingsCharts(handle) {
+	const data = await fetchSolvedTagsAndRatings(handle);
+
+	updateSolvedRatingsChart(data.ratings);
+
+	updateTagsChartData(data.tags);
+	updateSolvedTagsChart();
+}
+
+async function updateSolvedRatingsChart(data) {
 	const ctx = document.getElementById('solved-ratings-chart');
-	const data = await fetchSolvedRatings(handle);
 
 	if (solvedRatingsChart != null)
 		solvedRatingsChart.destroy();
@@ -33,3 +42,4 @@ export async function updateSolvedRatingsChart(handle) {
 		}
 	});
 }
+
