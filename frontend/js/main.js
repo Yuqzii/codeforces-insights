@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const handle = input.value.trim();
 		if (!handle) return;
 
+		await updateSolvedTagsAndRatingsCharts(handle);
 		updateUserInfo(handle);
-		updateSolvedTagsAndRatingsCharts(handle);
 	});
 });
 

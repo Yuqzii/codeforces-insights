@@ -1,4 +1,4 @@
-import { fetchSolvedRatings, fetchSolvedTagsAndRatings } from "./api.js";
+import { fetchSolvedTagsAndRatings } from "./api.js";
 
 var solvedRatingsChart;
 var solvedTagsChart;
@@ -68,7 +68,8 @@ async function updateSolvedTagsChart(data) {
 					display: false
 				}
 			},
-			borderWidth: 1
+			borderWidth: 1,
+			responsive: true
 		}
 	});
 }
