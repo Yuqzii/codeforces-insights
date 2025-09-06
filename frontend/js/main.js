@@ -1,5 +1,5 @@
 import { fetchUserInfo } from "./api.js";
-import { updateSolvedRatingsChart } from "./charts.js";
+import { updateSolvedTagsAndRatingsCharts } from "./charts.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (!handle) return;
 
 		updateUserInfo(handle);
-		updateSolvedRatingsChart(handle);
+		updateSolvedTagsAndRatingsCharts(handle);
 	});
 });
 
