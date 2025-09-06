@@ -1,7 +1,29 @@
+:root {
+	--bg: #282828;
+	--bg1: #3c3836;
+	--bg2: #504945;
+	--bg3: #665c54;
+	--fg: #ebdbb2;
+	--shadow: #92837455;
+	--red: #fb4934;
+	--orange: #fe8019;
+	--green: #b8bb26;
+	--yellow: #fabd2f;
+	--blue: #83a598;
+	--purple: #d3869b;
+	--aqua: #83c07c;
+	--gray-dark: #928374;
+	--blue-dark: #458588;
+}
+
 body {
 	font-family: "Fira Code";
+	color: var(--fg);
+
 	margin: auto;
 	width: auto;
+
+	background-color: var(--bg);
 }
 
 h1,
@@ -16,6 +38,30 @@ h6 {
 main {
 	margin: auto;
 	width: 90%;
+}
+
+button {
+	background-color: var(--bg1);
+	color: var(--fg);
+	padding: 10px 20px;
+	display: inline-block;
+	border: 1px solid var(--gray-dark);
+	border-radius: 7px;
+	box-shadow: 0 0 2px 1px var(--shadow);
+
+	text-align: center;
+	font-size: 14px;
+
+	transition-duration: 50ms;
+}
+
+button:hover {
+	background-color: var(--bg2);
+	box-shadow: 0 0 3px 2px var(--shadow);
+}
+
+button:active {
+	background-color: var(--bg3);
 }
 
 .user-info-grid {
@@ -34,10 +80,9 @@ main {
 .user-info-item {
 	padding: 25px;
 
-	border: 1.5px solid gray;
+	border: 1.5px solid var(--gray-dark);
 	border-radius: 10px;
-	box-shadow: 0 0 8px 2px rgba(100, 100, 100, 0.3);
-
+	box-shadow: 0 0 5px 2px var(--shadow);
 	display: flex;
 	flex-direction: column;
 }
@@ -61,4 +106,35 @@ main {
 .user-stats {
 	margin: 0;
 	padding-left: 15px;
+}
+
+#handle-input {
+	padding: 5px 10px;
+	background-color: var(--bg1);
+	border: 1px solid var(--gray-dark);
+	border-radius: 5px;
+	display: inline-block;
+	box-shadow: 0 0 2px 0.5px var(--shadow);
+
+	color: var(--fg);
+	font-size: 16px;
+
+	transition-duration: 100ms;
+}
+
+#handle-input:hover {
+	background-color: var(--bg2);
+	box-shadow: 0 0 3px 0.5px var(--shadow);
+}
+
+#handle-input:focus {
+	background-color: var(--bg3);
+	box-shadow: 0 0 3px 1px var(--shadow);
+	outline: none;
+}
+
+#user-avatar {
+	border-radius: 8px;
+	width: 150px;
+	height: auto;
 }

@@ -1,4 +1,4 @@
-const N = 12;
+const N = 10;
 
 let showOtherTags = false;
 var chart;
