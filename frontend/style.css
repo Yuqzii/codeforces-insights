@@ -91,9 +91,57 @@ input.glow-interactive:focus {
 .hero-section h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
-
 	margin-bottom: 4em;
+	position: relative;
+	width: max-content;
 }
+
+/* Typing animation */
+.hero-section h2::before,
+.hero-section h2::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.hero-section h2::before {
+	background: var(--bg);
+	animation:
+		typing 4s steps(32) 1.5s forwards;
+}
+
+.hero-section h2::after {
+	width: .125em;
+	background: var(--fg);
+	animation:
+		typing 4s steps(32) 1.5s forwards,
+		blinking 750ms 0s 2,
+		blinking 750ms 5.5s infinite;
+}
+
+@keyframes typing {
+	to {
+		left: 100%;
+	}
+}
+
+@keyframes blinking {
+
+	0%,
+	50% {
+		opacity: 1;
+	}
+
+	51%,
+	100% {
+		opacity: 0;
+	}
+}
+
+/* End of typing animation */
 
 .hero-section h2 span {
 	color: var(--blue);
