@@ -222,6 +222,7 @@ main {
 .chart-container {
 	position: relative;
 	flex: 1;
+	min-height: 0;
 }
 
 .user-info-header {
