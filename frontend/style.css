@@ -75,11 +75,13 @@ button:active {
 
 .hero-section h1 {
 	font-size: 80px;
+	margin: 0;
 }
 
 .hero-section h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
+	margin-bottom: 4em;
 }
 
 .hero-section form {
