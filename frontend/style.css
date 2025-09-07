@@ -43,27 +43,35 @@ main {
 }
 
 button {
+	padding: 0.75em 1.5em;
+	text-align: center;
+	font-size: 14px;
+}
+
+.glow-interactive {
 	background-color: var(--bg1);
 	color: var(--fg);
-	padding: 0.75em 1.5em;
 	display: inline-block;
 	border: 1px solid var(--gray-dark);
 	border-radius: 0.5em;
 	box-shadow: 0 0 2px 1px var(--shadow);
 
-	text-align: center;
-	font-size: 14px;
-
 	transition-duration: 50ms;
 }
 
-button:hover {
+.glow-interactive:hover {
 	background-color: var(--bg2);
 	box-shadow: 0 0 3px 2px var(--shadow);
 }
 
-button:active {
+button.glow-interactive:active {
 	background-color: var(--bg3);
+}
+
+input.glow-interactive:focus {
+	background-color: var(--bg3);
+	box-shadow: 0 0 3px 2px var(--shadow);
+	outline: none;
 }
 
 .hero-section {
@@ -79,7 +87,7 @@ button:active {
 
 .hero-section h1 {
 	font-size: 80px;
-	text-shadow: 0 0.04em 5px var(--shadow);
+	text-shadow: 0 0 5px var(--shadow);
 	margin: 0;
 }
 
@@ -104,6 +112,14 @@ button:active {
 .hero-section button {
 	font-size: 18px;
 	font-family: "Fira Code";
+}
+
+#handle-input {
+	padding: 0.65em 1.3em;
+
+	font-size: 18px;
+	font-family: "Fira Code";
+	text-align: center;
 }
 
 .user-info-grid {
@@ -148,33 +164,6 @@ button:active {
 .user-stats {
 	margin: 0;
 	padding-left: 15px;
-}
-
-#handle-input {
-	padding: 0.65em 1.3em;
-	background-color: var(--bg1);
-	border: 1px solid var(--gray-dark);
-	border-radius: 0.5em;
-	display: inline-block;
-	box-shadow: 0 0 2px 0.5px var(--shadow);
-
-	color: var(--fg);
-	font-size: 18px;
-	font-family: "Fira Code";
-	text-align: center;
-
-	transition-duration: 100ms;
-}
-
-#handle-input:hover {
-	background-color: var(--bg2);
-	box-shadow: 0 0 3px 0.5px var(--shadow);
-}
-
-#handle-input:focus {
-	background-color: var(--bg3);
-	box-shadow: 0 0 3px 1px var(--shadow);
-	outline: none;
 }
 
 #user-title-photo {
