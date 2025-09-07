@@ -97,8 +97,19 @@ input.glow-interactive:focus {
 }
 
 /* Typing animation */
-.hero-section h2::before,
-.hero-section h2::after {
+.typing-animation {
+	--typing-time: 3s;
+	--char-count: 32;
+	--blink-speed: 850ms;
+	--blinks-before-start: 1;
+	--typing-wait: calc(var(--blinks-before-start) * var(--blink-speed) + var(--blink-speed) / 4);
+
+	position: relative;
+	width: max-content;
+}
+
+.typing-animation::before,
+.typing-animation::after {
 	content: "";
 	position: absolute;
 	top: 0;
@@ -107,19 +118,21 @@ input.glow-interactive:focus {
 	left: 0;
 }
 
-.hero-section h2::before {
+/* "Hides" the text behind */
+.typing-animation::before {
 	background: var(--bg);
 	animation:
-		typing 4s steps(32) 1.5s forwards;
+		typing var(--typing-time) steps(var(--char-count)) var(--typing-wait) forwards;
 }
 
-.hero-section h2::after {
-	width: .125em;
+/* Caret */
+.typing-animation::after {
+	width: 0.125em;
 	background: var(--fg);
 	animation:
-		typing 4s steps(32) 1.5s forwards,
-		blinking 750ms 0s 2,
-		blinking 750ms 5.5s infinite;
+		typing var(--typing-time) steps(var(--char-count)) var(--typing-wait) forwards,
+		blinking var(--blink-speed) 0s var(--blinks-before-start),
+		blinking var(--blink-speed) calc(var(--typing-wait) + var(--typing-time)) infinite;
 }
 
 @keyframes typing {
