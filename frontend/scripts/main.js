@@ -8,8 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	form.addEventListener('submit', async (e) => {
 		e.preventDefault();
+
 		const handle = input.value.trim();
 		if (!handle) return;
+
+		document.querySelector("main").scrollIntoView({
+			behavior: "smooth"
+		});
 
 		await updateSolvedTagsAndRatingsCharts(handle);
 		updateUserInfo(handle);

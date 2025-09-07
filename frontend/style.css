@@ -18,6 +18,10 @@
 	--green-dark: #98971a;
 }
 
+html {
+	scroll-behavior: smooth;
+}
+
 body {
 	font-family: "Fira Code";
 	color: var(--fg);
@@ -91,7 +95,7 @@ input.glow-interactive:focus {
 .hero-section h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
-	margin-bottom: 4em;
+	margin-bottom: 2.5em;
 	position: relative;
 	width: max-content;
 }
