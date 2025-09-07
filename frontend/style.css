@@ -14,6 +14,7 @@
 	--aqua: #83c07c;
 	--gray-dark: #928374;
 	--blue-dark: #458588;
+	--green-dark: #98971a;
 }
 
 body {
@@ -43,10 +44,10 @@ main {
 button {
 	background-color: var(--bg1);
 	color: var(--fg);
-	padding: 10px 20px;
+	padding: 0.75em 1.5em;
 	display: inline-block;
 	border: 1px solid var(--gray-dark);
-	border-radius: 7px;
+	border-radius: 0.5em;
 	box-shadow: 0 0 2px 1px var(--shadow);
 
 	text-align: center;
@@ -74,6 +75,22 @@ button:active {
 
 .hero-section h1 {
 	font-size: 80px;
+}
+
+.hero-section h2 {
+	font-family: "Fira Code";
+	font-weight: 300;
+}
+
+.hero-section form {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.hero-section button {
+	font-size: 18px;
+	font-family: "Fira Code";
 }
 
 .user-info-grid {
@@ -121,15 +138,17 @@ button:active {
 }
 
 #handle-input {
-	padding: 5px 10px;
+	padding: 0.65em 1.3em;
 	background-color: var(--bg1);
 	border: 1px solid var(--gray-dark);
-	border-radius: 5px;
+	border-radius: 0.5em;
 	display: inline-block;
 	box-shadow: 0 0 2px 0.5px var(--shadow);
 
 	color: var(--fg);
-	font-size: 24px;
+	font-size: 18px;
+	font-family: "Fira Code";
+	text-align: center;
 
 	transition-duration: 100ms;
 }
