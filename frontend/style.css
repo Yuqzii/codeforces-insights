@@ -82,7 +82,9 @@ input.glow-interactive:focus {
 
 	height: 100vh;
 	border-bottom: 1px solid var(--gray-dark);
-	box-shadow: 0 5px 20px var(--shadow);
+	box-shadow: 0 0 15px var(--shadow);
+
+	background: linear-gradient(to bottom, var(--bg) 85%, var(--bg1));
 }
 
 .hero-section h1 {
@@ -101,6 +103,7 @@ input.glow-interactive:focus {
 .hero-section h2 span {
 	color: var(--blue);
 	font-weight: 450;
+	text-shadow: 0 0 2px var(--shadow);
 }
 
 .hero-section form {
