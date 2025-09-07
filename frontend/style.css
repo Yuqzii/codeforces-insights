@@ -106,6 +106,7 @@ input.glow-interactive:focus {
 	--char-count: 32;
 	--blink-speed: 850ms;
 	--blinks-before-start: 1;
+	--blinks-after-end: 5;
 	--typing-wait: calc(var(--blinks-before-start) * var(--blink-speed) + var(--blink-speed) / 4);
 
 	position: relative;
@@ -136,7 +137,7 @@ input.glow-interactive:focus {
 	animation:
 		typing var(--typing-time) steps(var(--char-count)) var(--typing-wait) forwards,
 		blinking var(--blink-speed) 0s var(--blinks-before-start),
-		blinking var(--blink-speed) calc(var(--typing-wait) + var(--typing-time)) infinite;
+		blinking var(--blink-speed) calc(var(--typing-wait) + var(--typing-time)) var(--blinks-after-end) forwards;
 }
 
 @keyframes typing {
