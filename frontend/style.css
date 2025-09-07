@@ -5,6 +5,7 @@
 	--bg3: #665c54;
 	--fg: #ebdbb2;
 	--shadow: #92837455;
+	--border: #92837488;
 	--red: #fb4934;
 	--orange: #fe8019;
 	--green: #b8bb26;
@@ -14,6 +15,11 @@
 	--aqua: #83c07c;
 	--gray-dark: #928374;
 	--blue-dark: #458588;
+	--green-dark: #98971a;
+}
+
+html {
+	scroll-behavior: smooth;
 }
 
 body {
@@ -35,33 +41,154 @@ h6 {
 	font-family: "Inconsolata";
 }
 
-main {
-	margin: auto;
-	width: 90%;
-}
-
 button {
-	background-color: var(--bg1);
-	color: var(--fg);
-	padding: 10px 20px;
-	display: inline-block;
-	border: 1px solid var(--gray-dark);
-	border-radius: 7px;
-	box-shadow: 0 0 2px 1px var(--shadow);
-
+	padding: 0.75em 1.5em;
 	text-align: center;
 	font-size: 14px;
+}
+
+.glow-interactive {
+	background-color: var(--bg1);
+	color: var(--fg);
+	display: inline-block;
+	border: 1px solid var(--border);
+	border-radius: 0.5em;
+	box-shadow: 0 0 2px 1px var(--shadow);
 
 	transition-duration: 50ms;
 }
 
-button:hover {
+.glow-interactive:hover {
 	background-color: var(--bg2);
 	box-shadow: 0 0 3px 2px var(--shadow);
 }
 
-button:active {
+button.glow-interactive:active {
 	background-color: var(--bg3);
+}
+
+input.glow-interactive:focus {
+	background-color: var(--bg3);
+	box-shadow: 0 0 3px 2px var(--shadow);
+	outline: none;
+}
+
+.hero-section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	height: 100vh;
+	border-bottom: 1px solid var(--border);
+	box-shadow: 0 0 15px var(--shadow);
+
+	background: linear-gradient(to bottom, var(--bg) 85%, var(--bg1));
+}
+
+.hero-section h1 {
+	font-size: 80px;
+	text-shadow: 0 0 5px var(--shadow);
+	margin: 0;
+}
+
+.hero-section h2 {
+	font-family: "Fira Code";
+	font-weight: 300;
+	margin-bottom: 2.5em;
+	position: relative;
+	width: max-content;
+}
+
+/* Typing animation */
+.typing-animation {
+	--typing-time: 3s;
+	--char-count: 32;
+	--blink-speed: 850ms;
+	--blinks-before-start: 1;
+	--typing-wait: calc(var(--blinks-before-start) * var(--blink-speed) + var(--blink-speed) / 4);
+
+	position: relative;
+	width: max-content;
+}
+
+.typing-animation::before,
+.typing-animation::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+/* "Hides" the text behind */
+.typing-animation::before {
+	background: var(--bg);
+	animation:
+		typing var(--typing-time) steps(var(--char-count)) var(--typing-wait) forwards;
+}
+
+/* Caret */
+.typing-animation::after {
+	width: 0.125em;
+	background: var(--fg);
+	animation:
+		typing var(--typing-time) steps(var(--char-count)) var(--typing-wait) forwards,
+		blinking var(--blink-speed) 0s var(--blinks-before-start),
+		blinking var(--blink-speed) calc(var(--typing-wait) + var(--typing-time)) infinite;
+}
+
+@keyframes typing {
+	to {
+		left: 100%;
+	}
+}
+
+@keyframes blinking {
+
+	0%,
+	50% {
+		opacity: 1;
+	}
+
+	51%,
+	100% {
+		opacity: 0;
+	}
+}
+
+/* End of typing animation */
+
+.hero-section h2 span {
+	color: var(--blue);
+	font-weight: 450;
+	text-shadow: 0 0 2px var(--shadow);
+}
+
+.hero-section form {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.hero-section button {
+	font-size: 18px;
+	font-family: "Fira Code";
+}
+
+#handle-input {
+	padding: 0.65em 1.3em;
+
+	font-size: 18px;
+	font-family: "Fira Code";
+	text-align: center;
+}
+
+main {
+	margin: auto;
+	margin-top: 5em;
+	width: 90%;
 }
 
 .user-info-grid {
@@ -78,13 +205,13 @@ button:active {
 }
 
 .user-info-item {
-	padding: 25px;
-
-	border: 1.5px solid var(--gray-dark);
-	border-radius: 10px;
-	box-shadow: 0 0 5px 2px var(--shadow);
 	display: flex;
 	flex-direction: column;
+	padding: 25px;
+
+	border: 1.5px solid var(--border);
+	border-radius: 10px;
+	box-shadow: 0 0 5px 2px var(--shadow);
 }
 
 .user-info-item h2 {
@@ -108,33 +235,8 @@ button:active {
 	padding-left: 15px;
 }
 
-#handle-input {
-	padding: 5px 10px;
-	background-color: var(--bg1);
-	border: 1px solid var(--gray-dark);
-	border-radius: 5px;
-	display: inline-block;
-	box-shadow: 0 0 2px 0.5px var(--shadow);
-
-	color: var(--fg);
-	font-size: 16px;
-
-	transition-duration: 100ms;
-}
-
-#handle-input:hover {
-	background-color: var(--bg2);
-	box-shadow: 0 0 3px 0.5px var(--shadow);
-}
-
-#handle-input:focus {
-	background-color: var(--bg3);
-	box-shadow: 0 0 3px 1px var(--shadow);
-	outline: none;
-}
-
 #user-title-photo {
-	border: 1px solid var(--gray-dark);
+	border: 1px solid var(--border);
 	border-radius: 8px;
 	width: 150px;
 	height: auto;
