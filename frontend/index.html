@@ -28,11 +28,11 @@
 
 		<div class="user-info-grid">
 			<div id="user-details" class="user-info-item" style="grid-area: user-info">
-				<header>
+				<header class="user-info-header">
 					<h2>User Info</h2>
-					<img id="user-avatar" src="https://userpic.codeforces.org/no-avatar.jpg" alt="User Avatar">
-					<h3 id="username">Placeholder</h3>
 				</header>
+				<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg" alt="User Title Photo">
+				<h3 id="username">Placeholder</h3>
 				<div>
 					<ul class="user-stats">
 						<li>Rating: <span id="user-rating">0</span></li>
@@ -42,7 +42,9 @@
 				</div>
 			</div>
 			<div id="solved-ratings" class="user-info-item" style="grid-area: solved-ratings">
-				<h2>Rating distribution of solved problems</h2>
+				<header class="user-info-header">
+					<h2>Rating distribution of solved problems</h2>
+				</header>
 				<div class="chart-container">
 					<canvas id="solved-ratings-chart"></canvas>
 				</div>
