@@ -38,6 +38,7 @@ h6 {
 
 main {
 	margin: auto;
+	margin-top: 5em;
 	width: 90%;
 }
 
@@ -70,18 +71,28 @@ button:active {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+
 	height: 100vh;
+	border-bottom: 1px solid var(--gray-dark);
+	box-shadow: 0 5px 20px var(--shadow);
 }
 
 .hero-section h1 {
 	font-size: 80px;
+	text-shadow: 0 0.04em 5px var(--shadow);
 	margin: 0;
 }
 
 .hero-section h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
+
 	margin-bottom: 4em;
+}
+
+.hero-section h2 span {
+	color: var(--blue);
+	font-weight: 450;
 }
 
 .hero-section form {
@@ -109,13 +120,13 @@ button:active {
 }
 
 .user-info-item {
+	display: flex;
+	flex-direction: column;
 	padding: 25px;
 
 	border: 1.5px solid var(--gray-dark);
 	border-radius: 10px;
 	box-shadow: 0 0 5px 2px var(--shadow);
-	display: flex;
-	flex-direction: column;
 }
 
 .user-info-item h2 {
