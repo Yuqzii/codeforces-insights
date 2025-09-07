@@ -5,6 +5,7 @@
 	--bg3: #665c54;
 	--fg: #ebdbb2;
 	--shadow: #92837455;
+	--border: #92837488;
 	--red: #fb4934;
 	--orange: #fe8019;
 	--green: #b8bb26;
@@ -36,12 +37,6 @@ h6 {
 	font-family: "Inconsolata";
 }
 
-main {
-	margin: auto;
-	margin-top: 5em;
-	width: 90%;
-}
-
 button {
 	padding: 0.75em 1.5em;
 	text-align: center;
@@ -52,7 +47,7 @@ button {
 	background-color: var(--bg1);
 	color: var(--fg);
 	display: inline-block;
-	border: 1px solid var(--gray-dark);
+	border: 1px solid var(--border);
 	border-radius: 0.5em;
 	box-shadow: 0 0 2px 1px var(--shadow);
 
@@ -81,7 +76,7 @@ input.glow-interactive:focus {
 	justify-content: center;
 
 	height: 100vh;
-	border-bottom: 1px solid var(--gray-dark);
+	border-bottom: 1px solid var(--border);
 	box-shadow: 0 0 15px var(--shadow);
 
 	background: linear-gradient(to bottom, var(--bg) 85%, var(--bg1));
@@ -125,6 +120,12 @@ input.glow-interactive:focus {
 	text-align: center;
 }
 
+main {
+	margin: auto;
+	margin-top: 5em;
+	width: 90%;
+}
+
 .user-info-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -143,7 +144,7 @@ input.glow-interactive:focus {
 	flex-direction: column;
 	padding: 25px;
 
-	border: 1.5px solid var(--gray-dark);
+	border: 1.5px solid var(--border);
 	border-radius: 10px;
 	box-shadow: 0 0 5px 2px var(--shadow);
 }
@@ -170,7 +171,7 @@ input.glow-interactive:focus {
 }
 
 #user-title-photo {
-	border: 1px solid var(--gray-dark);
+	border: 1px solid var(--border);
 	border-radius: 8px;
 	width: 150px;
 	height: auto;
