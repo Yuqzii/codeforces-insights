@@ -134,7 +134,9 @@ button:active {
 }
 
 #user-title-photo {
+	border: 1px solid var(--gray-dark);
 	border-radius: 8px;
 	width: 150px;
 	height: auto;
+	box-shadow: 0 0 3px 2px var(--shadow);
 }
