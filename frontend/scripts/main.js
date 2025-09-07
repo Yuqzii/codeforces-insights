@@ -29,7 +29,7 @@ async function updateUserInfo(username) {
 		return;
 	}
 
-	document.getElementById('user-avatar').src = data.avatar;
+	document.getElementById('user-title-photo').src = data.titlePhoto;
 	document.getElementById('username').textContent = data.handle;
 	document.getElementById('user-rating').textContent = data.rating;
 	document.getElementById('user-peak-rating').textContent = data.maxRating;
