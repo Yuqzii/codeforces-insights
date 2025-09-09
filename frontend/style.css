@@ -73,6 +73,14 @@ input.glow-interactive:focus {
 	outline: none;
 }
 
+.glow-text {
+	text-shadow: 0 0 0.075em var(--shadow);
+}
+
+.glow-border {
+	box-shadow: 0 0 5px 2px var(--shadow);
+}
+
 .hero-section {
 	display: flex;
 	flex-direction: column;
@@ -88,7 +96,6 @@ input.glow-interactive:focus {
 
 .hero-section h1 {
 	font-size: 80px;
-	text-shadow: 0 0 5px var(--shadow);
 	margin: 0;
 }
 
@@ -164,7 +171,6 @@ input.glow-interactive:focus {
 .hero-section h2 span {
 	color: var(--blue);
 	font-weight: 450;
-	text-shadow: 0 0 2px var(--shadow);
 }
 
 .hero-section form {
@@ -195,7 +201,6 @@ main {
 main h1 {
 	text-align: center;
 	font-size: 50px;
-	text-shadow: 0 0 2px var(--shadow);
 }
 
 .user-info-grid {
@@ -219,7 +224,6 @@ main h1 {
 
 	border: 1.5px solid var(--border);
 	border-radius: var(--card-border-radius);
-	box-shadow: 0 0 5px 2px var(--shadow);
 }
 
 .chart-container {
