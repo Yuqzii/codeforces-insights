@@ -1,10 +1,11 @@
-import { fetchUserInfo } from "./api.js";
-import { hideLoader, showLoader, updateSolvedTagsAndRatingsCharts } from "./charts.js";
-import { toggleShowOtherTags } from "./solvedTags.js";
+import { fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { hideLoader, showLoader, SolvedTags, updateSolvedRatingsChart } from "./charts.js";
 
 const userDetails = document.getElementById('user-details');
 const solvedRatings = document.getElementById('solved-ratings');
-const solvedTags = document.getElementById('solved-tags');
+const solvedTagsElement = document.getElementById('solved-tags');
+
+const solvedTags = new SolvedTags();
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -18,18 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		showLoader(userDetails);
 		showLoader(solvedRatings);
-		showLoader(solvedTags);
+		showLoader(solvedTagsElement);
 
 		document.querySelector("main").scrollIntoView({
 			behavior: "smooth"
 		});
 
-		await updateSolvedTagsAndRatingsCharts(handle);
+		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
+		solvedTags.updateData(tagsRatings.tags);
+		solvedTags.updateChart();
+
+		updateSolvedRatingsChart(tagsRatings.ratings);
+
 		updateUserInfo(handle);
 	});
 
 	document.getElementById('toggle-other-tags').addEventListener('click', () => {
-		toggleShowOtherTags();
+		solvedTags.toggleOther();
 	});
 });
 
