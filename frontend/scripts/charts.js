@@ -28,6 +28,7 @@ async function updateSolvedRatingsChart(data) {
 	if (solvedRatingsChart != null)
 		solvedRatingsChart.destroy();
 
+	hideLoader(ctx.parentNode.parentNode);
 	solvedRatingsChart = new Chart(ctx, {
 		type: 'bar',
 		data: {
@@ -67,4 +68,12 @@ function getColors() {
 	aquaColor = style.getPropertyValue('--aqua');
 	grayDarkColor = style.getPropertyValue('--gray-dark');
 	blueDarkColor = style.getPropertyValue('--blue-dark');
+}
+
+export function showLoader(container) {
+	container.querySelector(".loader").style.display = "flex";
+}
+
+export function hideLoader(container) {
+	container.querySelector(".loader").style.display = "none";
 }

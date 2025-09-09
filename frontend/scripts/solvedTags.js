@@ -1,3 +1,5 @@
+import { hideLoader } from "./charts.js";
+
 const N = 10;
 
 let showOtherTags = false;
@@ -28,6 +30,7 @@ export async function updateSolvedTagsChart() {
 	if (chart != null)
 		chart.destroy();
 
+	hideLoader(ctx.parentNode.parentNode);
 	chart = new Chart(ctx, {
 		type: 'pie',
 		data: {

@@ -1,6 +1,10 @@
 import { fetchUserInfo } from "./api.js";
-import { updateSolvedTagsAndRatingsCharts } from "./charts.js";
+import { hideLoader, showLoader, updateSolvedTagsAndRatingsCharts } from "./charts.js";
 import { toggleShowOtherTags } from "./solvedTags.js";
+
+const userDetails = document.getElementById('user-details');
+const solvedRatings = document.getElementById('solved-ratings');
+const solvedTags = document.getElementById('solved-tags');
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -11,6 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const handle = input.value.trim();
 		if (!handle) return;
+
+		showLoader(userDetails);
+		showLoader(solvedRatings);
+		showLoader(solvedTags);
 
 		document.querySelector("main").scrollIntoView({
 			behavior: "smooth"
@@ -33,6 +41,8 @@ async function updateUserInfo(username) {
 		console.error(err);
 		return;
 	}
+
+	hideLoader(userDetails);
 
 	document.getElementById('user-title-photo').src = data.titlePhoto;
 	document.getElementById('username').textContent = data.handle;
