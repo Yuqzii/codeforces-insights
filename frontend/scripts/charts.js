@@ -1,5 +1,3 @@
-var solvedRatingsChart;
-
 var fgColor, bgColor, shadowColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 var grayDarkColor, blueDarkColor;
@@ -89,7 +87,7 @@ export class SolvedRatings {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
-		solvedRatingsChart = new Chart(ctx, {
+		this.#chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				datasets: [{
