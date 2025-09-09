@@ -206,6 +206,7 @@ main {
 }
 
 .user-info-item {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	padding: 25px;
