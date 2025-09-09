@@ -192,6 +192,12 @@ main {
 	width: 90%;
 }
 
+main h1 {
+	text-align: center;
+	font-size: 50px;
+	text-shadow: 0 0 2px var(--shadow);
+}
+
 .user-info-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -264,7 +270,7 @@ main {
 	background-color: var(--bg);
 	border-radius: var(--card-border-radius);
 
-		display: flex;
+	display: flex;
 	align-items: center;
 	justify-content: center;
 }
