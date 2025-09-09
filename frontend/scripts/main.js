@@ -1,6 +1,12 @@
-import { fetchUserInfo } from "./api.js";
-import { updateSolvedTagsAndRatingsCharts } from "./charts.js";
-import { toggleShowOtherTags } from "./solvedTags.js";
+import { fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { hideLoader, showLoader, SolvedRatings, SolvedTags } from "./charts.js";
+
+const userDetails = document.getElementById('user-details');
+const solvedRatingsElement = document.getElementById('solved-ratings');
+const solvedTagsElement = document.getElementById('solved-tags');
+
+const solvedTags = new SolvedTags();
+const solvedRatings = new SolvedRatings();
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -12,16 +18,25 @@ document.addEventListener('DOMContentLoaded', () => {
 		const handle = input.value.trim();
 		if (!handle) return;
 
+		showLoader(userDetails);
+		showLoader(solvedRatingsElement);
+		showLoader(solvedTagsElement);
+
 		document.querySelector("main").scrollIntoView({
 			behavior: "smooth"
 		});
 
-		await updateSolvedTagsAndRatingsCharts(handle);
+		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
+		solvedTags.updateData(tagsRatings.tags);
+		solvedTags.updateChart();
+		solvedRatings.updateData(tagsRatings.ratings);
+		solvedRatings.updateChart();
+
 		updateUserInfo(handle);
 	});
 
 	document.getElementById('toggle-other-tags').addEventListener('click', () => {
-		toggleShowOtherTags();
+		solvedTags.toggleOther();
 	});
 });
 
@@ -33,6 +48,8 @@ async function updateUserInfo(username) {
 		console.error(err);
 		return;
 	}
+
+	hideLoader(userDetails);
 
 	document.getElementById('user-title-photo').src = data.titlePhoto;
 	document.getElementById('username').textContent = data.handle;
