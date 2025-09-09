@@ -33,35 +33,41 @@
 				<header class="user-info-header">
 					<h2>User Info</h2>
 				</header>
-				<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg" alt="User Title Photo">
-				<h3 id="username">Placeholder</h3>
-				<div>
-					<ul class="user-stats">
-						<li>Rating: <span id="user-rating">0</span></li>
-						<li>Peak rating: <span id="user-peak-rating">0</span></li>
-						<li>Country: <span id="user-country"></span></li>
-					</ul>
+				<div class="user-info-content">
+					<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg" alt="User Title Photo">
+					<h3 id="username">Placeholder</h3>
+					<div>
+						<ul class="user-stats">
+							<li>Rating: <span id="user-rating">0</span></li>
+							<li>Peak rating: <span id="user-peak-rating">0</span></li>
+							<li>Country: <span id="user-country"></span></li>
+						</ul>
+					</div>
+					<div class="loader"></div>
 				</div>
-				<div class="loader"></div>
 			</div>
 			<div id="solved-ratings" class="user-info-item" style="grid-area: solved-ratings">
 				<header class="user-info-header">
 					<h2>Rating distribution of solved problems</h2>
 				</header>
-				<div class="chart-container">
-					<canvas id="solved-ratings-chart"></canvas>
+				<div class="user-info-content">
+					<div class=" chart-container">
+						<canvas id="solved-ratings-chart"></canvas>
+					</div>
+					<div class="loader"></div>
 				</div>
-				<div class="loader"></div>
 			</div>
 			<div id="solved-tags" class="user-info-item">
-				<div class="user-info-header">
+				<header class="user-info-header">
 					<h2>Solved Tags</h2>
 					<button id="toggle-other-tags" class="glow-interactive" type="button">Toggle Other</button>
+				</header>
+				<div class="user-info-content">
+					<div class="chart-container" style="align-self: center">
+						<canvas id="solved-tags-chart"></canvas>
+					</div>
+					<div class="loader"></div>
 				</div>
-				<div class="chart-container" style="align-self: center">
-					<canvas id="solved-tags-chart"></canvas>
-				</div>
-				<div class="loader"></div>
 			</div>
 			<div class="user-info-item">
 				<h2>Placeholder</h2>

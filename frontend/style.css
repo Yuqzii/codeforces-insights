@@ -206,18 +206,14 @@ main {
 }
 
 .user-info-item {
-	position: relative;
+	--card-border-radius: 10px;
+
 	display: flex;
 	flex-direction: column;
-	padding: 25px;
 
 	border: 1.5px solid var(--border);
-	border-radius: 10px;
+	border-radius: var(--card-border-radius);
 	box-shadow: 0 0 5px 2px var(--shadow);
-}
-
-.user-info-item h2 {
-	margin: 0;
 }
 
 .chart-container {
@@ -230,7 +226,11 @@ main {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 1em;
+	margin: 1.5em 1.5em 0 1.5em
+}
+
+.user-info-header h2 {
+	margin: 0;
 }
 
 .user-stats {
@@ -246,14 +246,25 @@ main {
 	box-shadow: 0 0 3px 2px var(--shadow);
 }
 
+.user-info-content {
+	position: relative;
+	display: flex;
+	min-height: 0;
+	flex: 1;
+	flex-direction: column;
+	padding: 1.5em;
+}
+
 .loader {
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+	background-color: var(--bg);
+	border-radius: var(--card-border-radius);
 
-	display: flex;
+		display: flex;
 	align-items: center;
 	justify-content: center;
 }
