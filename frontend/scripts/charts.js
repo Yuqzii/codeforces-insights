@@ -78,36 +78,45 @@ export class SolvedTags {
 	}
 }
 
-export async function updateSolvedRatingsChart(data) {
-	const ctx = document.getElementById('solved-ratings-chart');
+export class SolvedRatings {
+	#chart;
+	#data;
 
-	if (solvedRatingsChart != null)
-		solvedRatingsChart.destroy();
+	updateChart() {
+		const ctx = document.getElementById('solved-ratings-chart');
 
-	hideLoader(ctx.parentNode.parentNode);
-	solvedRatingsChart = new Chart(ctx, {
-		type: 'bar',
-		data: {
-			datasets: [{
-				label: '# of Solved Problems',
-				data: data,
-			}]
-		},
-		options: {
-			scales: {
-				y: {
-					beginAtZero: true
-				}
+		if (this.#chart != null)
+			this.#chart.destroy();
+
+		hideLoader(ctx.parentNode.parentNode);
+		solvedRatingsChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				datasets: [{
+					label: '# of Solved Problems',
+					data: this.#data,
+				}]
 			},
-			elements: {
-				bar: {
-					borderRadius: 8
-				}
-			},
-			maintainAspectRatio: false,
-			responsive: true
-		}
-	});
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				},
+				elements: {
+					bar: {
+						borderRadius: 8
+					}
+				},
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		});
+	}
+
+	updateData(data) {
+		this.#data = data;
+	}
 }
 
 function getColors() {

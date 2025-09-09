@@ -1,11 +1,12 @@
 import { fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
-import { hideLoader, showLoader, SolvedTags, updateSolvedRatingsChart } from "./charts.js";
+import { hideLoader, showLoader, SolvedRatings, SolvedTags } from "./charts.js";
 
 const userDetails = document.getElementById('user-details');
-const solvedRatings = document.getElementById('solved-ratings');
+const solvedRatingsElement = document.getElementById('solved-ratings');
 const solvedTagsElement = document.getElementById('solved-tags');
 
 const solvedTags = new SolvedTags();
+const solvedRatings = new SolvedRatings();
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (!handle) return;
 
 		showLoader(userDetails);
-		showLoader(solvedRatings);
+		showLoader(solvedRatingsElement);
 		showLoader(solvedTagsElement);
 
 		document.querySelector("main").scrollIntoView({
@@ -28,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
 		solvedTags.updateData(tagsRatings.tags);
 		solvedTags.updateChart();
-
-		updateSolvedRatingsChart(tagsRatings.ratings);
+		solvedRatings.updateData(tagsRatings.ratings);
+		solvedRatings.updateChart();
 
 		updateUserInfo(handle);
 	});
