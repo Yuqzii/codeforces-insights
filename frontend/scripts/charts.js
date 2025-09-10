@@ -117,6 +117,42 @@ export class SolvedRatings {
 	}
 }
 
+export class RatingHistory {
+	#chart;
+	#data = [new Array, new Array]
+
+	updateChart() {
+		const ctx = document.getElementById('rating-history-chart');
+
+		if (this.#chart != null)
+			this.#chart.destroy();
+
+		hideLoader(ctx.parentNode.parentNode);
+		this.#chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: this.#data.labels,
+				datasets: [{
+					label: 'Rating',
+					data: this.#data.ratings
+				}]
+			},
+			options: {
+				responsive: true
+			}
+		});
+	}
+
+	updateData(data) {
+		this.#data.ratings = [];
+		this.#data.labels = [];
+		for (const element of data) {
+			this.#data.ratings.push(element.newRating);
+			this.#data.labels.push(element.ratingUpdateTimeSeconds);
+		}
+	}
+}
+
 function getColors() {
 	var style = window.getComputedStyle(document.body);
 	fgColor = style.getPropertyValue('--fg');
