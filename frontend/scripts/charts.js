@@ -7,6 +7,10 @@ Chart.defaults.color = fgColor;
 Chart.defaults.borderColor = grayDarkColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
+Chart.defaults.elements.line.borderColor = orangeColor;
+Chart.defaults.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
+Chart.defaults.elements.point.borderWidth = 1;
+Chart.defaults.elements.point.borderColor = fgColor;
 
 export class SolvedTags {
 	N = 10;
@@ -134,11 +138,18 @@ export class RatingHistory {
 				labels: this.#data.labels,
 				datasets: [{
 					label: 'Rating',
-					data: this.#data.ratings
+					data: this.#data.ratings,
+					tension: 0.25
 				}]
 			},
 			options: {
-				responsive: true
+				responsive: true,
+				scales: {
+					x: {
+						type: 'linear',
+					}
+				}
+
 			}
 		});
 	}
