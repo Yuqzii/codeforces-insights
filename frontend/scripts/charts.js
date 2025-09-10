@@ -147,6 +147,8 @@ export class RatingHistory {
 				scales: {
 					x: {
 						type: 'linear',
+						min: this.#data.labels[0],
+						max: this.#data.labels[this.#data.labels.length - 1]
 					}
 				},
 				maintainAspectRatio: false,
