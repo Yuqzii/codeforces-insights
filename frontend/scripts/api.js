@@ -30,7 +30,7 @@ export async function fetchSolvedTagsAndRatings(handle) {
 	return await response.json();
 }
 
-export async function feetchRatingChanges(handle) {
+export async function fetchRatingChanges(handle) {
 	const endpoint = `users/rating/${handle}`;
 
 	const response = await fetch(url + endpoint);

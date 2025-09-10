@@ -1,4 +1,4 @@
-import { feetchRatingChanges as fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
 import { hideLoader, showLoader, SolvedRatings, SolvedTags, RatingHistory } from "./charts.js";
 
 const userDetails = document.getElementById('user-details');
