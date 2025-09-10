@@ -7,7 +7,9 @@ Chart.defaults.color = fgColor;
 Chart.defaults.borderColor = grayDarkColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
+
 Chart.defaults.elements.line.borderColor = orangeColor;
+Chart.defaults.elements.line.backgroundColor = orangeColor;
 Chart.defaults.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
 Chart.defaults.elements.point.borderWidth = 1;
 Chart.defaults.elements.point.borderColor = fgColor;
