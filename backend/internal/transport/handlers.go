@@ -13,6 +13,7 @@ import (
 type Client interface {
 	GetUser(context.Context, string) (*codeforces.User, error)
 	GetSubmissions(context.Context, string) ([]codeforces.Submission, error)
+	GetRatingChanges(context.Context, string) ([]codeforces.RatingChange, error)
 }
 
 type Handler struct {
@@ -110,6 +111,24 @@ func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request
 		Ratings: ratings,
 	}
 	j, err := json.Marshal(combined)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
+
+func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	ratings, err := h.client.GetRatingChanges(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	j, err := json.Marshal(ratings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
