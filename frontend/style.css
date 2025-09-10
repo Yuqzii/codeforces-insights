@@ -210,7 +210,7 @@ main h1 {
 	gap: 15px;
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings solved-tags"
-		"rating-history rating-history . .";
+		"rating-history rating-history rating-history .";
 
 	margin-top: 20px;
 	align-items: stretch;

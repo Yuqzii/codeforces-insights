@@ -148,8 +148,9 @@ export class RatingHistory {
 					x: {
 						type: 'linear',
 					}
-				}
-
+				},
+				maintainAspectRatio: false,
+				responsive: true
 			}
 		});
 	}
