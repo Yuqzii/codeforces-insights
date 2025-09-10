@@ -209,7 +209,8 @@ main h1 {
 	grid-template-rows: 400px 400px;
 	gap: 15px;
 	grid-template-areas:
-		"user-info solved-ratings solved-ratings";
+		"user-info solved-ratings solved-ratings solved-tags"
+		"rating-history rating-history . .";
 
 	margin-top: 20px;
 	align-items: stretch;

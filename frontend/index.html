@@ -58,7 +58,7 @@
 					<div class="loader"></div>
 				</div>
 			</div>
-			<div id="solved-tags" class="user-info-item glow-border">
+			<div id="solved-tags" class="user-info-item glow-border" style="grid-area: solved-tags">
 				<header class="user-info-header">
 					<h2>Solved Tags</h2>
 					<button id="toggle-other-tags" class="glow-interactive" type="button">Toggle Other</button>
@@ -70,11 +70,16 @@
 					<div class="loader"></div>
 				</div>
 			</div>
-			<div class="user-info-item glow-border">
-				<h2>Placeholder</h2>
-			</div>
-			<div class="user-info-item glow-border">
-				<h2>Placeholder</h2>
+			<div class="user-info-item glow-border" style="grid-area: rating-history">
+				<header class="user-info-header">
+					<h2>Rating History</h2>
+				</header>
+				<div class="user-info-content">
+					<div class="chart-container">
+						<canvas id="rating-history-chart"></canvas>
+					</div>
+					<div class="loader"></div>
+				</div>
 			</div>
 		</div>
 	</main>
