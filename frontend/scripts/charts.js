@@ -148,7 +148,10 @@ export class RatingHistory {
 				responsive: true,
 				scales: {
 					x: {
-						type: 'linear',
+						type: 'time',
+						time: {
+							unit: 'month'
+						},
 						min: this.#data.labels[0],
 						max: this.#data.labels[this.#data.labels.length - 1]
 					}
@@ -164,7 +167,7 @@ export class RatingHistory {
 		this.#data.labels = [];
 		for (const element of data) {
 			this.#data.ratings.push(element.newRating);
-			this.#data.labels.push(element.ratingUpdateTimeSeconds);
+			this.#data.labels.push(element.ratingUpdateTimeSeconds * 1000);
 		}
 	}
 }
