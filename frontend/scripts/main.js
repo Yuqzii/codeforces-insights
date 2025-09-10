@@ -1,12 +1,14 @@
-import { fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
-import { hideLoader, showLoader, SolvedRatings, SolvedTags } from "./charts.js";
+import { fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { hideLoader, showLoader, SolvedRatings, SolvedTags, RatingHistory } from "./charts.js";
 
 const userDetails = document.getElementById('user-details');
 const solvedRatingsElement = document.getElementById('solved-ratings');
 const solvedTagsElement = document.getElementById('solved-tags');
+const ratingHistoryElement = document.getElementById('rating-history');
 
 const solvedTags = new SolvedTags();
 const solvedRatings = new SolvedRatings();
+const ratingHistory = new RatingHistory();
 
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
@@ -21,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		showLoader(userDetails);
 		showLoader(solvedRatingsElement);
 		showLoader(solvedTagsElement);
+		showLoader(ratingHistoryElement);
 
 		document.querySelector("main").scrollIntoView({
 			behavior: "smooth"
@@ -31,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		solvedTags.updateChart();
 		solvedRatings.updateData(tagsRatings.ratings);
 		solvedRatings.updateChart();
+
+		const ratingChanges = await fetchRatingChanges(handle);
+		ratingHistory.updateData(ratingChanges);
+		ratingHistory.updateChart();
 
 		updateUserInfo(handle);
 	});

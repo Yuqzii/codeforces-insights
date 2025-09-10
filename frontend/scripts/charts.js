@@ -8,6 +8,12 @@ Chart.defaults.borderColor = grayDarkColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
 
+Chart.defaults.elements.line.borderColor = orangeColor;
+Chart.defaults.elements.line.backgroundColor = orangeColor;
+Chart.defaults.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
+Chart.defaults.elements.point.borderWidth = 1;
+Chart.defaults.elements.point.borderColor = fgColor;
+
 export class SolvedTags {
 	N = 10;
 	#showOtherTags = false;
@@ -114,6 +120,55 @@ export class SolvedRatings {
 
 	updateData(data) {
 		this.#data = data;
+	}
+}
+
+export class RatingHistory {
+	#chart;
+	#data = [new Array, new Array]
+
+	updateChart() {
+		const ctx = document.getElementById('rating-history-chart');
+
+		if (this.#chart != null)
+			this.#chart.destroy();
+
+		hideLoader(ctx.parentNode.parentNode);
+		this.#chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: this.#data.labels,
+				datasets: [{
+					label: 'Rating',
+					data: this.#data.ratings,
+					tension: 0.25
+				}]
+			},
+			options: {
+				responsive: true,
+				scales: {
+					x: {
+						type: 'time',
+						time: {
+							unit: 'month'
+						},
+						min: this.#data.labels[0],
+						max: this.#data.labels[this.#data.labels.length - 1]
+					}
+				},
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		});
+	}
+
+	updateData(data) {
+		this.#data.ratings = [];
+		this.#data.labels = [];
+		for (const element of data) {
+			this.#data.ratings.push(element.newRating);
+			this.#data.labels.push(element.ratingUpdateTimeSeconds * 1000);
+		}
 	}
 }
 

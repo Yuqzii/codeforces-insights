@@ -30,6 +30,7 @@ func main() {
 	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
 	// Prefer calling this to minimize Codeforces API calls.
 	mux.HandleFunc("GET /users/solved-tags-ratings/{handle}", h.HandleGetTagsAndRatings)
+	mux.HandleFunc("GET /users/rating/{handle}", h.HandleGetRatingChanges)
 
 	fmt.Println("Server listening on port :8080")
 	http.ListenAndServe(":8080", mux)

@@ -29,3 +29,13 @@ export async function fetchSolvedTagsAndRatings(handle) {
 
 	return await response.json();
 }
+
+export async function fetchRatingChanges(handle) {
+	const endpoint = `users/rating/${handle}`;
+
+	const response = await fetch(url + endpoint);
+	if (!response.ok)
+		throw new Error(`response not ok: ${response.statusText}`);
+
+	return await response.json();
+}
