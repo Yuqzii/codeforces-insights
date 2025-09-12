@@ -29,7 +29,7 @@ func fftRecursive(x []complex128, n, s int) []complex128 {
 	twiddle := complex(1, 0)                    // Twiddle factor, accumulates rotation.
 	res := make([]complex128, n)
 
-	for k := 0; k < n/2; k++ {
+	for k := range n / 2 {
 		t := twiddle * odd[k]
 		res[k] = even[k] + t     // Set first half
 		res[k+n/2] = even[k] - t // Set second half
