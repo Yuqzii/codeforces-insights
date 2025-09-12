@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"strconv"
 )
 
 type RatingChange struct {
@@ -44,6 +45,31 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 
 	if len(apiResp.Result) == 0 {
 		return nil, ErrNoRating
+	}
+
+	return apiResp.Result, nil
+}
+
+func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingChange, error) {
+	endpoint := "contest.ratingChanges?"
+	params := url.Values{}
+	params.Set("contestId", strconv.Itoa(id))
+
+	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("getting contest rating changes from Codeforces: %w", err)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiResp apiResponse[RatingChange]
+	json.Unmarshal(body, &apiResp)
+
+	if apiResp.Status != "OK" {
+		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
 	return apiResp.Result, nil
