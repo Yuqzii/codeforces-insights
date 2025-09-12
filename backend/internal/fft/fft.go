@@ -38,3 +38,28 @@ func fftRecursive(x []complex128, n, s int) []complex128 {
 	}
 	return res
 }
+
+// Works because IFFT(x) = 1/n * FFT(timeReverse(x)),
+// where timeReverse is swapping elements symmetrically around the center excluding index 0.
+// Exploits DFT symmetry to compute IFFT using forward FFT.
+func IFFT(x []complex128) []complex128 {
+	n := len(x)
+	res := make([]complex128, n)
+	copy(res, x)
+
+	// Time reversal
+	for i := 1; i < n/2; i++ {
+		j := n - i
+		res[i], res[j] = res[j], res[i]
+	}
+
+	res = FFT(res)
+
+	// Scale output by 1/n
+	invN := complex(1.0/float64(n), 0)
+	for i := range res {
+		res[i] *= invN
+	}
+
+	return res
+}
