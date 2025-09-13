@@ -16,7 +16,16 @@ const (
 	eloScale      float64 = 400
 )
 
+type ContestSeed struct {
+	seed []float64
+}
+
 var eloWinProb = generateEloWinProb()
+
+func (s *ContestSeed) CalculatePerformance(c *codeforces.Contestant) int {
+	perf := s.rankToRating(float64(c.Rank), c.Rating)
+	return perf
+}
 
 func generateEloWinProb() []float64 {
 	prob := make([]float64, ratingRange*2+1)
@@ -26,24 +35,47 @@ func generateEloWinProb() []float64 {
 	return prob
 }
 
-// Computes expected ranks for all possible ratings
-func calculateSeed(contestants []codeforces.Contestant) []float64 {
+// Computes expected ranks for all possible ratings.
+func CalculateSeed(contestants []codeforces.Contestant) *ContestSeed {
 	counts := make([]float64, ratingRange)
 	for _, c := range contestants {
 		counts[c.Rating+ratingOffset] += 1
 	}
 
-	seed := fft.ComplexToFloat(fft.Convolve(fft.FloatToComplex(eloWinProb), fft.FloatToComplex(counts)))
-
-	// Seed base case is 1
-	for i := range seed {
-		seed[i] += 1
+	seedComplex := fft.Convolve(fft.FloatToComplex(eloWinProb), fft.FloatToComplex(counts))
+	seed := ContestSeed{
+		seed: fft.ComplexToFloat(seedComplex),
 	}
 
-	return seed
+	// Seed base case is 1
+	for i := range seed.seed {
+		seed.seed[i] += 1
+	}
+
+	return &seed
+}
+
+// Uses binary search to find what rating gives rank targetRank.
+// @param rating Rating to exclude from expected rank calculation, rating of contestant we are calculating for.
+func (s *ContestSeed) rankToRating(targetRank float64, rating int) int {
+	l, r := minRating, maxRating
+	for l < r {
+		mid := (l + r) / 2
+		expectedRank := s.get(mid, rating)
+		if expectedRank < targetRank {
+			// Rating mid gives too high rank
+			r = mid
+		} else {
+			// Rating mid gives too low rank
+			l = mid + 1
+		}
+	}
+	// l is now first rating where expected rank < targetRank.
+	// - 1 to find last rating where expected rank >= targetRank.
+	return l - 1
 }
 
 // Returns expected rank for rating r, excluding one contestant with rating exclude.
-func getSeed(seed []float64, r, exclude int) float64 {
-	return seed[r+ratingRange+ratingOffset] - eloWinProb[r-exclude+ratingRange]
+func (s *ContestSeed) get(r, exclude int) float64 {
+	return s.seed[r+ratingRange+ratingOffset] - eloWinProb[r-exclude+ratingRange]
 }
