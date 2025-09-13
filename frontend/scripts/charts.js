@@ -21,6 +21,10 @@ export class SolvedTags {
 	#counts = [];
 	#chart;
 
+	constructor(toggleOtherButton) {
+		this.toggleOtherButton = toggleOtherButton
+	}
+
 	async updateChart() {
 		const ctx = document.getElementById('solved-tags-chart');
 
@@ -45,6 +49,7 @@ export class SolvedTags {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+		this.toggleOtherButton.style.display = 'inline';
 
 		this.#chart = new Chart(ctx, {
 			type: 'pie',
