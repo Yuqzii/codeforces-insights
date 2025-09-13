@@ -41,10 +41,12 @@ h6 {
 	font-family: "Inconsolata";
 }
 
-button {
+button,
+input {
 	padding: 0.75em 1.5em;
 	text-align: center;
 	font-size: 14px;
+	font-family: "Fira Code";
 }
 
 .glow-interactive {
@@ -181,14 +183,12 @@ input.glow-interactive:focus {
 
 .hero-section button {
 	font-size: 18px;
-	font-family: "Fira Code";
 }
 
 #handle-input {
 	padding: 0.65em 1.3em;
 
 	font-size: 18px;
-	font-family: "Fira Code";
 	text-align: center;
 }
 
@@ -263,7 +263,8 @@ main h1 {
 	min-height: 0;
 	flex: 1;
 	flex-direction: column;
-	padding: 1.5em;
+	padding: 1.5em 1.25em 1.5em 1.5em;
+	margin-top: 0.25em;
 }
 
 .loader,
