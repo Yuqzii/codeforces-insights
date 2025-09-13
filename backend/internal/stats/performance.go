@@ -11,8 +11,8 @@ const (
 	maxRating     int     = 6000
 	minRating     int     = -500
 	ratingRange   int     = maxRating - minRating
-	defaultRating int     = 1400
 	ratingOffset  int     = -minRating
+	defaultRating int     = 1400
 	eloScale      float64 = 400
 )
 
@@ -39,6 +39,9 @@ func generateEloWinProb() []float64 {
 func CalculateSeed(contestants []codeforces.Contestant) *ContestSeed {
 	counts := make([]float64, ratingRange)
 	for _, c := range contestants {
+		if c.Rating == 0 {
+			c.Rating = defaultRating
+		}
 		counts[c.Rating+ratingOffset] += 1
 	}
 
@@ -58,16 +61,16 @@ func CalculateSeed(contestants []codeforces.Contestant) *ContestSeed {
 // Uses binary search to find what rating gives rank targetRank.
 // @param rating Rating to exclude from expected rank calculation, rating of contestant we are calculating for.
 func (s *ContestSeed) rankToRating(targetRank float64, rating int) int {
-	l, r := minRating, maxRating
+	l, r := 2, maxRating
 	for l < r {
 		mid := (l + r) / 2
 		expectedRank := s.get(mid, rating)
-		if expectedRank < targetRank {
+		if expectedRank > targetRank {
 			// Rating mid gives too high rank
-			r = mid
+			l = mid + 1
 		} else {
 			// Rating mid gives too low rank
-			l = mid + 1
+			r = mid
 		}
 	}
 	// l is now first rating where expected rank < targetRank.
