@@ -146,7 +146,9 @@ export class RatingHistory {
 				}, {
 					label: 'Performance',
 					data: this.#performanceData.performance,
-					tension: 0.25
+					tension: 0.25,
+					borderColor: aquaColor,
+					backgroundColor: aquaColor,
 				}]
 			},
 			options: {
