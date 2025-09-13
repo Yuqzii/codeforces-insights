@@ -21,7 +21,7 @@ func fftRecursive(x []complex128, n, s int) []complex128 {
 		return []complex128{x[0]}
 	}
 
-	// Even and odd indices (only actually even and odd in first recursion)
+	// Even and odd indices (only actually even and odd in first iteration/recursive call)
 	even := fftRecursive(x, n/2, 2*s)
 	odd := fftRecursive(x[s:], n/2, 2*s)
 

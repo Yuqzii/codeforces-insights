@@ -36,6 +36,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		return nil, err
 	}
 
+	// Special apiResponse struct as the Codeforces API returns an unusual json format for this endpoint.
 	type apiResponse struct {
 		Status string `json:"status"`
 		Result struct {
