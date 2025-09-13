@@ -1,4 +1,4 @@
-import { fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { fetchPerformance, fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
 import { hideLoader, showLoader, SolvedRatings, SolvedTags, RatingHistory } from "./charts.js";
 
 const userDetails = document.getElementById('user-details');
@@ -13,6 +13,8 @@ const ratingHistory = new RatingHistory();
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
 	const input = document.getElementById('handle-input');
+	const perfLoader = document.getElementById('performance-loader');
+	perfLoader.style.display = 'none';
 
 	form.addEventListener('submit', async (e) => {
 		e.preventDefault();
@@ -29,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			behavior: "smooth"
 		});
 
+		ratingHistory.updatePerfomanceData([]);
+		ratingHistory.updateRatingData([]);
+
 		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
 		solvedTags.updateData(tagsRatings.tags);
 		solvedTags.updateChart();
@@ -36,8 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		solvedRatings.updateChart();
 
 		const ratingChanges = await fetchRatingChanges(handle);
-		ratingHistory.updateData(ratingChanges);
+		ratingHistory.updateRatingData(ratingChanges);
 		ratingHistory.updateChart();
+
+		perfLoader.style.display = 'flex';
+		const performance = await fetchPerformance(handle);
+		ratingHistory.updatePerfomanceData(performance);
+		ratingHistory.updateChart();
+		perfLoader.style.display = 'none';
 
 		updateUserInfo(handle);
 	});

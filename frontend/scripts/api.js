@@ -39,3 +39,13 @@ export async function fetchRatingChanges(handle) {
 
 	return await response.json();
 }
+
+export async function fetchPerformance(handle) {
+	const endpoint = `users/performance/${handle}`;
+
+	const response = await fetch(url + endpoint);
+	if (!response.ok)
+		throw new Error(`response not ok: ${response.statusText}`);
+
+	return await response.json();
+}

@@ -125,7 +125,8 @@ export class SolvedRatings {
 
 export class RatingHistory {
 	#chart;
-	#data = [new Array, new Array]
+	#ratingData = [new Array, new Array]
+	#performanceData = [new Array, new Array]
 
 	updateChart() {
 		const ctx = document.getElementById('rating-history-chart');
@@ -137,11 +138,17 @@ export class RatingHistory {
 		this.#chart = new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: this.#data.labels,
+				labels: this.#ratingData.labels,
 				datasets: [{
 					label: 'Rating',
-					data: this.#data.ratings,
+					data: this.#ratingData.ratings,
 					tension: 0.25
+				}, {
+					label: 'Performance',
+					data: this.#performanceData.performance,
+					tension: 0.25,
+					borderColor: aquaColor,
+					backgroundColor: aquaColor,
 				}]
 			},
 			options: {
@@ -152,8 +159,8 @@ export class RatingHistory {
 						time: {
 							unit: 'month'
 						},
-						min: this.#data.labels[0],
-						max: this.#data.labels[this.#data.labels.length - 1]
+						min: this.#ratingData.labels[0],
+						max: this.#ratingData.labels[this.#ratingData.labels.length - 1]
 					}
 				},
 				maintainAspectRatio: false,
@@ -162,12 +169,21 @@ export class RatingHistory {
 		});
 	}
 
-	updateData(data) {
-		this.#data.ratings = [];
-		this.#data.labels = [];
+	updateRatingData(data) {
+		this.#ratingData.ratings = [];
+		this.#ratingData.labels = [];
 		for (const element of data) {
-			this.#data.ratings.push(element.newRating);
-			this.#data.labels.push(element.ratingUpdateTimeSeconds * 1000);
+			this.#ratingData.ratings.push(element.newRating);
+			this.#ratingData.labels.push(element.ratingUpdateTimeSeconds * 1000);
+		}
+	}
+
+	updatePerfomanceData(data) {
+		this.#performanceData.performance = [];
+		this.#performanceData.timestamps = [];
+		for (const element of data) {
+			this.#performanceData.performance.push(element.rating);
+			this.#performanceData.timestamps.push(element.timestamp);
 		}
 	}
 }
