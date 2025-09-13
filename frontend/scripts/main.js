@@ -6,15 +6,18 @@ const solvedRatingsElement = document.getElementById('solved-ratings');
 const solvedTagsElement = document.getElementById('solved-tags');
 const ratingHistoryElement = document.getElementById('rating-history');
 
-const solvedTags = new SolvedTags();
-const solvedRatings = new SolvedRatings();
-const ratingHistory = new RatingHistory();
-
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
 	const input = document.getElementById('handle-input');
 	const perfLoader = document.getElementById('performance-loader');
+	const toggleOtherTags = document.getElementById('toggle-other-tags')
+
 	perfLoader.style.display = 'none';
+	toggleOtherTags.style.display = 'none';
+
+	const solvedTags = new SolvedTags(toggleOtherTags);
+	const solvedRatings = new SolvedRatings();
+	const ratingHistory = new RatingHistory();
 
 	form.addEventListener('submit', async (e) => {
 		e.preventDefault();
@@ -26,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		showLoader(solvedRatingsElement);
 		showLoader(solvedTagsElement);
 		showLoader(ratingHistoryElement);
+
+		toggleOtherTags.style.display = 'none';
 
 		document.querySelector("main").scrollIntoView({
 			behavior: "smooth"
@@ -53,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		updateUserInfo(handle);
 	});
 
-	document.getElementById('toggle-other-tags').addEventListener('click', () => {
+	toggleOtherTags.addEventListener('click', () => {
 		solvedTags.toggleOther();
 	});
 });
