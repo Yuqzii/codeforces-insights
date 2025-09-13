@@ -22,8 +22,8 @@ type ContestSeed struct {
 
 var eloWinProb = generateEloWinProb()
 
-func (s *ContestSeed) CalculatePerformance(c *codeforces.Contestant) int {
-	perf := s.rankToRating(float64(c.Rank), c.Rating)
+func (s *ContestSeed) CalculatePerformance(rank, rating int) int {
+	perf := s.rankToRating(float64(rank), rating)
 	return perf
 }
 

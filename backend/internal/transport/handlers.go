@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/stats"
@@ -14,6 +15,8 @@ type Client interface {
 	GetUser(context.Context, string) (*codeforces.User, error)
 	GetSubmissions(context.Context, string) ([]codeforces.Submission, error)
 	GetRatingChanges(context.Context, string) ([]codeforces.RatingChange, error)
+	GetContestRatingChanges(context.Context, int) ([]codeforces.RatingChange, error)
+	GetContestStandings(context.Context, int) ([]codeforces.Contestant, error)
 }
 
 type Handler struct {
@@ -129,6 +132,68 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 	}
 
 	j, err := json.Marshal(ratings)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
+
+func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	ratings, err := h.client.GetRatingChanges(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	type performance struct {
+		Rating    int `json:"rating"`
+		Timestamp int `json:"timestamp"`
+	}
+
+	perf := make([]performance, len(ratings))
+	for i := range ratings {
+		c, err := h.client.GetContestStandings(context.TODO(), ratings[i].ContestID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Sort contestants by rank
+		slices.SortFunc(c, func(a, b codeforces.Contestant) int {
+			return a.Rank - b.Rank
+		})
+
+		cr, err := h.client.GetContestRatingChanges(context.TODO(), ratings[i].ContestID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Does not always return rating changes for every participant.
+		// Create map to avoid index issues.
+		crMap := make(map[int]int) // Key: rank, value: rating
+		for _, rat := range cr {
+			crMap[rat.Rank] = rat.OldRating
+		}
+		// Update contestants ratings, required for performance calculation.
+		for i := range c {
+			rat, ok := crMap[c[i].Rank]
+			if !ok {
+				continue
+			}
+			c[i].Rating = rat
+		}
+
+		seed := stats.CalculateSeed(c)
+		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
+		perf[i].Timestamp = ratings[i].Timestamp
+	}
+
+	j, err := json.Marshal(perf)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
