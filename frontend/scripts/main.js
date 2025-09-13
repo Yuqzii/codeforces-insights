@@ -13,6 +13,8 @@ const ratingHistory = new RatingHistory();
 document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('user-form');
 	const input = document.getElementById('handle-input');
+	const perfLoader = document.getElementById('performance-loader');
+	perfLoader.style.display = 'none';
 
 	form.addEventListener('submit', async (e) => {
 		e.preventDefault();
@@ -41,10 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		const ratingChanges = await fetchRatingChanges(handle);
 		ratingHistory.updateRatingData(ratingChanges);
 		ratingHistory.updateChart();
+
+		perfLoader.style.display = 'flex';
 		const performance = await fetchPerformance(handle);
 		ratingHistory.updatePerfomanceData(performance);
 		ratingHistory.updateChart();
-
+		perfLoader.style.display = 'none';
 
 		updateUserInfo(handle);
 	});
