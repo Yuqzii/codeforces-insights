@@ -36,19 +36,19 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		return nil, err
 	}
 
-	type result struct {
-		Rows []Contestant `json:"rows"`
+	type apiResponse struct {
+		Status string `json:"status"`
+		Result struct {
+			Contestants []Contestant `json:"rows"`
+		} `json:"result"`
+		Comment string `json:"comment,omitempty"`
 	}
-	var apiResp apiResponse[result]
+	var apiResp apiResponse
 	json.Unmarshal(body, &apiResp)
 
 	if apiResp.Status != "OK" {
 		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
-	if len(apiResp.Result) == 0 {
-		return nil, ErrNoStandings
-	}
-
-	return apiResp.Result[0].Rows, nil
+	return apiResp.Result.Contestants, nil
 }
