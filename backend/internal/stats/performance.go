@@ -12,7 +12,7 @@ const (
 	minRating     int     = -500
 	ratingRange   int     = maxRating - minRating
 	ratingOffset  int     = -minRating
-	defaultRating int     = 1400
+	defaultRating int     = 1100
 	eloScale      float64 = 400
 )
 
