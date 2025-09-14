@@ -2,16 +2,6 @@ var fgColor, bgColor, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 
 getColors();
-Chart.defaults.color = fgColor;
-Chart.defaults.borderColor = borderColor;
-Chart.defaults.datasets.bar.backgroundColor = blueColor;
-Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
-
-Chart.defaults.elements.line.borderColor = orangeColor;
-Chart.defaults.elements.line.backgroundColor = orangeColor;
-Chart.defaults.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
-Chart.defaults.elements.point.borderWidth = 1;
-Chart.defaults.elements.point.borderColor = fgColor;
 
 export class SolvedTags {
 	N = 10;
@@ -54,7 +44,10 @@ export class SolvedTags {
 			type: 'pie',
 			data: {
 				datasets: [{
-					data: countsToShow
+					data: countsToShow,
+					color: fgColor,
+					borderColor: borderColor,
+					backgroundColor: [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor]
 				}],
 				labels: tagsToShow
 			},
@@ -103,6 +96,9 @@ export class SolvedRatings {
 				datasets: [{
 					label: '# of Solved Problems',
 					data: this.#data,
+					color: fgColor,
+					borderColor: borderColor,
+					backgroundColor: blueColor,
 				}]
 			},
 			options: {
@@ -146,7 +142,10 @@ export class RatingHistory {
 				datasets: [{
 					label: 'Rating',
 					data: this.#ratingData.ratings,
-					tension: 0.25
+					tension: 0.25,
+					color: fgColor,
+					borderColor: orangeColor,
+					backgroundColor: orangeColor
 				}, {
 					label: 'Performance',
 					data: this.#performanceData.performance,
@@ -192,8 +191,8 @@ export class RatingHistory {
 	}
 }
 
-function getColors() {
-	var style = window.getComputedStyle(document.body);
+export function getColors() {
+	const style = window.getComputedStyle(document.documentElement);
 	fgColor = style.getPropertyValue('--fg');
 	bgColor = style.getPropertyValue('--bg');
 	shadowColor = style.getPropertyValue('--shadow');
