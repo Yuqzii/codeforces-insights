@@ -49,6 +49,10 @@ input {
 	font-family: "Fira Code";
 }
 
+button:hover {
+	cursor: pointer;
+}
+
 .glow-interactive {
 	background-color: var(--bg1);
 	color: var(--fg);
