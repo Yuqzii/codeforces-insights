@@ -266,8 +266,7 @@ div.theme-select {
 }
 
 main {
-	margin: auto;
-	margin-top: 5em;
+	margin: 3rem auto;
 	width: 90%;
 }
 
@@ -279,7 +278,7 @@ main h1 {
 .user-info-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
-	grid-template-rows: 400px 400px;
+	grid-template-rows: 22.5vw 22.5vw;
 	gap: 15px;
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings solved-tags"
@@ -304,6 +303,12 @@ main h1 {
 	position: relative;
 	flex: 1;
 	min-height: 0;
+}
+
+.chart-container canvas {
+	width: 100% !important;
+	height: 100% !important;
+	display: block;
 }
 
 .user-info-header {
