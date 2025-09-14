@@ -1,21 +1,11 @@
-var fgColor, bgColor, shadowColor;
+var fgColor, bgColor, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
-var grayDarkColor, blueDarkColor;
 
 getColors();
-Chart.defaults.color = fgColor;
-Chart.defaults.borderColor = grayDarkColor;
-Chart.defaults.datasets.bar.backgroundColor = blueColor;
-Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
-
-Chart.defaults.elements.line.borderColor = orangeColor;
-Chart.defaults.elements.line.backgroundColor = orangeColor;
-Chart.defaults.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
-Chart.defaults.elements.point.borderWidth = 1;
-Chart.defaults.elements.point.borderColor = fgColor;
 
 export class SolvedTags {
 	N = 10;
+	loading = true;
 	#showOtherTags = false;
 	#tags = [];
 	#counts = [];
@@ -27,6 +17,11 @@ export class SolvedTags {
 
 	async updateChart() {
 		const ctx = document.getElementById('solved-tags-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		let tagsToShow = [];
 		let countsToShow = [];
@@ -49,13 +44,15 @@ export class SolvedTags {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+
 		this.toggleOtherButton.style.display = 'inline';
 
 		this.#chart = new Chart(ctx, {
 			type: 'pie',
 			data: {
 				datasets: [{
-					data: countsToShow
+					data: countsToShow,
+					backgroundColor: [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor]
 				}],
 				labels: tagsToShow
 			},
@@ -88,11 +85,17 @@ export class SolvedTags {
 }
 
 export class SolvedRatings {
+	loading = true;
 	#chart;
 	#data;
 
 	updateChart() {
 		const ctx = document.getElementById('solved-ratings-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		if (this.#chart != null)
 			this.#chart.destroy();
@@ -104,6 +107,7 @@ export class SolvedRatings {
 				datasets: [{
 					label: '# of Solved Problems',
 					data: this.#data,
+					backgroundColor: blueColor,
 				}]
 			},
 			options: {
@@ -129,12 +133,18 @@ export class SolvedRatings {
 }
 
 export class RatingHistory {
+	loading = true;
 	#chart;
 	#ratingData = [new Array, new Array]
 	#performanceData = [new Array, new Array]
 
 	updateChart() {
 		const ctx = document.getElementById('rating-history-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		if (this.#chart != null)
 			this.#chart.destroy();
@@ -147,7 +157,9 @@ export class RatingHistory {
 				datasets: [{
 					label: 'Rating',
 					data: this.#ratingData.ratings,
-					tension: 0.25
+					tension: 0.25,
+					borderColor: orangeColor,
+					backgroundColor: orangeColor
 				}, {
 					label: 'Performance',
 					data: this.#performanceData.performance,
@@ -193,11 +205,12 @@ export class RatingHistory {
 	}
 }
 
-function getColors() {
-	var style = window.getComputedStyle(document.body);
+export function getColors() {
+	const style = window.getComputedStyle(document.documentElement);
 	fgColor = style.getPropertyValue('--fg');
 	bgColor = style.getPropertyValue('--bg');
 	shadowColor = style.getPropertyValue('--shadow');
+	borderColor = style.getPropertyValue('--border');
 	redColor = style.getPropertyValue('--red');
 	orangeColor = style.getPropertyValue('--orange');
 	greenColor = style.getPropertyValue('--green');
@@ -205,8 +218,9 @@ function getColors() {
 	blueColor = style.getPropertyValue('--blue');
 	purpleColor = style.getPropertyValue('--purple');
 	aquaColor = style.getPropertyValue('--aqua');
-	grayDarkColor = style.getPropertyValue('--gray-dark');
-	blueDarkColor = style.getPropertyValue('--blue-dark');
+
+	Chart.defaults.color = fgColor;
+	Chart.defaults.borderColor = borderColor;
 }
 
 export function showLoader(container) {

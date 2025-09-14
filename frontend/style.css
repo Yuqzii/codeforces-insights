@@ -1,4 +1,6 @@
 :root {
+	--bg-transition-speed: 150ms;
+
 	--bg: #282828;
 	--bg1: #3c3836;
 	--bg2: #504945;
@@ -13,9 +15,40 @@
 	--blue: #83a598;
 	--purple: #d3869b;
 	--aqua: #83c07c;
-	--gray-dark: #928374;
-	--blue-dark: #458588;
-	--green-dark: #98971a;
+}
+
+.theme-catppuccin {
+	--bg: #1e1e2e;
+	--bg1: #313244;
+	--bg2: #45475a;
+	--bg3: #585b70;
+	--fg: #cdd6f4;
+	--shadow: #7f849c55;
+	--border: #7f849c88;
+	--red: #f38ba8;
+	--orange: #fab387;
+	--green: #a6e3a1;
+	--yellow: #f9e2af;
+	--blue: #89b4fa;
+	--purple: #cba6f7;
+	--aqua: #94e2d5;
+}
+
+.theme-gruvbox {
+	--bg: #282828;
+	--bg1: #3c3836;
+	--bg2: #504945;
+	--bg3: #665c54;
+	--fg: #ebdbb2;
+	--shadow: #92837455;
+	--border: #92837488;
+	--red: #fb4934;
+	--orange: #fe8019;
+	--green: #b8bb26;
+	--yellow: #fabd2f;
+	--blue: #83a598;
+	--purple: #d3869b;
+	--aqua: #83c07c;
 }
 
 html {
@@ -30,6 +63,7 @@ body {
 	width: auto;
 
 	background-color: var(--bg);
+	transition: background-color var(--bg-transition-speed) ease;
 }
 
 h1,
@@ -42,11 +76,25 @@ h6 {
 }
 
 button,
-input {
-	padding: 0.75em 1.5em;
+input,
+select {
 	text-align: center;
 	font-size: 14px;
 	font-family: "Fira Code";
+}
+
+button,
+input {
+	padding: 0.75em 1.5em;
+}
+
+select {
+	padding: 0.5em 1em;
+	appearance: none;
+}
+
+select:focus {
+	outline: none;
 }
 
 button:hover {
@@ -60,13 +108,13 @@ button:hover {
 	border: 1px solid var(--border);
 	border-radius: 0.5em;
 	box-shadow: 0 0 2px 1px var(--shadow);
-
-	transition-duration: 50ms;
+	transition: background-color var(--bg-transition-speed) ease, box-shadow var(--bg-transition-speed);
 }
 
 .glow-interactive:hover {
 	background-color: var(--bg2);
 	box-shadow: 0 0 3px 2px var(--shadow);
+	transition: background-color 50ms, box-shadow 50ms;
 }
 
 button.glow-interactive:active {
@@ -88,6 +136,7 @@ input.glow-interactive:focus {
 }
 
 .hero-section {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -97,7 +146,16 @@ input.glow-interactive:focus {
 	border-bottom: 1px solid var(--border);
 	box-shadow: 0 0 15px var(--shadow);
 
-	background: linear-gradient(to bottom, var(--bg) 85%, var(--bg1));
+	background-color: var(--bg);
+	transition: background-color var(--bg-transition-speed) ease;
+}
+
+.hero-section::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to bottom, transparent 85%, var(--bg1));
+	pointer-events: none;
 }
 
 .hero-section h1 {
@@ -134,6 +192,7 @@ input.glow-interactive:focus {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	transition: background-color var(--bg-transition-speed) ease;
 }
 
 /* "Hides" the text behind */
@@ -194,6 +253,16 @@ input.glow-interactive:focus {
 
 	font-size: 18px;
 	text-align: center;
+}
+
+div.theme-select {
+	position: absolute;
+	top: 1em;
+	right: 1em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5em;
 }
 
 main {
