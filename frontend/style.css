@@ -18,10 +18,10 @@
 }
 
 .theme-catppuccin {
-	--bg: #181825;
-	--bg1: #1e1e2e;
-	--bg2: #313244;
-	--bg3: #45475a;
+	--bg: #1e1e2e;
+	--bg1: #313244;
+	--bg2: #45475a;
+	--bg3: #585b70;
 	--fg: #cdd6f4;
 	--shadow: #7f849c55;
 	--border: #7f849c88;
@@ -154,7 +154,7 @@ input.glow-interactive:focus {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(to bottom, transparent, 97%, var(--bg2));
+	background: linear-gradient(to bottom, transparent 85%, var(--bg1));
 	pointer-events: none;
 }
 
