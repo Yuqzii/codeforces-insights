@@ -8,14 +8,16 @@ const form = document.getElementById('user-form');
 const input = document.getElementById('handle-input');
 const perfLoader = document.getElementById('performance-loader');
 const toggleOtherTags = document.getElementById('toggle-other-tags')
-const themeToggleBtn = document.getElementById('toggle-theme');
+const themeSelect = document.getElementById('theme-select');
 
 const solvedTags = new SolvedTags(toggleOtherTags);
 const solvedRatings = new SolvedRatings();
 const ratingHistory = new RatingHistory();
 
 document.addEventListener('DOMContentLoaded', () => {
-	setTheme(localStorage.getItem('theme') || 'theme-catppuccin');
+	const savedTheme = localStorage.getItem('theme') || 'theme-catppuccin';
+	root.classList.add(savedTheme);
+	themeSelect.value = savedTheme;
 
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
@@ -75,10 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		solvedTags.toggleOther();
 	});
 
-	themeToggleBtn.addEventListener('click', () => {
-		const current = localStorage.getItem('theme') || 'theme-catppuccin';
-		const next = current == 'theme-gruvbox' ? 'theme-catppuccin' : 'theme-gruvbox';
-		setTheme(next);
+	themeSelect.addEventListener('change', (e) => {
+		const theme = e.target.value;
+		setTheme(theme);
 	});
 });
 
