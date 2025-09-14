@@ -1,4 +1,6 @@
 :root {
+	--bg-transition-speed: 150ms;
+
 	--bg: #282828;
 	--bg1: #3c3836;
 	--bg2: #504945;
@@ -61,6 +63,7 @@ body {
 	width: auto;
 
 	background-color: var(--bg);
+	transition: background-color var(--bg-transition-speed) ease;
 }
 
 h1,
@@ -105,13 +108,13 @@ button:hover {
 	border: 1px solid var(--border);
 	border-radius: 0.5em;
 	box-shadow: 0 0 2px 1px var(--shadow);
-
-	transition-duration: 50ms;
+	transition: background-color var(--bg-transition-speed) ease, box-shadow var(--bg-transition-speed);
 }
 
 .glow-interactive:hover {
 	background-color: var(--bg2);
 	box-shadow: 0 0 3px 2px var(--shadow);
+	transition: background-color 50ms, box-shadow 50ms;
 }
 
 button.glow-interactive:active {
@@ -133,6 +136,7 @@ input.glow-interactive:focus {
 }
 
 .hero-section {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -142,7 +146,16 @@ input.glow-interactive:focus {
 	border-bottom: 1px solid var(--border);
 	box-shadow: 0 0 15px var(--shadow);
 
-	background: linear-gradient(to bottom, var(--bg) 85%, var(--bg1));
+	background-color: var(--bg);
+	transition: background-color var(--bg-transition-speed) ease;
+}
+
+.hero-section::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to bottom, transparent, 97%, var(--bg2));
+	pointer-events: none;
 }
 
 .hero-section h1 {
@@ -179,6 +192,7 @@ input.glow-interactive:focus {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	transition: background-color var(--bg-transition-speed) ease;
 }
 
 /* "Hides" the text behind */
