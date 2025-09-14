@@ -1,10 +1,9 @@
-var fgColor, bgColor, shadowColor;
+var fgColor, bgColor, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
-var grayDarkColor, blueDarkColor;
 
 getColors();
 Chart.defaults.color = fgColor;
-Chart.defaults.borderColor = grayDarkColor;
+Chart.defaults.borderColor = borderColor;
 Chart.defaults.datasets.bar.backgroundColor = blueColor;
 Chart.defaults.elements.arc.backgroundColor = [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor];
 
@@ -198,6 +197,7 @@ function getColors() {
 	fgColor = style.getPropertyValue('--fg');
 	bgColor = style.getPropertyValue('--bg');
 	shadowColor = style.getPropertyValue('--shadow');
+	borderColor = style.getPropertyValue('--border');
 	redColor = style.getPropertyValue('--red');
 	orangeColor = style.getPropertyValue('--orange');
 	greenColor = style.getPropertyValue('--green');
@@ -205,8 +205,6 @@ function getColors() {
 	blueColor = style.getPropertyValue('--blue');
 	purpleColor = style.getPropertyValue('--purple');
 	aquaColor = style.getPropertyValue('--aqua');
-	grayDarkColor = style.getPropertyValue('--gray-dark');
-	blueDarkColor = style.getPropertyValue('--blue-dark');
 }
 
 export function showLoader(container) {
