@@ -4,9 +4,6 @@ import { hideLoader, showLoader, SolvedRatings, SolvedTags, RatingHistory, getCo
 const root = document.documentElement;
 
 const userDetails = document.getElementById('user-details');
-const solvedRatingsElement = document.getElementById('solved-ratings');
-const solvedTagsElement = document.getElementById('solved-tags');
-const ratingHistoryElement = document.getElementById('rating-history');
 const form = document.getElementById('user-form');
 const input = document.getElementById('handle-input');
 const perfLoader = document.getElementById('performance-loader');
@@ -20,6 +17,10 @@ const ratingHistory = new RatingHistory();
 document.addEventListener('DOMContentLoaded', () => {
 	setTheme(localStorage.getItem('theme') || 'theme-catppuccin');
 
+	solvedTags.updateChart();
+	solvedRatings.updateChart();
+	ratingHistory.updateChart();
+
 	perfLoader.style.display = 'none';
 	toggleOtherTags.style.display = 'none';
 
@@ -29,10 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		const handle = input.value.trim();
 		if (!handle) return;
 
+		// Set charts to loading
 		showLoader(userDetails);
-		showLoader(solvedRatingsElement);
-		showLoader(solvedTagsElement);
-		showLoader(ratingHistoryElement);
+		solvedRatings.loading = true;
+		solvedTags.loading = true;
+		ratingHistory.loading = true;
+		solvedTags.updateChart();
+		solvedRatings.updateChart();
+		ratingHistory.updateChart();
 
 		toggleOtherTags.style.display = 'none';
 
@@ -45,17 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
 		solvedTags.updateData(tagsRatings.tags);
+		solvedTags.loading = false;
 		solvedTags.updateChart();
 		solvedRatings.updateData(tagsRatings.ratings);
+		solvedRatings.loading = false;
 		solvedRatings.updateChart();
 
 		const ratingChanges = await fetchRatingChanges(handle);
 		ratingHistory.updateRatingData(ratingChanges);
+		ratingHistory.loading = false;
 		ratingHistory.updateChart();
 
 		perfLoader.style.display = 'flex';
 		const performance = await fetchPerformance(handle);
 		ratingHistory.updatePerfomanceData(performance);
+		ratingHistory.loading = false;
 		ratingHistory.updateChart();
 		perfLoader.style.display = 'none';
 
@@ -96,4 +105,7 @@ function setTheme(theme) {
 	root.classList.add(theme);
 	localStorage.setItem('theme', theme);
 	getColors(); // Update chart colors
+	solvedRatings.updateChart();
+	solvedTags.updateChart();
+	ratingHistory.updateChart();
 }

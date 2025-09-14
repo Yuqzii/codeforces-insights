@@ -5,6 +5,7 @@ getColors();
 
 export class SolvedTags {
 	N = 10;
+	loading = true;
 	#showOtherTags = false;
 	#tags = [];
 	#counts = [];
@@ -16,6 +17,11 @@ export class SolvedTags {
 
 	async updateChart() {
 		const ctx = document.getElementById('solved-tags-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		let tagsToShow = [];
 		let countsToShow = [];
@@ -38,6 +44,7 @@ export class SolvedTags {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+
 		this.toggleOtherButton.style.display = 'inline';
 
 		this.#chart = new Chart(ctx, {
@@ -45,8 +52,6 @@ export class SolvedTags {
 			data: {
 				datasets: [{
 					data: countsToShow,
-					color: fgColor,
-					borderColor: borderColor,
 					backgroundColor: [redColor, greenColor, yellowColor, blueColor, purpleColor, orangeColor, aquaColor]
 				}],
 				labels: tagsToShow
@@ -80,11 +85,17 @@ export class SolvedTags {
 }
 
 export class SolvedRatings {
+	loading = true;
 	#chart;
 	#data;
 
 	updateChart() {
 		const ctx = document.getElementById('solved-ratings-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		if (this.#chart != null)
 			this.#chart.destroy();
@@ -96,8 +107,6 @@ export class SolvedRatings {
 				datasets: [{
 					label: '# of Solved Problems',
 					data: this.#data,
-					color: fgColor,
-					borderColor: borderColor,
 					backgroundColor: blueColor,
 				}]
 			},
@@ -124,12 +133,18 @@ export class SolvedRatings {
 }
 
 export class RatingHistory {
+	loading = true;
 	#chart;
 	#ratingData = [new Array, new Array]
 	#performanceData = [new Array, new Array]
 
 	updateChart() {
 		const ctx = document.getElementById('rating-history-chart');
+
+		if (this.loading) {
+			showLoader(ctx.parentNode.parentNode);
+			return;
+		}
 
 		if (this.#chart != null)
 			this.#chart.destroy();
@@ -143,7 +158,6 @@ export class RatingHistory {
 					label: 'Rating',
 					data: this.#ratingData.ratings,
 					tension: 0.25,
-					color: fgColor,
 					borderColor: orangeColor,
 					backgroundColor: orangeColor
 				}, {
@@ -204,6 +218,9 @@ export function getColors() {
 	blueColor = style.getPropertyValue('--blue');
 	purpleColor = style.getPropertyValue('--purple');
 	aquaColor = style.getPropertyValue('--aqua');
+
+	Chart.defaults.color = fgColor;
+	Chart.defaults.borderColor = borderColor;
 }
 
 export function showLoader(container) {
