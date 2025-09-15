@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const handle = input.value.trim();
 		if (!handle) return;
-		
-	analyzeUser(handle);
+
+		analyzeUser(handle);
 	});
 
 	toggleOtherTags.addEventListener('click', () => {
@@ -70,25 +70,44 @@ async function analyzeUser(handle) {
 	ratingHistory.updatePerfomanceData([]);
 	ratingHistory.updateRatingData([]);
 
-	const tagsRatings = await fetchSolvedTagsAndRatings(handle, { signal });
-	solvedTags.updateData(tagsRatings.tags);
-	solvedTags.loading = false;
-	solvedTags.updateChart();
-	solvedRatings.updateData(tagsRatings.ratings);
-	solvedRatings.loading = false;
-	solvedRatings.updateChart();
+	try {
+		const tagsRatings = await fetchSolvedTagsAndRatings(handle, { signal });
+		solvedTags.updateData(tagsRatings.tags);
+		solvedTags.loading = false;
+		solvedTags.updateChart();
+		solvedRatings.updateData(tagsRatings.ratings);
+		solvedRatings.loading = false;
+		solvedRatings.updateChart();
+	} catch (err) {
+		if (err.name == 'AbortError')
+			return
+		throw err;
+	}
 
-	const ratingChanges = await fetchRatingChanges(handle, { signal });
-	ratingHistory.updateRatingData(ratingChanges);
-	ratingHistory.loading = false;
-	ratingHistory.updateChart();
+	try {
+		const ratingChanges = await fetchRatingChanges(handle, { signal });
+		ratingHistory.updateRatingData(ratingChanges);
+		ratingHistory.loading = false;
+		ratingHistory.updateChart();
+	} catch (err) {
+		if (err.name == 'AbortError')
+			return
+		throw err;
+	}
+
 
 	perfLoader.style.display = 'flex';
-	const performance = await fetchPerformance(handle, { signal });
-	ratingHistory.updatePerfomanceData(performance);
-	ratingHistory.loading = false;
-	ratingHistory.updateChart();
-	perfLoader.style.display = 'none';
+	try {
+		const performance = await fetchPerformance(handle, { signal });
+		ratingHistory.updatePerfomanceData(performance);
+		ratingHistory.loading = false;
+		ratingHistory.updateChart();
+		perfLoader.style.display = 'none';
+	} catch (err) {
+		if (err.name == 'AbortError')
+			return
+		throw err;
+	}
 
 	updateUserInfo(handle);
 }
