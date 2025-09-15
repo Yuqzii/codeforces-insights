@@ -60,6 +60,7 @@ async function analyzeUser(handle) {
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
 	ratingHistory.updateChart();
+	perfLoader.style.display = 'none';
 
 	toggleOtherTags.style.display = 'none';
 
