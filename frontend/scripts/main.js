@@ -15,8 +15,9 @@ const solvedRatings = new SolvedRatings();
 const ratingHistory = new RatingHistory();
 
 document.addEventListener('DOMContentLoaded', () => {
-	setTheme(localStorage.getItem('theme'));
-	themeSelect.value = localStorage.getItem('theme');
+	const savedTheme = localStorage.getItem('theme') || 'theme-catppuccin';
+	setTheme(savedTheme);
+	themeSelect.value = savedTheme;
 
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
