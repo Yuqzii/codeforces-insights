@@ -14,6 +14,8 @@ const solvedTags = new SolvedTags(toggleOtherTags);
 const solvedRatings = new SolvedRatings();
 const ratingHistory = new RatingHistory();
 
+let controller = new AbortController();
+
 document.addEventListener('DOMContentLoaded', () => {
 	const savedTheme = localStorage.getItem('theme') || 'theme-catppuccin';
 	setTheme(savedTheme);
@@ -31,46 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const handle = input.value.trim();
 		if (!handle) return;
-
-		// Set charts to loading
-		showLoader(userDetails);
-		solvedRatings.loading = true;
-		solvedTags.loading = true;
-		ratingHistory.loading = true;
-		solvedTags.updateChart();
-		solvedRatings.updateChart();
-		ratingHistory.updateChart();
-
-		toggleOtherTags.style.display = 'none';
-
-		document.querySelector("main").scrollIntoView({
-			behavior: "smooth"
-		});
-
-		ratingHistory.updatePerfomanceData([]);
-		ratingHistory.updateRatingData([]);
-
-		const tagsRatings = await fetchSolvedTagsAndRatings(handle);
-		solvedTags.updateData(tagsRatings.tags);
-		solvedTags.loading = false;
-		solvedTags.updateChart();
-		solvedRatings.updateData(tagsRatings.ratings);
-		solvedRatings.loading = false;
-		solvedRatings.updateChart();
-
-		const ratingChanges = await fetchRatingChanges(handle);
-		ratingHistory.updateRatingData(ratingChanges);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-
-		perfLoader.style.display = 'flex';
-		const performance = await fetchPerformance(handle);
-		ratingHistory.updatePerfomanceData(performance);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-		perfLoader.style.display = 'none';
-
-		updateUserInfo(handle);
+		
+	analyzeUser(handle);
 	});
 
 	toggleOtherTags.addEventListener('click', () => {
@@ -82,6 +46,52 @@ document.addEventListener('DOMContentLoaded', () => {
 		setTheme(theme);
 	});
 });
+
+async function analyzeUser(handle) {
+	controller.abort();
+	controller = new AbortController();
+	const signal = controller.signal;
+
+	// Set charts to loading
+	showLoader(userDetails);
+	solvedRatings.loading = true;
+	solvedTags.loading = true;
+	ratingHistory.loading = true;
+	solvedTags.updateChart();
+	solvedRatings.updateChart();
+	ratingHistory.updateChart();
+
+	toggleOtherTags.style.display = 'none';
+
+	document.querySelector("main").scrollIntoView({
+		behavior: "smooth"
+	});
+
+	ratingHistory.updatePerfomanceData([]);
+	ratingHistory.updateRatingData([]);
+
+	const tagsRatings = await fetchSolvedTagsAndRatings(handle, { signal });
+	solvedTags.updateData(tagsRatings.tags);
+	solvedTags.loading = false;
+	solvedTags.updateChart();
+	solvedRatings.updateData(tagsRatings.ratings);
+	solvedRatings.loading = false;
+	solvedRatings.updateChart();
+
+	const ratingChanges = await fetchRatingChanges(handle, { signal });
+	ratingHistory.updateRatingData(ratingChanges);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
+
+	perfLoader.style.display = 'flex';
+	const performance = await fetchPerformance(handle, { signal });
+	ratingHistory.updatePerfomanceData(performance);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
+	perfLoader.style.display = 'none';
+
+	updateUserInfo(handle);
+}
 
 async function updateUserInfo(username) {
 	let data;
