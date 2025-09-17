@@ -63,7 +63,8 @@ export class SolvedTags {
 					}
 				},
 				borderWidth: 0.5,
-				responsive: true
+				responsive: true,
+				maintainAspectRatio: true
 			}
 		});
 	}

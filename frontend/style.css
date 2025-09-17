@@ -277,16 +277,37 @@ main h1 {
 
 .user-info-grid {
 	display: grid;
+	margin-top: 20px;
+	gap: 15px;
+	align-items: stretch;
+	justify-items: stretch;
+
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 22.5vw 22.5vw;
-	gap: 15px;
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings solved-tags"
 		"rating-history rating-history rating-history .";
+}
 
-	margin-top: 20px;
-	align-items: stretch;
-	justify-items: stretch;
+@media (max-aspect-ratio: 8/5) or (max-width: 1000px) {
+	.user-info-grid {
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 30vw 30vw 30vw;
+		grid-template-areas:
+			"user-info solved-ratings solved-ratings"
+			"rating-history rating-history solved-tags";
+	}
+}
+
+@media (max-aspect-ratio: 6/5) {
+	.user-info-grid {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 45vw 45vw 45vw;
+		grid-template-areas:
+			"user-info solved-tags"
+			"solved-ratings solved-ratings"
+			"rating-history rating-history";
+	}
 }
 
 .user-info-item {
