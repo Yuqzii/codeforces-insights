@@ -256,7 +256,7 @@ input.glow-interactive:focus {
 }
 
 div.theme-select {
-	position: absolute;
+	position: fixed;
 	top: 1em;
 	right: 1em;
 	display: flex;
