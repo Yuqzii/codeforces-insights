@@ -286,10 +286,6 @@ main h1 {
 }
 
 @media (max-aspect-ratio: 8/5) or (max-width: 1000px) {
-	html {
-		font-size: 17px;
-	}
-
 	.user-info-grid {
 		grid-template-columns: 1fr 1fr 1fr;
 		grid-template-rows: 30vw 30vw 30vw;
@@ -300,6 +296,21 @@ main h1 {
 }
 
 @media (max-aspect-ratio: 6/5) {
+	.hero-section h1 {
+		font-size: 4.75rem;
+	}
+
+	.user-info-grid {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 50vh 50vh 50vh;
+		grid-template-areas:
+			"user-info solved-tags"
+			"solved-ratings solved-ratings"
+			"rating-history rating-history";
+	}
+}
+
+@media (max-aspect-ratio: 4/5) {
 	html {
 		font-size: 18px;
 	}
@@ -325,15 +336,6 @@ main h1 {
 	.hero-section form {
 		margin: 2vh auto;
 		font-size: min(5vw, 3vh);
-	}
-
-	.user-info-grid {
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 50vh 50vh 50vh;
-		grid-template-areas:
-			"user-info solved-tags"
-			"solved-ratings solved-ratings"
-			"rating-history rating-history";
 	}
 }
 
