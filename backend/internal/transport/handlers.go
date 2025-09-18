@@ -202,3 +202,35 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(j)
 }
+
+func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
+	handle := r.PathValue("handle")
+	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	solved := stats.FilterSolved(s)
+
+	type response struct {
+		Rating    int
+		Timestamp int
+	}
+	resp := make([]response, 0, len(solved))
+	for _, sub := range solved {
+		resp = append(resp, response{
+			Rating:    sub.Problem.Rating,
+			Timestamp: sub.Timestamp,
+		})
+	}
+
+	j, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(j)
+}
