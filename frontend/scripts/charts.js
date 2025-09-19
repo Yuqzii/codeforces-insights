@@ -185,7 +185,8 @@ export class RatingHistory {
 							unit: 'month'
 						},
 						min: this.#ratingData.labels[0],
-						max: this.#ratingData.labels[this.#ratingData.labels.length - 1]
+						max: Math.max(this.#ratingData.labels[this.#ratingData.labels.length - 1],
+							this.#solvedData[this.#solvedData.length - 1]),
 					}
 				},
 				maintainAspectRatio: false,

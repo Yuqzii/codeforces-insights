@@ -212,6 +212,10 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	}
 
 	solved := stats.FilterSolved(s)
+	// Sort by solved time
+	slices.SortFunc(solved, func(a, b codeforces.Submission) int {
+		return a.Timestamp - b.Timestamp
+	})
 
 	type response struct {
 		Rating    int `json:"rating"`
