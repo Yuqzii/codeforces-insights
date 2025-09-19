@@ -223,6 +223,9 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	}
 	resp := make([]response, 0, len(solved))
 	for _, sub := range solved {
+		if sub.Problem.Rating == 0 {
+			continue
+		}
 		resp = append(resp, response{
 			Rating:    sub.Problem.Rating,
 			Timestamp: sub.Timestamp,
