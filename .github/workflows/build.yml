@@ -1,0 +1,50 @@
+name: Build, format, and test
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Go 1.24.x
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.x'
+        cache-dependency-path: backend/go.sum
+
+    - name: Download dependencies
+      run: go mod download
+    - name: Go Mod Verify
+      run: go mod verify
+    - name: Go Vet
+      run: go vet ./...
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -json ./... > testResults.json
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Go-results
+        path: ./backend/testResults.json
+
+    - name: Test Report
+      uses: dorny/test-reporter@v2
+      if: ${{ !cancelled() }}
+      with:
+        name: Go Tests
+        path: ./backend/testResults.json
+        reporter: 'golang-json'
+
+    - name: Check formatting
+      run: files="$(gofmt -l ./)" && echo "$files" && test -z "$files"
