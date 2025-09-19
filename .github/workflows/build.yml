@@ -28,9 +28,10 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -json > testResults.json
+      run: go test -json ./... > testResults.json
 
     - name: Upload test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: Go-results
