@@ -49,3 +49,13 @@ export async function fetchPerformance(handle, { signal } = {}) {
 
 	return await response.json();
 }
+
+export async function fetchSolvedRatingsTime(handle, { signal } = {}) {
+	const endpoint = `users/solved-ratings-time/${handle}`;
+
+	const response = await fetch(url + endpoint, { signal });
+	if (!response.ok)
+		throw new Error(`response not ok: ${response.statusText}`);
+	
+	return await response.json();
+}
