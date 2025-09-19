@@ -214,8 +214,8 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	solved := stats.FilterSolved(s)
 
 	type response struct {
-		Rating    int
-		Timestamp int
+		Rating    int `json:"rating"`
+		Timestamp int `json:"timestamp"`
 	}
 	resp := make([]response, 0, len(solved))
 	for _, sub := range solved {
