@@ -279,7 +279,7 @@ main h1 {
 	justify-items: stretch;
 
 	grid-template-columns: 1fr 1fr 1fr 1fr;
-	grid-template-rows: 22.5vw 22.5vw;
+	grid-template-rows: 25vw 25vw;
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings solved-tags"
 		"rating-history rating-history rating-history .";
@@ -288,7 +288,7 @@ main h1 {
 @media (max-aspect-ratio: 8/5) or (max-width: 1000px) {
 	.user-info-grid {
 		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 30vw 30vw 30vw;
+		grid-template-rows: 32.5vw 32.5vw 32.5vw;
 		grid-template-areas:
 			"user-info solved-ratings solved-ratings"
 			"rating-history rating-history solved-tags";

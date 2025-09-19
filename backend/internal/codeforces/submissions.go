@@ -13,6 +13,7 @@ type Submission struct {
 	Verdict             string  `json:"verdict"`
 	Problem             Problem `json:"problem"`
 	ProgrammingLanguage string  `json:"programmingLanguage"`
+	Timestamp           int     `json:"creationTimeSeconds"`
 }
 
 type Problem struct {
