@@ -136,8 +136,9 @@ export class SolvedRatings {
 export class RatingHistory {
 	loading = true;
 	#chart;
-	#ratingData = [new Array, new Array]
-	#performanceData = [new Array, new Array]
+	#ratingData = [new Array, new Array];
+	#performanceData = [new Array, new Array];
+	#solvedData = new Array;
 
 	updateChart() {
 		const ctx = document.getElementById('rating-history-chart');
@@ -167,6 +168,12 @@ export class RatingHistory {
 					tension: 0.25,
 					borderColor: aquaColor,
 					backgroundColor: aquaColor,
+				},
+				{
+					label: 'Solved Problems',
+					type: 'scatter',
+					data: this.#solvedData,
+					backgroundColor: blueColor,
 				}]
 			},
 			options: {
@@ -203,6 +210,13 @@ export class RatingHistory {
 			this.#performanceData.performance.push(element.rating);
 			this.#performanceData.timestamps.push(element.timestamp);
 		}
+	}
+
+	updateSolvedData(data) {
+		this.#solvedData = data.map(el => ({
+			x: el.timestamp * 1000,
+			y: el.rating
+		}));
 	}
 }
 

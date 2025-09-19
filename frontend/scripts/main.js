@@ -1,4 +1,4 @@
-import { fetchPerformance, fetchRatingChanges, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
+import { fetchPerformance, fetchRatingChanges, fetchSolvedRatingsTime, fetchSolvedTagsAndRatings, fetchUserInfo } from "./api.js";
 import { hideLoader, showLoader, SolvedRatings, SolvedTags, RatingHistory, getColors } from "./charts.js";
 
 const root = document.documentElement;
@@ -70,6 +70,7 @@ async function analyzeUser(handle) {
 
 	ratingHistory.updatePerfomanceData([]);
 	ratingHistory.updateRatingData([]);
+	ratingHistory.updateSolvedData([]);
 
 	try {
 		const tagsRatings = await fetchSolvedTagsAndRatings(handle, { signal });
@@ -81,7 +82,7 @@ async function analyzeUser(handle) {
 		solvedRatings.updateChart();
 	} catch (err) {
 		if (err.name == 'AbortError')
-			return
+			return;
 		throw err;
 	}
 
@@ -92,10 +93,20 @@ async function analyzeUser(handle) {
 		ratingHistory.updateChart();
 	} catch (err) {
 		if (err.name == 'AbortError')
-			return
+			return;
 		throw err;
 	}
 
+	try {
+		const solved = await fetchSolvedRatingsTime(handle, { signal });
+		ratingHistory.updateSolvedData(solved);
+		ratingHistory.loading = false;
+		ratingHistory.updateChart();
+	} catch (err) {
+		if (err.name == 'AbortError')
+			return;
+		throw err;
+	}
 
 	perfLoader.style.display = 'flex';
 	try {
@@ -106,7 +117,7 @@ async function analyzeUser(handle) {
 		perfLoader.style.display = 'none';
 	} catch (err) {
 		if (err.name == 'AbortError')
-			return
+			return;
 		throw err;
 	}
 
