@@ -161,7 +161,7 @@ export class RatingHistory {
 					data: this.#ratingData.ratings,
 					tension: 0.25,
 					borderColor: orangeColor,
-					backgroundColor: orangeColor
+					backgroundColor: orangeColor,
 				}, {
 					label: 'Performance',
 					data: this.#performanceData.performance,
@@ -173,7 +173,9 @@ export class RatingHistory {
 					label: 'Solved Problems',
 					type: 'scatter',
 					data: this.#solvedData,
+						borderColor: blueColor,
 					backgroundColor: blueColor,
+					pointRadius: 2.5,
 				}]
 			},
 			options: {
