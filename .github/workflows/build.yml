@@ -37,5 +37,13 @@ jobs:
         name: Go-results
         path: ./backend/testResults.json
 
+    - name: Test Report
+      uses: dorny/test-reporter@v2
+      if: ${{ !cancelled() }}
+      with:
+        name: Go Tests
+        path: ./backend/testResults.json
+        reporter: 'golang-json'
+
     - name: Check formatting
       run: files="$(gofmt -l ./)" && echo "$files" && test -z "$files"
