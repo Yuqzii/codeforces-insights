@@ -2,18 +2,24 @@ package stats
 
 import (
 	"math"
+	"strings"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/fft"
 )
 
 const (
-	maxRating     int     = 6000
-	minRating     int     = -500
-	ratingRange   int     = maxRating - minRating
-	ratingOffset  int     = -minRating
-	defaultRating int     = 1100
-	eloScale      float64 = 400
+	maxRating    int     = 6000
+	minRating    int     = -500
+	ratingRange  int     = maxRating - minRating
+	ratingOffset int     = -minRating
+	eloScale     float64 = 400
+
+	avgRatingWeight float64 = 0.4
+	div1Rating      int     = 1300
+	div2Rating      int     = 1175
+	div3Rating      int     = 1100
+	div4Rating      int     = 1050
 )
 
 type ContestSeed struct {
@@ -36,7 +42,30 @@ func generateEloWinProb() []float64 {
 }
 
 // Computes expected ranks for all possible ratings.
-func CalculateSeed(contestants []codeforces.Contestant) *ContestSeed {
+func CalculateSeed(contestants []codeforces.Contestant, contest *codeforces.Contest) *ContestSeed {
+	// Set default rating based on contest division
+	defaultRating := div2Rating
+	if strings.Contains(contest.Name, "Div. 3") {
+		defaultRating = div3Rating
+	} else if strings.Contains(contest.Name, "Div. 4") {
+		defaultRating = div4Rating
+	} else if strings.Contains(contest.Name, "Div. 1") && !strings.Contains(contest.Name, "Div. 2") {
+		defaultRating = div1Rating
+	}
+
+	// Calculate average rating
+	ratSum, cnt := 0.0, 0
+	for i := range contestants {
+		if contestants[i].Rating != 0 {
+			ratSum += float64(contestants[i].Rating)
+			cnt++
+		}
+	}
+	ratAvg := ratSum / float64(cnt)
+
+	// Calculate default rating combined with average
+	defaultRating = int((float64(defaultRating) + ratAvg*avgRatingWeight) / (1.0 + avgRatingWeight))
+
 	counts := make([]float64, ratingRange)
 	for _, c := range contestants {
 		if c.Rating == 0 {
