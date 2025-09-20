@@ -17,9 +17,14 @@ type Contestant struct {
 	Rating  int
 }
 
+type Contest struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 var ErrNoStandings = errors.New("could not find standings")
 
-func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant, error) {
+func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant, *Contest, error) {
 	endpoint := "contest.standings?"
 	params := url.Values{}
 	params.Set("contestId", strconv.Itoa(id))
@@ -28,12 +33,12 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 
 	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
 	if err != nil {
-		return nil, fmt.Errorf("getting contest standings from Codeforces: %w", err)
+		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", err)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Special apiResponse struct as the Codeforces API returns an unusual json format for this endpoint.
@@ -41,6 +46,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		Status string `json:"status"`
 		Result struct {
 			Contestants []Contestant `json:"rows"`
+			Contest     Contest      `json:"contest"`
 		} `json:"result"`
 		Comment string `json:"comment,omitempty"`
 	}
@@ -48,8 +54,8 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	json.Unmarshal(body, &apiResp)
 
 	if apiResp.Status != "OK" {
-		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
+		return nil, nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
-	return apiResp.Result.Contestants, nil
+	return apiResp.Result.Contestants, &apiResp.Result.Contest, nil
 }
