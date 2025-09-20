@@ -162,6 +162,7 @@ input.glow-interactive:focus {
 .hero-section h1 {
 	font-size: 6rem;
 	margin: 0;
+	z-index: 1;
 }
 
 .hero-section h2 {
@@ -170,6 +171,7 @@ input.glow-interactive:focus {
 	margin-bottom: 2.5em;
 	position: relative;
 	width: max-content;
+	z-index: 1;
 }
 
 /* Typing animation */
@@ -234,6 +236,26 @@ input.glow-interactive:focus {
 
 /* End of typing animation */
 
+/* Hero graph animation */
+.hero-graph-container {
+	position: absolute;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+}
+
+.animated-line {
+	stroke-dasharray: 1000;
+	stroke-dashoffset: 1000;
+	animation: draw-line 3s 2.5s linear forwards;
+}
+
+@keyframes draw-line {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
 .hero-section h2 span {
 	color: var(--blue);
 	font-weight: 450;
@@ -244,6 +266,7 @@ input.glow-interactive:focus {
 	flex-direction: column;
 	gap: 1em;
 	font-size: 1.15rem;
+	z-index: 1;
 }
 
 #handle-input {
