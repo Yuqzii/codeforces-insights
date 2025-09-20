@@ -244,9 +244,40 @@ input.glow-interactive:focus {
 	height: 100%;
 }
 
+.hero-graph-container svg circle {
+	fill: var(--bg3);
+	r: 2;
+	opacity: 0;
+	animation: show-circle 200ms ease-out forwards;
+}
+
+.hero-graph-container svg circle[data-index="0"] {
+	animation-delay: 2.7s;
+}
+
+.hero-graph-container svg circle[data-index="1"] {
+	animation-delay: 3s;
+}
+
+.hero-graph-container svg circle[data-index="2"] {
+	animation-delay: 3.3s;
+}
+
+.hero-graph-container svg circle[data-index="3"] {
+	animation-delay: 3.6s;
+}
+
+@keyframes show-circle {
+	to {
+		opacity: 1;
+	}
+}
+
 .animated-line {
 	stroke-dasharray: 1000;
 	stroke-dashoffset: 1000;
+	stroke: var(--bg3);
+	stroke-width: 1.5;
 	animation: draw-line 3s 2.5s linear forwards;
 }
 
