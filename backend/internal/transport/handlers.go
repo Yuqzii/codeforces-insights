@@ -16,7 +16,7 @@ type Client interface {
 	GetSubmissions(context.Context, string) ([]codeforces.Submission, error)
 	GetRatingChanges(context.Context, string) ([]codeforces.RatingChange, error)
 	GetContestRatingChanges(context.Context, int) ([]codeforces.RatingChange, error)
-	GetContestStandings(context.Context, int) ([]codeforces.Contestant, error)
+	GetContestStandings(context.Context, int) ([]codeforces.Contestant, *codeforces.Contest, error)
 }
 
 type Handler struct {
@@ -156,7 +156,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 
 	perf := make([]performance, len(ratings))
 	for i := range ratings {
-		c, err := h.client.GetContestStandings(context.TODO(), ratings[i].ContestID)
+		c, contest, err := h.client.GetContestStandings(context.TODO(), ratings[i].ContestID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -188,7 +188,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 			c[i].Rating = rat
 		}
 
-		seed := stats.CalculateSeed(c)
+		seed := stats.CalculateSeed(c, contest)
 		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
 		perf[i].Timestamp = ratings[i].Timestamp
 	}
