@@ -1,0 +1,7 @@
+BEGIN;
+
+DROP TABLE IF EXISTS contests;
+
+DROP FUNCTION IF EXISTS set_updated_at();
+
+COMMIT;
