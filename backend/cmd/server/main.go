@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -29,17 +28,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v", err)
 	}
-	log.Println("Connected to database.")
+	log.Println("Connected to database")
 	defer db.Close()
 
+	log.Println("Setting up Codeforces client")
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
 		cfRequestsPerSecond,
 		cfMaxBurst)
 
+	log.Println("Setting up API handler")
 	h := transport.NewHandler(cfClient)
 
+	log.Println("Setting up server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", h.HandleRoot)
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
@@ -51,6 +53,6 @@ func main() {
 	mux.HandleFunc("GET /users/performance/{handle}", h.HandleGetPerformance)
 	mux.HandleFunc("GET /users/solved-ratings-time/{handle}", h.HandleGetRatingTime)
 
-	fmt.Println("Server listening on port :8080")
+	log.Println("Server listening on port 8080")
 	http.ListenAndServe(":8080", mux)
 }
