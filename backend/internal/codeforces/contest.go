@@ -11,10 +11,12 @@ import (
 )
 
 type Contestant struct {
-	Rank    int     `json:"rank"`
-	Points  float64 `json:"points"`
-	Penalty int     `json:"penalty"`
-	Rating  int
+	Rank          int     `json:"rank"`
+	Points        float64 `json:"points"`
+	Penalty       int     `json:"penalty"`
+	OldRating     int
+	NewRating     int
+	MemberHandles []string
 }
 
 type Contest struct {
@@ -53,11 +55,41 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		Comment string `json:"comment,omitempty"`
 	}
 	var apiResp apiResponse
-	json.Unmarshal(body, &apiResp)
+	if err := json.Unmarshal(body, &apiResp); err != nil {
+		return nil, nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		return nil, nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
 	return apiResp.Result.Contestants, &apiResp.Result.Contest, nil
+}
+
+func (c *Contestant) UnmarshalJSON(data []byte) error {
+	type rawContestant struct {
+		Rank    int     `json:"rank"`
+		Points  float64 `json:"points"`
+		Penalty int     `json:"penalty"`
+		Party   struct {
+			Members []struct {
+				Handle string `json:"handle"`
+			} `json:"members"`
+		} `json:"party"`
+	}
+
+	var raw rawContestant
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	c.Rank = raw.Rank
+	c.Points = raw.Points
+	c.Penalty = raw.Penalty
+
+	for _, member := range raw.Party.Members {
+		c.MemberHandles = append(c.MemberHandles, member.Handle)
+	}
+
+	return nil
 }
