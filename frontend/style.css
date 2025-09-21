@@ -162,6 +162,7 @@ input.glow-interactive:focus {
 .hero-section h1 {
 	font-size: 6rem;
 	margin: 0;
+	z-index: 1;
 }
 
 .hero-section h2 {
@@ -170,6 +171,7 @@ input.glow-interactive:focus {
 	margin-bottom: 2.5em;
 	position: relative;
 	width: max-content;
+	z-index: 1;
 }
 
 /* Typing animation */
@@ -234,6 +236,59 @@ input.glow-interactive:focus {
 
 /* End of typing animation */
 
+/* Hero graph animation */
+.hero-graph-container {
+	--graph-anim-delay: 250ms;
+
+	position: absolute;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+}
+
+.hero-graph-container svg circle {
+	fill: var(--bg3);
+	r: 2;
+	opacity: 0;
+	animation: show-circle 200ms ease-out forwards;
+}
+
+.hero-graph-container svg circle[data-index="0"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.15s);
+}
+
+.hero-graph-container svg circle[data-index="1"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.325s);
+}
+
+.hero-graph-container svg circle[data-index="2"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.6s);
+}
+
+.hero-graph-container svg circle[data-index="3"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.825s);
+}
+
+@keyframes show-circle {
+	to {
+		opacity: 1;
+	}
+}
+
+.animated-line {
+	stroke-dasharray: 1000;
+	stroke-dashoffset: 1000;
+	stroke: var(--bg3);
+	stroke-width: 1.5;
+	animation: draw-line 2.25s var(--graph-anim-delay) linear forwards;
+}
+
+@keyframes draw-line {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
 .hero-section h2 span {
 	color: var(--blue);
 	font-weight: 450;
@@ -244,6 +299,7 @@ input.glow-interactive:focus {
 	flex-direction: column;
 	gap: 1em;
 	font-size: 1.15rem;
+	z-index: 1;
 }
 
 #handle-input {

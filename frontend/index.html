@@ -27,6 +27,23 @@
 			<button type="submit" class="glow-interactive">Show Analytics</button>
 		</form>
 
+		<div class="hero-graph-container">
+			<svg viewBox="0 0 400 200">
+				<defs>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+						<feDropShadow dx="0" dy="0" stdDeviation="1.1" flood-color="currentColor" flood-opacity="0.175" />
+					</filter>
+				</defs>
+				<g filter="url(#glow)">
+					<polyline class="animated-line" points="-10,200 50,140 110,150 170,60 280,55 360,-10" fill="none" />
+					<circle data-index="0" cx="50" cy="140" r="1.75" />
+					<circle data-index="1" cx="110" cy="150" r="1.75" />
+					<circle data-index="2" cx="170" cy="60" r="1.75" />
+					<circle data-index="3" cx="280" cy="55" r="1.75" />
+				</g>
+			</svg>
+		</div>
+
 		<div class="theme-select">
 			<label for="theme-select">Select Theme</label>
 			<select id="theme-select" class="glow-interactive">
