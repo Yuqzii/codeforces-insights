@@ -1,0 +1,15 @@
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS users (
+	id SERIAL PRIMARY KEY,
+	handle VARCHAR(32) NOT NULL UNIQUE,
+	current_rating INT,
+	last_updated TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TRIGGER set_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE PROCEDURE set_updated_at();
+
+COMMIT;
