@@ -18,8 +18,10 @@ type Contestant struct {
 }
 
 type Contest struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	StartTime int    `json:"startTimeSeconds"`
+	Duration  int    `json:"durationSeconds"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
