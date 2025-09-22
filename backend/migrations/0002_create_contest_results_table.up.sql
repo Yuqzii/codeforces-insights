@@ -2,7 +2,6 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS contest_results (
 	id SERIAL PRIMARY KEY,
-	user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	contest_id INT NOT NULL REFERENCES contests(id) ON DELETE CASCADE,
 	rank INT NOT NULL,
 	old_rating INT NOT NULL,
