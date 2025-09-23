@@ -9,19 +9,22 @@ import (
 )
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
-	tx, err := db.conn.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return fmt.Errorf("starting transaction: %w", err)
-	}
-
+	batch := &pgx.Batch{}
 	for _, c := range contestants {
-		_, err := tx.Exec(ctx, `
-			INSERT INTO contest_results
-			(contest_id, rank, old_rating, new_rating, points) VALUES ($1, $2, $3, $4, $5)`,
-			id, c.Rank, c.OldRating, c.NewRating, c.Points)
-		if err != nil {
-			return fmt.Errorf("inserting contest result: %w", err)
-		}
+		batch.Queue(`
+			WITH new_result AS (
+				INSERT INTO contest_results (contest_id, rank, old_rating, new_rating, points)
+				VALUES ($1, $2, $3, $4, $5)
+				RETURNING id
+			)
+			INSERT INTO contest_result_handles (contest_result_id, handle)
+			SELECT new_result.id, UNNEST($6::text[])
+			FROM new_result`,
+			id, c.Rank, c.OldRating, c.NewRating, c.Points, c.MemberHandles)
+	}
+	br := db.conn.SendBatch(ctx, batch)
+	if err := br.Close(); err != nil {
+		return fmt.Errorf("closing batch result: %w", err)
 	}
 
 	return nil
