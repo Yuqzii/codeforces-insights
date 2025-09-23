@@ -24,6 +24,7 @@ type Contest struct {
 	Name      string `json:"name"`
 	StartTime int    `json:"startTimeSeconds"`
 	Duration  int    `json:"durationSeconds"`
+	Phase     string `json:"phase"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -55,7 +56,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		Comment string `json:"comment,omitempty"`
 	}
 	var apiResp apiResponse
-	if err := json.Unmarshal(body, &apiResp); err != nil {
+	if err = json.Unmarshal(body, &apiResp); err != nil {
 		return nil, nil, err
 	}
 
@@ -64,6 +65,31 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	}
 
 	return apiResp.Result.Contestants, &apiResp.Result.Contest, nil
+}
+
+func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
+	endpoint := "contest.list"
+
+	resp, err := c.makeRequest(ctx, "GET", endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("getting contest list from Codeforces: %w", err)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiResp apiResponse[Contest]
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
+
+	if apiResp.Status != "OK" {
+		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
+	}
+
+	return apiResp.Result, nil
 }
 
 func (c *Contestant) UnmarshalJSON(data []byte) error {
