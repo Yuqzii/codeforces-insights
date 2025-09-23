@@ -36,5 +36,7 @@ func main() {
 		cfRequestsPerSecond,
 		cfMaxBurst,
 	)
-	_ = cfClient
+
+	fetcher := NewFetcher(cfClient, db, db)
+	_ = fetcher
 }
