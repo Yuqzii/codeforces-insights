@@ -22,7 +22,7 @@ func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) error {
 		ON CONFLICT (contest_id) DO UPDATE
 		SET name = EXCLUDED.name,
 			start_time = EXCLUDED.start_time,
-			duration = EXCLUDED.duration;
-		`, c.ID, c.Name, c.StartTime, c.Duration)
+			duration = EXCLUDED.duration`,
+		c.ID, c.Name, c.StartTime, c.Duration)
 	return err
 }
