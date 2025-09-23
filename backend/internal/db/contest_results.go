@@ -9,6 +9,12 @@ import (
 )
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
+	return db.InsertContestResultsTx(ctx, db.conn, contestants, id)
+}
+
+func (db *db) InsertContestResultsTx(ctx context.Context, q querier,
+	contestants []codeforces.Contestant, id int) error {
+
 	batch := &pgx.Batch{}
 	for _, c := range contestants {
 		batch.Queue(`
@@ -22,7 +28,7 @@ func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces
 			FROM new_result`,
 			id, c.Rank, c.OldRating, c.NewRating, c.Points, c.MemberHandles)
 	}
-	br := db.conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	if err := br.Close(); err != nil {
 		return fmt.Errorf("closing batch result: %w", err)
 	}
