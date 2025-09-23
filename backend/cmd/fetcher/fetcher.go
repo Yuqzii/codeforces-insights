@@ -16,11 +16,13 @@ type fetcher struct {
 
 type ContestProvider interface {
 	GetContestStandings(ctx context.Context, id int) ([]codeforces.Contestant, *codeforces.Contest, error)
+	GetContests(context.Context) ([]codeforces.Contest, error)
 }
 
 type ContestRepository interface {
 	UpsertContestTx(context.Context, db.Querier, *codeforces.Contest) (id int, err error)
 	InsertContestResultsTx(context.Context, db.Querier, []codeforces.Contestant, int) error
+	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
 }
 
 func NewFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *fetcher {
@@ -52,4 +54,34 @@ func (f *fetcher) fetchContest(id int) error {
 	})
 
 	return err
+}
+
+// @return Slice of the IDs of all unfetched contests
+func (f *fetcher) findUnfetchedContests() ([]int, error) {
+	c, err := f.cp.GetContests(context.TODO())
+	if err != nil {
+		return nil, fmt.Errorf("getting contests: %w", err)
+	}
+
+	finished := make([]int, 0)
+	for _, cont := range c {
+		if cont.Phase == "FINISHED" {
+			finished = append(finished, cont.ID)
+		}
+	}
+
+	existing, err := f.contestRepo.ContestsExists(context.TODO(), finished)
+	if err != nil {
+		return nil, fmt.Errorf("checking contests existence: %w", err)
+	}
+
+	result := make([]int, 0)
+	for _, id := range finished {
+		_, exists := existing[id]
+		if !exists {
+			result = append(result, id)
+		}
+	}
+
+	return result, nil
 }
