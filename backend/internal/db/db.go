@@ -16,11 +16,15 @@ type db struct {
 	conn *pgxpool.Pool
 }
 
-type querier interface {
+type Querier interface {
 	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
 	Query(context.Context, string, ...any) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...any) pgx.Row
 	SendBatch(context.Context, *pgx.Batch) pgx.BatchResults
+}
+
+type TxManager interface {
+	WithTx(context.Context, func(Querier) error) error
 }
 
 // Connects to Postgres with the provided parameters.
@@ -46,7 +50,7 @@ func (db *db) Close() {
 	db.conn.Close()
 }
 
-func (db *db) WithTx(ctx context.Context, fn func(q querier) error) error {
+func (db *db) WithTx(ctx context.Context, fn func(q Querier) error) error {
 	tx, err := db.conn.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("starting transaction: %w", err)
