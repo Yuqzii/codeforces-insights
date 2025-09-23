@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type Contestant struct {
@@ -20,11 +21,11 @@ type Contestant struct {
 }
 
 type Contest struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	StartTime int    `json:"startTimeSeconds"`
-	Duration  int    `json:"durationSeconds"`
-	Phase     string `json:"phase"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	StartTime time.Time `json:"startTime"`
+	Duration  int       `json:"durationSeconds"`
+	Phase     string    `json:"phase"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -116,6 +117,29 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 	for _, member := range raw.Party.Members {
 		c.MemberHandles = append(c.MemberHandles, member.Handle)
 	}
+
+	return nil
+}
+
+func (c *Contest) UnmarshalJSON(data []byte) error {
+	type rawContest struct {
+		ID        int    `json:"id"`
+		Name      string `json:"name"`
+		StartTime int64  `json:"startTimeSeconds"`
+		Duration  int    `json:"durationSeconds"`
+		Phase     string `json:"phase"`
+	}
+
+	var raw rawContest
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	c.ID = raw.ID
+	c.Name = raw.Name
+	c.StartTime = time.Unix(raw.StartTime, 0)
+	c.Duration = raw.Duration
+	c.Phase = raw.Phase
 
 	return nil
 }

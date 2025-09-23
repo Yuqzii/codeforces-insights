@@ -38,16 +38,19 @@ func main() {
 	)
 
 	fetcher := NewFetcher(cfClient, db, db)
+	log.Println("Finding unfetched contests")
 	unfetched, err := fetcher.findUnfetchedContests()
 	if err != nil {
 		log.Fatalf("Failed to find unfetched contests: %v\n", err)
 	}
 
-	for _, id := range unfetched {
+	log.Printf("Starting fetching for %d contests\n", len(unfetched))
+	for i, id := range unfetched {
 		err = fetcher.fetchContest(id)
 		if err != nil {
 			log.Printf("Failed to fetch contest %d: %v\n", id, err)
 		}
+		log.Printf("Fetched contest %d (%d/%d)\n", id, i, len(unfetched))
 	}
 	log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
 }
