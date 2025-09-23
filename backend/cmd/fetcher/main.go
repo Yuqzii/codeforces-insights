@@ -25,7 +25,7 @@ func main() {
 	dbPswd := os.Getenv("POSTGRES_PASSWORD")
 	db, err := db.New(context.Background(), dbHost, dbUser, dbPswd, dbName, dbPort)
 	if err != nil {
-		log.Fatalf("Could not connect to database: %v", err)
+		log.Fatalf("Could not connect to database: %v\n", err)
 	}
 	log.Println("Connected to database")
 	defer db.Close()
@@ -38,5 +38,16 @@ func main() {
 	)
 
 	fetcher := NewFetcher(cfClient, db, db)
-	_ = fetcher
+	unfetched, err := fetcher.findUnfetchedContests()
+	if err != nil {
+		log.Fatalf("Failed to find unfetched contests: %v\n", err)
+	}
+
+	for _, id := range unfetched {
+		err = fetcher.fetchContest(id)
+		if err != nil {
+			log.Printf("Failed to fetch contest %d: %v\n", id, err)
+		}
+	}
+	log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
 }
