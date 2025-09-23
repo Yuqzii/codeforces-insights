@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -12,6 +14,13 @@ var ErrPingFailed = errors.New("database ping failed")
 
 type db struct {
 	conn *pgxpool.Pool
+}
+
+type querier interface {
+	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
+	Query(context.Context, string, ...any) (pgx.Rows, error)
+	QueryRow(context.Context, string, ...any) pgx.Row
+	SendBatch(context.Context, *pgx.Batch) pgx.BatchResults
 }
 
 // Connects to Postgres with the provided parameters.
@@ -35,4 +44,23 @@ func New(ctx context.Context, host, user, password, dbName string, port uint16) 
 // Should be called before exiting application
 func (db *db) Close() {
 	db.conn.Close()
+}
+
+func (db *db) WithTx(ctx context.Context, fn func(q querier) error) error {
+	tx, err := db.conn.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("starting transaction: %w", err)
+	}
+
+	// Automatically rollback on error
+	defer func() {
+		if err != nil {
+			err = errors.Join(err, tx.Rollback(ctx))
+		}
+	}()
+
+	if err = fn(tx); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
