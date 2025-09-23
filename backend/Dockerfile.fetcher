@@ -1,0 +1,9 @@
+FROM golang:1.24-alpine
+
+WORKDIR /app
+COPY . .
+RUN go mod download
+
+RUN GOOS=linux go build -o /fetcher ./cmd/fetcher/
+
+ENTRYPOINT ["/fetcher"]
