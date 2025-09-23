@@ -16,6 +16,28 @@ func (db *db) ContestExists(ctx context.Context, id int) (exists bool, err error
 	return exists, err
 }
 
+func (db *db) ContestsExists(ctx context.Context, ids []int) (existingIDs map[int]struct{}, err error) {
+	rows, err := db.conn.Query(ctx, `
+		SELECT contest_id FROM contests WHERE contest_id = ANY($1)`,
+		ids,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	existingIDs = make(map[int]struct{})
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		existingIDs[id] = struct{}{}
+	}
+
+	return existingIDs, nil
+}
+
 func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) (id int, err error) {
 	return db.UpsertContestTx(ctx, db.conn, c)
 }
@@ -28,6 +50,7 @@ func (db *db) UpsertContestTx(ctx context.Context, q Querier, c *codeforces.Cont
 			start_time = EXCLUDED.start_time,
 			duration = EXCLUDED.duration
 		RETURNING id`,
-		c.ID, c.Name, c.StartTime, c.Duration).Scan(&id)
+		c.ID, c.Name, c.StartTime, c.Duration,
+	).Scan(&id)
 	return id, err
 }
