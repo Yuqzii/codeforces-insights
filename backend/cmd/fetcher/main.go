@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/schollz/progressbar/v3"
+
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
 )
@@ -45,12 +47,14 @@ func main() {
 	}
 
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
-	for i, id := range unfetched {
+	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
+	bar.Add(1)
+	for _, id := range unfetched {
 		err = fetcher.fetchContest(id)
 		if err != nil {
 			log.Printf("Failed to fetch contest %d: %v\n", id, err)
 		}
-		log.Printf("Fetched contest %d (%d/%d)\n", id, i, len(unfetched))
+		bar.Add(1)
 	}
 	log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
 }
