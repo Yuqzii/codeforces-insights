@@ -15,6 +15,7 @@ type Contestant struct {
 	Rank          int     `json:"rank"`
 	Points        float64 `json:"points"`
 	Penalty       int     `json:"penalty"`
+	ID            uint64
 	OldRating     int
 	NewRating     int
 	MemberHandles []string
@@ -99,7 +100,8 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 		Points  float64 `json:"points"`
 		Penalty int     `json:"penalty"`
 		Party   struct {
-			Members []struct {
+			ParticipantID uint64 `json:"participantId"`
+			Members       []struct {
 				Handle string `json:"handle"`
 			} `json:"members"`
 		} `json:"party"`
@@ -113,6 +115,7 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 	c.Rank = raw.Rank
 	c.Points = raw.Points
 	c.Penalty = raw.Penalty
+	c.ID = raw.Party.ParticipantID
 
 	for _, member := range raw.Party.Members {
 		c.MemberHandles = append(c.MemberHandles, member.Handle)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -35,23 +36,34 @@ func newFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManag
 }
 
 func (f *fetcher) fetchContest(id int) error {
+	ratings, err := f.cp.GetContestRatingChanges(context.TODO(), id)
+	if err != nil {
+		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
+			// Ignore this error, means contest was unrated
+			return nil
+		}
+		return fmt.Errorf("getting contest ratings: %w", err)
+	}
+	ratingMap := make(map[string]*codeforces.RatingChange)
+	for i := range ratings {
+		ratingMap[ratings[i].Handle] = &ratings[i]
+	}
+
 	contestants, contest, err := f.cp.GetContestStandings(context.TODO(), id)
 	if err != nil {
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
-	rankMap := make(map[int]*codeforces.Contestant)
-	for i := range contestants {
-		rankMap[contestants[i].Rank] = &contestants[i]
-	}
 
 	// Set ratings of contestants
-	ratings, err := f.cp.GetContestRatingChanges(context.TODO(), id)
-	if err != nil {
-		return fmt.Errorf("getting contest ratings: %w", err)
-	}
-	for _, r := range ratings {
-		rankMap[r.Rank].NewRating = r.NewRating
-		rankMap[r.Rank].OldRating = r.OldRating
+	for i, c := range contestants {
+		for _, handle := range c.MemberHandles {
+			r, ok := ratingMap[handle]
+			// Use rating of party member with maximum previous rating
+			if ok && r.OldRating > contestants[i].OldRating {
+				contestants[i].OldRating = r.OldRating
+				contestants[i].NewRating = r.NewRating
+			}
+		}
 	}
 
 	// Insert to DB in a transaction
