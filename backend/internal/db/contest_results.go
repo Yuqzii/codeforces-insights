@@ -24,7 +24,7 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 				RETURNING id
 			)
 			INSERT INTO contest_result_handles (contest_result_id, handle)
-			SELECT new_result.id, UNNEST($6::text[])
+			SELECT new_result.id, UNNEST($6::varchar(32)[])
 			FROM new_result`,
 			id, c.Rank, c.OldRating, c.NewRating, c.Points, c.MemberHandles)
 	}
