@@ -32,7 +32,7 @@ func TestContestExists(t *testing.T) {
 			WillReturnRows(rows)
 
 		exists, err := db.ContestExists(ctx, 69)
-		assert.Nil(t, err, err)
+		assert.NoError(t, err)
 		assert.True(t, exists, "expected contest to exist")
 	})
 
@@ -43,7 +43,7 @@ func TestContestExists(t *testing.T) {
 			WillReturnRows(rows)
 
 		exists, err := db.ContestExists(ctx, 99)
-		assert.Nil(t, err, err)
+		assert.NoError(t, err)
 		assert.False(t, exists, "expected contest to not exist")
 	})
 
@@ -53,7 +53,7 @@ func TestContestExists(t *testing.T) {
 			WillReturnError(errors.New("query failed"))
 
 		exists, err := db.ContestExists(ctx, 13)
-		assert.NotNil(t, err, "expected error")
+		assert.Error(t, err, "expected error")
 		assert.False(t, exists, "expected exists=false on error")
 	})
 }
@@ -71,7 +71,7 @@ func TestContestsExists(t *testing.T) {
 			WillReturnRows(rows)
 
 		existing, err := db.ContestsExists(ctx, input)
-		assert.Nil(t, err, err)
+		assert.NoError(t, err)
 		for _, val := range input {
 			_, ok := existing[val]
 			assert.Truef(t, ok, "expected contest %d to exist", val)
@@ -88,7 +88,7 @@ func TestContestsExists(t *testing.T) {
 			WillReturnRows(rows)
 
 		existing, err := db.ContestsExists(ctx, input)
-		assert.Nil(t, err, err)
+		assert.NoError(t, err)
 		for i := range input {
 			_, ok := existing[input[i]]
 			assert.Equal(t, shouldExist[i], ok)
@@ -103,7 +103,7 @@ func TestContestsExists(t *testing.T) {
 			WillReturnRows(rows)
 
 		existing, err := db.ContestsExists(ctx, input)
-		assert.Nil(t, err, err)
+		assert.NoError(t, err)
 		for _, val := range input {
 			_, ok := existing[val]
 			assert.Falsef(t, ok, "did not expect contest %d to exist", val)
@@ -117,7 +117,7 @@ func TestContestsExists(t *testing.T) {
 			WillReturnError(errors.New("query failed"))
 
 		existing, err := db.ContestsExists(ctx, input)
-		assert.NotNil(t, err, "expected error")
+		assert.Error(t, err, "expected error")
 		assert.Nilf(t, existing, "expected existing=nil on error, got %v", existing)
 	})
 }
