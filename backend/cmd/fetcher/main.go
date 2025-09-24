@@ -48,13 +48,19 @@ func main() {
 
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
 	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
-	bar.Add(1)
+	failCnt := 0
 	for _, id := range unfetched {
 		err = fetcher.fetchContest(id)
 		if err != nil {
+			failCnt++
 			log.Printf("Failed to fetch contest %d: %v\n", id, err)
 		}
 		bar.Add(1)
 	}
-	log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
+
+	if failCnt == 0 {
+		log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
+	} else {
+		log.Printf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
+	}
 }
