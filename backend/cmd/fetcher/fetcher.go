@@ -15,8 +15,9 @@ type fetcher struct {
 }
 
 type ContestProvider interface {
-	GetContestStandings(ctx context.Context, id int) ([]codeforces.Contestant, *codeforces.Contest, error)
 	GetContests(context.Context) ([]codeforces.Contest, error)
+	GetContestStandings(ctx context.Context, id int) ([]codeforces.Contestant, *codeforces.Contest, error)
+	GetContestRatingChanges(ctx context.Context, id int) ([]codeforces.RatingChange, error)
 }
 
 type ContestRepository interface {
@@ -38,7 +39,22 @@ func (f *fetcher) fetchContest(id int) error {
 	if err != nil {
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
+	rankMap := make(map[int]*codeforces.Contestant)
+	for i := range contestants {
+		rankMap[contestants[i].Rank] = &contestants[i]
+	}
 
+	// Set ratings of contestants
+	ratings, err := f.cp.GetContestRatingChanges(context.TODO(), id)
+	if err != nil {
+		return fmt.Errorf("getting contest ratings: %w", err)
+	}
+	for _, r := range ratings {
+		rankMap[r.Rank].NewRating = r.NewRating
+		rankMap[r.Rank].OldRating = r.OldRating
+	}
+
+	// Insert to DB in a transaction
 	err = f.tx.WithTx(context.TODO(), func(q db.Querier) error {
 		id, err := f.contestRepo.UpsertContestTx(context.TODO(), q, contest)
 		if err != nil {
@@ -56,7 +72,7 @@ func (f *fetcher) fetchContest(id int) error {
 	return err
 }
 
-// @return Slice of the IDs of all unfetched contests
+// @return Slice of the IDs of all unfetched contests.
 func (f *fetcher) findUnfetchedContests() ([]int, error) {
 	c, err := f.cp.GetContests(context.TODO())
 	if err != nil {
