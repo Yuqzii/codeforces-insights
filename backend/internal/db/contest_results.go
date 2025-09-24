@@ -9,7 +9,7 @@ import (
 )
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
-	return db.InsertContestResultsTx(ctx, db.conn, contestants, id)
+	return db.InsertContestResultsTx(ctx, db.q, contestants, id)
 }
 
 func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,

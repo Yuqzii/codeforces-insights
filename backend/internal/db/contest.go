@@ -7,7 +7,7 @@ import (
 )
 
 func (db *db) ContestExists(ctx context.Context, id int) (exists bool, err error) {
-	err = db.conn.QueryRow(ctx,
+	err = db.q.QueryRow(ctx,
 		`SELECT EXISTS(SELECT 1 FROM contests WHERE contest_id=$1)`, id,
 	).Scan(&exists)
 	if err != nil {
@@ -17,7 +17,7 @@ func (db *db) ContestExists(ctx context.Context, id int) (exists bool, err error
 }
 
 func (db *db) ContestsExists(ctx context.Context, ids []int) (existingIDs map[int]struct{}, err error) {
-	rows, err := db.conn.Query(ctx, `
+	rows, err := db.q.Query(ctx, `
 		SELECT contest_id FROM contests WHERE contest_id = ANY($1)`,
 		ids,
 	)
@@ -39,7 +39,7 @@ func (db *db) ContestsExists(ctx context.Context, ids []int) (existingIDs map[in
 }
 
 func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) (id int, err error) {
-	return db.UpsertContestTx(ctx, db.conn, c)
+	return db.UpsertContestTx(ctx, db.q, c)
 }
 
 func (db *db) UpsertContestTx(ctx context.Context, q Querier, c *codeforces.Contest) (id int, err error) {

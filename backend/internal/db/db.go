@@ -13,10 +13,11 @@ import (
 var ErrPingFailed = errors.New("database ping failed")
 
 type db struct {
-	conn *pgxpool.Pool
+	q Querier
 }
 
 type Querier interface {
+	Begin(context.Context) (pgx.Tx, error)
 	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
 	Query(context.Context, string, ...any) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...any) pgx.Row
@@ -42,16 +43,18 @@ func New(ctx context.Context, host, user, password, dbName string, port uint16) 
 		return nil, fmt.Errorf("%w: %w", ErrPingFailed, err)
 	}
 
-	return &db{conn: conn}, nil
+	return &db{q: conn}, nil
 }
 
 // Should be called before exiting application
 func (db *db) Close() {
-	db.conn.Close()
+	if pool, ok := db.q.(*pgxpool.Pool); ok {
+		pool.Close()
+	}
 }
 
 func (db *db) WithTx(ctx context.Context, fn func(q Querier) error) error {
-	tx, err := db.conn.Begin(ctx)
+	tx, err := db.q.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("starting transaction: %w", err)
 	}
