@@ -65,7 +65,7 @@ func (f *fetcher) findUnfetchedContests() ([]int, error) {
 
 	finished := make([]int, 0)
 	for _, cont := range c {
-		if cont.Phase == "FINISHED" {
+		if cont.Phase == "FINISHED" && !containsCyrillic(cont.Name) {
 			finished = append(finished, cont.ID)
 		}
 	}

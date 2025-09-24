@@ -16,7 +16,7 @@ const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
 
-	cfRequestsPerSecond float64 = 0.5
+	cfRequestsPerSecond float64 = 0.4
 	cfMaxBurst          int     = 1
 )
 
