@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/pashagolub/pgxmock/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
 func setupMockDB(t *testing.T) (pgxmock.PgxPoolIface, *db) {
@@ -117,5 +119,37 @@ func TestContestsExists(t *testing.T) {
 		existing, err := db.ContestsExists(ctx, input)
 		assert.NotNil(t, err, "expected error")
 		assert.Nilf(t, existing, "expected existing=nil on error, got %v", existing)
+	})
+}
+
+func TestUpsertContestsTx(t *testing.T) {
+	ctx := context.Background()
+	mock, db := setupMockDB(t)
+
+	c := &codeforces.Contest{
+		ID:        1337,
+		Name:      "Mock Contest",
+		StartTime: time.Date(2025, 3, 10, 0, 0, 0, 0, time.UTC),
+		Duration:  7200,
+	}
+
+	t.Run("Successful upsert", func(t *testing.T) {
+		rows := pgxmock.NewRows([]string{"id"}).AddRow(42)
+		mock.ExpectQuery(`INSERT INTO contests`).
+			WithArgs(c.ID, c.Name, c.StartTime, c.Duration).
+			WillReturnRows(rows)
+
+		id, err := db.UpsertContestTx(ctx, mock, c)
+		assert.Nil(t, err, err)
+		assert.Equalf(t, id, 42, "expected id 42, got %d", id)
+	})
+
+	t.Run("Query error", func(t *testing.T) {
+		mock.ExpectQuery(`INSERT INTO contests`).
+			WithArgs(c.ID, c.Name, c.StartTime, c.Duration).
+			WillReturnError(errors.New("insert failed"))
+
+		_, err := db.UpsertContestTx(ctx, mock, c)
+		assert.NotNil(t, err)
 	})
 }
