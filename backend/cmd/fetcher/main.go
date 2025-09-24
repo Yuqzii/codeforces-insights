@@ -39,7 +39,7 @@ func main() {
 		cfMaxBurst,
 	)
 
-	fetcher := NewFetcher(cfClient, db, db)
+	fetcher := newFetcher(cfClient, db, db)
 	log.Println("Finding unfetched contests")
 	unfetched, err := fetcher.findUnfetchedContests()
 	if err != nil {

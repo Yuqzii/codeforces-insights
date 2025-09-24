@@ -26,7 +26,7 @@ type ContestRepository interface {
 	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
 }
 
-func NewFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *fetcher {
+func newFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *fetcher {
 	return &fetcher{
 		cp:          cp,
 		contestRepo: contestRepo,
