@@ -19,8 +19,10 @@ const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
 
-	cfRequestsPerSecond float64 = 0.4
+	cfRequestsPerSecond float64 = 0.475
 	cfMaxBurst          int     = 1
+
+	workerCnt int = 2
 )
 
 func main() {
@@ -42,9 +44,9 @@ func main() {
 		cfMaxBurst,
 	)
 
-	fetcher := fetcher.New(cfClient, db, db)
+	f := fetcher.New(cfClient, db, db)
 	log.Println("Finding unfetched contests")
-	unfetched, err := fetcher.FindUnfetchedContests()
+	unfetched, err := f.FindUnfetchedContests()
 	if err != nil {
 		log.Fatalf("Failed to find unfetched contests: %v\n", err)
 	}
@@ -52,8 +54,9 @@ func main() {
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
 	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
 	failCnt, noRatingCnt := 0, 0
-	for _, id := range unfetched {
-		err = fetcher.FetchContest(id)
+
+	results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, db)
+	for err := range results {
 		bar.Add(1)
 		if err != nil {
 			if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
@@ -62,7 +65,7 @@ func main() {
 				continue
 			}
 			failCnt++
-			log.Printf("Failed to fetch contest %d: %v\n", id, err)
+			log.Printf("Failed to fetch contest: %v\n", err)
 		}
 	}
 

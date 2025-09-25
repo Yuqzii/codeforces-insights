@@ -37,7 +37,7 @@ func New(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *Se
 func (s *Service) FetchContest(id int) error {
 	ratings, err := s.contestProvider.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
-		return fmt.Errorf("getting contest ratings: %w", err)
+		return fmt.Errorf("getting contest %d ratings: %w", id, err)
 	}
 	ratingMap := make(map[string]*codeforces.RatingChange)
 	for i := range ratings {
@@ -46,7 +46,7 @@ func (s *Service) FetchContest(id int) error {
 
 	contestants, contest, err := s.contestProvider.GetContestStandings(context.TODO(), id)
 	if err != nil {
-		return fmt.Errorf("getting contest standings: %w", err)
+		return fmt.Errorf("getting contest %d standings: %w", id, err)
 	}
 
 	// Set ratings of contestants
@@ -65,12 +65,12 @@ func (s *Service) FetchContest(id int) error {
 	err = s.tx.WithTx(context.TODO(), func(q db.Querier) error {
 		id, err := s.contestRepo.UpsertContestTx(context.TODO(), q, contest)
 		if err != nil {
-			return fmt.Errorf("upserting contest: %w", err)
+			return fmt.Errorf("upserting contest %d: %w", id, err)
 		}
 
 		err = s.contestRepo.InsertContestResultsTx(context.TODO(), q, contestants, id)
 		if err != nil {
-			return fmt.Errorf("inserting contest results: %w", err)
+			return fmt.Errorf("inserting contest %d results: %w", id, err)
 		}
 
 		return nil
