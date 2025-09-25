@@ -3,15 +3,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.server
-    ports:
-      - "8080:8080"
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
 
   fetcher:
     profiles: [fetcher]
@@ -24,7 +23,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
 
   postgres:
     image: postgres:17-alpine
