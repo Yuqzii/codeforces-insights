@@ -1,15 +1,30 @@
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "8080:8080"
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.server
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
+
+  fetcher:
+    profiles: [fetcher]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.fetcher
+    restart: no
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   postgres:
     image: postgres:17-alpine
@@ -19,7 +34,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - cfinsights-db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -51,7 +66,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - server
 
 volumes:
-  cfinsights-db:
+  db:

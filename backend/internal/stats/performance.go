@@ -56,8 +56,8 @@ func CalculateSeed(contestants []codeforces.Contestant, contest *codeforces.Cont
 	// Calculate average rating
 	ratSum, cnt := 0.0, 0
 	for i := range contestants {
-		if contestants[i].Rating != 0 {
-			ratSum += float64(contestants[i].Rating)
+		if contestants[i].OldRating != 0 {
+			ratSum += float64(contestants[i].OldRating)
 			cnt++
 		}
 	}
@@ -68,10 +68,10 @@ func CalculateSeed(contestants []codeforces.Contestant, contest *codeforces.Cont
 
 	counts := make([]float64, ratingRange)
 	for _, c := range contestants {
-		if c.Rating == 0 {
-			c.Rating = defaultRating
+		if c.OldRating == 0 {
+			c.OldRating = defaultRating
 		}
-		counts[c.Rating+ratingOffset] += 1
+		counts[c.OldRating+ratingOffset] += 1
 	}
 
 	seedComplex := fft.Convolve(fft.FloatToComplex(eloWinProb), fft.FloatToComplex(counts))

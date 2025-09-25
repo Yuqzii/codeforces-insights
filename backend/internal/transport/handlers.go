@@ -185,7 +185,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				continue
 			}
-			c[i].Rating = rat
+			c[i].OldRating = rat
 		}
 
 		seed := stats.CalculateSeed(c, contest)
