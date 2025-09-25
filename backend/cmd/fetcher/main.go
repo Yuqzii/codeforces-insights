@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,19 +50,24 @@ func main() {
 
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
 	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
-	failCnt := 0
+	failCnt, noRatingCnt := 0, 0
 	for _, id := range unfetched {
 		err = fetcher.fetchContest(id)
+		bar.Add(1)
 		if err != nil {
+			if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
+				// Usually means contest was unrated
+				noRatingCnt++
+				continue
+			}
 			failCnt++
 			log.Printf("Failed to fetch contest %d: %v\n", id, err)
 		}
-		bar.Add(1)
 	}
 
-	if failCnt == 0 {
-		log.Printf("Successfully fetched all %d unfetched contests\n", len(unfetched))
-	} else {
-		log.Printf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
+	outputStr := fmt.Sprintf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
+	if noRatingCnt > 0 {
+		outputStr += fmt.Sprintf(" (%d was not stored due to missing rating data)", noRatingCnt)
 	}
+	log.Println(outputStr)
 }

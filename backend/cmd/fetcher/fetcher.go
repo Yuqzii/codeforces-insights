@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -38,10 +37,6 @@ func newFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManag
 func (f *fetcher) fetchContest(id int) error {
 	ratings, err := f.cp.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
-		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
-			// Ignore this error, means contest was unrated
-			return nil
-		}
 		return fmt.Errorf("getting contest ratings: %w", err)
 	}
 	ratingMap := make(map[string]*codeforces.RatingChange)
