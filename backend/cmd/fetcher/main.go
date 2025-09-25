@@ -12,6 +12,7 @@ import (
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/cf-stats/internal/fetcher"
 )
 
 const (
@@ -41,9 +42,9 @@ func main() {
 		cfMaxBurst,
 	)
 
-	fetcher := newFetcher(cfClient, db, db)
+	fetcher := fetcher.New(cfClient, db, db)
 	log.Println("Finding unfetched contests")
-	unfetched, err := fetcher.findUnfetchedContests()
+	unfetched, err := fetcher.FindUnfetchedContests()
 	if err != nil {
 		log.Fatalf("Failed to find unfetched contests: %v\n", err)
 	}
@@ -52,7 +53,7 @@ func main() {
 	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
 	failCnt, noRatingCnt := 0, 0
 	for _, id := range unfetched {
-		err = fetcher.fetchContest(id)
+		err = fetcher.FetchContest(id)
 		bar.Add(1)
 		if err != nil {
 			if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {

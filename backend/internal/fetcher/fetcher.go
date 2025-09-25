@@ -1,4 +1,4 @@
-package main
+package fetcher
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"github.com/yuqzii/cf-stats/internal/db"
 )
 
-type fetcher struct {
-	cp          ContestProvider
-	contestRepo ContestRepository
-	tx          db.TxManager
+type Service struct {
+	contestProvider ContestProvider
+	contestRepo     ContestRepository
+	tx              db.TxManager
 }
 
 type ContestProvider interface {
@@ -26,16 +26,16 @@ type ContestRepository interface {
 	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
 }
 
-func newFetcher(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *fetcher {
-	return &fetcher{
-		cp:          cp,
-		contestRepo: contestRepo,
-		tx:          tx,
+func New(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *Service {
+	return &Service{
+		contestProvider: cp,
+		contestRepo:     contestRepo,
+		tx:              tx,
 	}
 }
 
-func (f *fetcher) fetchContest(id int) error {
-	ratings, err := f.cp.GetContestRatingChanges(context.TODO(), id)
+func (s *Service) FetchContest(id int) error {
+	ratings, err := s.contestProvider.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
 		return fmt.Errorf("getting contest ratings: %w", err)
 	}
@@ -44,7 +44,7 @@ func (f *fetcher) fetchContest(id int) error {
 		ratingMap[ratings[i].Handle] = &ratings[i]
 	}
 
-	contestants, contest, err := f.cp.GetContestStandings(context.TODO(), id)
+	contestants, contest, err := s.contestProvider.GetContestStandings(context.TODO(), id)
 	if err != nil {
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
@@ -62,13 +62,13 @@ func (f *fetcher) fetchContest(id int) error {
 	}
 
 	// Insert to DB in a transaction
-	err = f.tx.WithTx(context.TODO(), func(q db.Querier) error {
-		id, err := f.contestRepo.UpsertContestTx(context.TODO(), q, contest)
+	err = s.tx.WithTx(context.TODO(), func(q db.Querier) error {
+		id, err := s.contestRepo.UpsertContestTx(context.TODO(), q, contest)
 		if err != nil {
 			return fmt.Errorf("upserting contest: %w", err)
 		}
 
-		err = f.contestRepo.InsertContestResultsTx(context.TODO(), q, contestants, id)
+		err = s.contestRepo.InsertContestResultsTx(context.TODO(), q, contestants, id)
 		if err != nil {
 			return fmt.Errorf("inserting contest results: %w", err)
 		}
@@ -80,8 +80,8 @@ func (f *fetcher) fetchContest(id int) error {
 }
 
 // @return Slice of the IDs of all unfetched contests.
-func (f *fetcher) findUnfetchedContests() ([]int, error) {
-	c, err := f.cp.GetContests(context.TODO())
+func (s *Service) FindUnfetchedContests() ([]int, error) {
+	c, err := s.contestProvider.GetContests(context.TODO())
 	if err != nil {
 		return nil, fmt.Errorf("getting contests: %w", err)
 	}
@@ -93,7 +93,7 @@ func (f *fetcher) findUnfetchedContests() ([]int, error) {
 		}
 	}
 
-	existing, err := f.contestRepo.ContestsExists(context.TODO(), finished)
+	existing, err := s.contestRepo.ContestsExists(context.TODO(), finished)
 	if err != nil {
 		return nil, fmt.Errorf("checking contests existence: %w", err)
 	}
