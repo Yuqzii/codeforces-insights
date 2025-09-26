@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -35,18 +36,22 @@ func New(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *Se
 }
 
 func (s *Service) FetchContest(id int) error {
+	contestants, contest, err := s.contestProvider.GetContestStandings(context.TODO(), id)
+	if err != nil {
+		return fmt.Errorf("getting contest %d standings: %w", id, err)
+	}
+
 	ratings, err := s.contestProvider.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
+		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
+			err = errors.Join(err, s.insertDB(context.Background(), contest, nil))
+			return err
+		}
 		return fmt.Errorf("getting contest %d ratings: %w", id, err)
 	}
 	ratingMap := make(map[string]*codeforces.RatingChange)
 	for i := range ratings {
 		ratingMap[ratings[i].Handle] = &ratings[i]
-	}
-
-	contestants, contest, err := s.contestProvider.GetContestStandings(context.TODO(), id)
-	if err != nil {
-		return fmt.Errorf("getting contest %d standings: %w", id, err)
 	}
 
 	// Set ratings of contestants
