@@ -62,21 +62,7 @@ func (s *Service) FetchContest(id int) error {
 	}
 
 	// Insert to DB in a transaction
-	err = s.tx.WithTx(context.TODO(), func(q db.Querier) error {
-		id, err := s.contestRepo.UpsertContestTx(context.TODO(), q, contest)
-		if err != nil {
-			return fmt.Errorf("upserting contest %d: %w", id, err)
-		}
-
-		err = s.contestRepo.InsertContestResultsTx(context.TODO(), q, contestants, id)
-		if err != nil {
-			return fmt.Errorf("inserting contest %d results: %w", id, err)
-		}
-
-		return nil
-	})
-
-	return err
+	return s.insertDB(context.TODO(), contest, contestants)
 }
 
 // @return Slice of the IDs of all unfetched contests.
@@ -107,4 +93,22 @@ func (s *Service) FindUnfetchedContests() ([]int, error) {
 	}
 
 	return result, nil
+}
+
+func (s *Service) insertDB(ctx context.Context, contest *codeforces.Contest,
+	contestants []codeforces.Contestant) error {
+
+	return s.tx.WithTx(ctx, func(q db.Querier) error {
+		id, err := s.contestRepo.UpsertContestTx(ctx, q, contest)
+		if err != nil {
+			return fmt.Errorf("upserting contest %d: %w", id, err)
+		}
+
+		err = s.contestRepo.InsertContestResultsTx(ctx, q, contestants, id)
+		if err != nil {
+			return fmt.Errorf("inserting contest %d results: %w", id, err)
+		}
+
+		return nil
+	})
 }
