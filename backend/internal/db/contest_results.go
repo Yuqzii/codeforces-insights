@@ -61,9 +61,13 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 		return nil, nil, fmt.Errorf("querying contests: %w", err)
 	}
 
-	// Get contestants
-	rows, err := q.Query(ctx,
-		`SELECT rank, old_rating, new_rating, points, id FROM contest_results WHERE contest_id=$1`,
+	// Get contestants with handles
+	rows, err := q.Query(ctx, `
+		SELECT cr.rank, cr.old_rating, cr.new_rating, cr.points, cr.id, crh.handle
+		FROM contest_results AS cr
+		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
+		WHERE cr.contest_id=$1
+		ORDER BY cr.rank`,
 		internalID)
 	if err != nil {
 		return nil, nil, fmt.Errorf("querying contest_results: %w", err)
@@ -74,54 +78,36 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 		return nil, nil, fmt.Errorf("scanning into contestant: %w", err)
 	}
 
-	if err = getHandles(ctx, q, contestants); err != nil {
-		return nil, nil, fmt.Errorf("getting contestant handles: %w", err)
-	}
-
 	return contestants, &contest, nil
 }
 
 func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
-	res := make([]codeforces.Contestant, 0)
+	contestantMap := make(map[int]codeforces.Contestant, 0)
 	var rank, oldRating, newRating, resultID int
 	var points float64
-	_, err := pgx.ForEachRow(rows, []any{&rank, &oldRating, &newRating, &points, &resultID}, func() error {
-		c := codeforces.Contestant{
-			Rank:       rank,
-			OldRating:  oldRating,
-			NewRating:  newRating,
-			Points:     points,
-			InternalID: resultID,
-		}
-		res = append(res, c)
-		return nil
-	})
-	return res, err
-}
+	var handle string
+	_, err := pgx.ForEachRow(rows,
+		[]any{&rank, &oldRating, &newRating, &points, &resultID, &handle},
+		func() error {
+			c, ok := contestantMap[resultID]
+			if !ok {
+				contestantMap[resultID] = codeforces.Contestant{
+					Rank:       rank,
+					OldRating:  oldRating,
+					NewRating:  newRating,
+					Points:     points,
+					InternalID: resultID,
+				}
+			}
+			c.MemberHandles = append(c.MemberHandles, handle)
 
-func getHandles(ctx context.Context, q Querier, c []codeforces.Contestant) error {
-	// Send queries in batch to avoid network roundtrips
-	batch := pgx.Batch{}
-	for i := range c {
-		batch.Queue(`SELECT handle FROM contest_result_handles WHERE contest_result_id=$1`,
-			c[i].InternalID)
-	}
-	br := q.SendBatch(ctx, &batch)
-	defer br.Close()
-
-	// Scan the results into the MemberHandles field
-	for i := range c {
-		rows, err := br.Query()
-		if err != nil {
-			return fmt.Errorf("querying contest_result_handles: %w", err)
-		}
-
-		var handle string
-		_, err = pgx.ForEachRow(rows, []any{&handle}, func() error {
-			c[i].MemberHandles = append(c[i].MemberHandles, handle)
 			return nil
 		})
+
+	contestantSlice := make([]codeforces.Contestant, 0, len(contestantMap))
+	for _, c := range contestantMap {
+		contestantSlice = append(contestantSlice, c)
 	}
 
-	return nil
+	return contestantSlice, err
 }
