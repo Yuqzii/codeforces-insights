@@ -2,11 +2,14 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
+
+var ErrContestNotStored = errors.New("did not find contest in db")
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
 	return db.InsertContestResultsTx(ctx, db.q, contestants, id)
@@ -31,6 +34,93 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 	br := q.SendBatch(ctx, batch)
 	if err := br.Close(); err != nil {
 		return fmt.Errorf("closing batch result: %w", err)
+	}
+
+	return nil
+}
+
+func (db *db) GetContestResults(ctx context.Context, id int) (
+	[]codeforces.Contestant, *codeforces.Contest, error) {
+
+	return db.GetContestResultsTx(ctx, db.q, id)
+}
+
+func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
+	[]codeforces.Contestant, *codeforces.Contest, error) {
+
+	// Get contest
+	var contest codeforces.Contest
+	var internalID int
+	err := q.QueryRow(ctx,
+		`SELECT name, start_time, duration, id FROM contests WHERE contest_id=$1`, id).
+		Scan(&contest.Name, &contest.StartTime, &contest.Duration, &internalID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil, ErrContestNotStored
+		}
+		return nil, nil, fmt.Errorf("querying contests: %w", err)
+	}
+
+	// Get contestants
+	rows, err := q.Query(ctx,
+		`SELECT rank, old_rating, new_rating, points, id FROM contest_results WHERE contest_id=$1`,
+		internalID)
+	if err != nil {
+		return nil, nil, fmt.Errorf("querying contest_results: %w", err)
+	}
+
+	contestants, err := scanToContestants(rows)
+	if err != nil {
+		return nil, nil, fmt.Errorf("scanning into contestant: %w", err)
+	}
+
+	if err = getHandles(ctx, q, contestants); err != nil {
+		return nil, nil, fmt.Errorf("getting contestant handles: %w", err)
+	}
+
+	return contestants, &contest, nil
+}
+
+func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
+	res := make([]codeforces.Contestant, 0)
+	var rank, oldRating, newRating, resultID int
+	var points float64
+	_, err := pgx.ForEachRow(rows, []any{&rank, &oldRating, &newRating, &points, &resultID}, func() error {
+		c := codeforces.Contestant{
+			Rank:       rank,
+			OldRating:  oldRating,
+			NewRating:  newRating,
+			Points:     points,
+			InternalID: resultID,
+		}
+		res = append(res, c)
+		return nil
+	})
+	return res, err
+}
+
+func getHandles(ctx context.Context, q Querier, c []codeforces.Contestant) error {
+	// Send queries in batch to avoid network roundtrips
+	batch := pgx.Batch{}
+	for i := range c {
+		batch.Queue(`SELECT handle FROM contest_result_handles WHERE contest_result_id=$1`,
+			c[i].InternalID)
+	}
+	br := q.SendBatch(ctx, &batch)
+	defer br.Close()
+
+	// Scan the results into the MemberHandles field
+	for i := range c {
+		rows, err := br.Query()
+		if err != nil {
+			return fmt.Errorf("querying contest_result_handles: %w", err)
+		}
+
+		var handle string
+		_, err = pgx.ForEachRow(rows, []any{&handle}, func() error {
+			c[i].MemberHandles = append(c[i].MemberHandles, handle)
+			return nil
+		})
 	}
 
 	return nil

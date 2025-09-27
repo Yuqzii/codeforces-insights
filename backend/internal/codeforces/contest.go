@@ -16,6 +16,7 @@ type Contestant struct {
 	Points        float64 `json:"points"`
 	Penalty       int     `json:"penalty"`
 	ID            uint64
+	InternalID    int
 	OldRating     int
 	NewRating     int
 	MemberHandles []string
