@@ -91,11 +91,10 @@ func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
 			c, ok := contestantMap[resultID]
 			if !ok {
 				contestantMap[resultID] = codeforces.Contestant{
-					Rank:       rank,
-					OldRating:  oldRating,
-					NewRating:  newRating,
-					Points:     points,
-					InternalID: resultID,
+					Rank:      rank,
+					OldRating: oldRating,
+					NewRating: newRating,
+					Points:    points,
 				}
 			}
 			c.MemberHandles = append(c.MemberHandles, handle)
