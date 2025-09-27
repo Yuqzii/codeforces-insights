@@ -17,6 +17,8 @@ type DB interface {
 		[]codeforces.Contestant, *codeforces.Contest, error)
 }
 
+// Responsible for deciding whether to get data from the database or the Codeforces API.
+// Chooses database if available for faster response.
 type Store struct {
 	api API
 	db  DB
