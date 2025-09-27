@@ -66,8 +66,7 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 		SELECT cr.rank, cr.old_rating, cr.new_rating, cr.points, cr.id, crh.handle
 		FROM contest_results AS cr
 		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
-		WHERE cr.contest_id=$1
-		ORDER BY cr.rank`,
+		WHERE cr.contest_id=$1`,
 		internalID)
 	if err != nil {
 		return nil, nil, fmt.Errorf("querying contest_results: %w", err)

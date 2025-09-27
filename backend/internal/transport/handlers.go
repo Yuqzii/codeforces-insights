@@ -171,11 +171,6 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Sort contestants by rank
-		slices.SortFunc(contestants, func(a, b codeforces.Contestant) int {
-			return a.Rank - b.Rank
-		})
-
 		seed := stats.CalculateSeed(contestants, contest)
 		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
 		perf[i].Timestamp = ratings[i].Timestamp
