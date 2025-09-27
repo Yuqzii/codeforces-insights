@@ -8,6 +8,7 @@ import (
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/cf-stats/internal/store"
 	"github.com/yuqzii/cf-stats/internal/transport"
 )
 
@@ -38,8 +39,10 @@ func main() {
 		cfRequestsPerSecond,
 		cfMaxBurst)
 
+	store := store.New(cfClient, db)
+
 	log.Println("Setting up API handler")
-	h := transport.NewHandler(cfClient)
+	h := transport.NewHandler(cfClient, store)
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()

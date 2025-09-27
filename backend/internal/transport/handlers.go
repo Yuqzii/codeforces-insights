@@ -19,13 +19,20 @@ type Client interface {
 	GetContestStandings(context.Context, int) ([]codeforces.Contestant, *codeforces.Contest, error)
 }
 
-type Handler struct {
-	client Client
+type ContestResultsProvider interface {
+	GetContestResults(ctx context.Context, id int) (
+		[]codeforces.Contestant, *codeforces.Contest, error)
 }
 
-func NewHandler(api Client) *Handler {
+type Handler struct {
+	client Client
+	crp    ContestResultsProvider
+}
+
+func NewHandler(api Client, crp ContestResultsProvider) *Handler {
 	return &Handler{
 		client: api,
+		crp:    crp,
 	}
 }
 
@@ -156,39 +163,15 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 
 	perf := make([]performance, len(ratings))
 	for i := range ratings {
-		c, contest, err := h.client.GetContestStandings(context.TODO(), ratings[i].ContestID)
+		contestants, contest, err := h.crp.GetContestResults(
+			context.TODO(), ratings[i].ContestID,
+		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// Sort contestants by rank
-		slices.SortFunc(c, func(a, b codeforces.Contestant) int {
-			return a.Rank - b.Rank
-		})
-
-		cr, err := h.client.GetContestRatingChanges(context.TODO(), ratings[i].ContestID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		// Does not always return rating changes for every participant.
-		// Create map to avoid index issues.
-		crMap := make(map[int]int) // Key: rank, value: rating
-		for _, rat := range cr {
-			crMap[rat.Rank] = rat.OldRating
-		}
-		// Update contestants ratings, required for performance calculation.
-		for i := range c {
-			rat, ok := crMap[c[i].Rank]
-			if !ok {
-				continue
-			}
-			c[i].OldRating = rat
-		}
-
-		seed := stats.CalculateSeed(c, contest)
+		seed := stats.CalculateSeed(contestants, contest)
 		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
 		perf[i].Timestamp = ratings[i].Timestamp
 	}

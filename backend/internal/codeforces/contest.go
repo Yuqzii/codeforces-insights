@@ -12,9 +12,9 @@ import (
 )
 
 type Contestant struct {
-	Rank          int     `json:"rank"`
-	Points        float64 `json:"points"`
-	Penalty       int     `json:"penalty"`
+	Rank          int
+	Points        float64
+	Penalty       int
 	ID            uint64
 	OldRating     int
 	NewRating     int
