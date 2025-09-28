@@ -468,6 +468,7 @@ main h1 {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	transition-duration: var(--bg-transition-speed);
 }
 
 .loader::after,
