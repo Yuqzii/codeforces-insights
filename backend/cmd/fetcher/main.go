@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/schollz/progressbar/v3"
 
@@ -52,7 +53,7 @@ func main() {
 	}
 
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
-	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests...")
+	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests")
 	failCnt, noRatingCnt := 0, 0
 
 	results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, db)
@@ -65,7 +66,15 @@ func main() {
 				continue
 			}
 			failCnt++
+			fmt.Print("\r\033[K") // Clear progress bar line
 			log.Printf("Failed to fetch contest: %v\n", err)
+			// Sleep before reprinting bar (doesn't want to work without this)
+			go func() {
+				time.Sleep(100 * time.Millisecond)
+				if err = bar.RenderBlank(); err != nil {
+					log.Printf("Failed rendering progress bar: %v", err)
+				}
+			}()
 		}
 	}
 
