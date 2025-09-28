@@ -240,10 +240,14 @@ input.glow-interactive:focus {
 .hero-graph-container {
 	--graph-anim-delay: 250ms;
 
+	transform-origin: bottom;
+	bottom: 0;
+	left: 0;
 	position: absolute;
 	pointer-events: none;
 	width: 100%;
-	height: 100%;
+	height: auto;
+	min-height: 100%;
 }
 
 .hero-graph-container svg circle {
