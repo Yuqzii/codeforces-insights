@@ -42,6 +42,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	if err != nil {
 		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", err)
 	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -76,6 +77,7 @@ func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("getting contest list from Codeforces: %w", err)
 	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

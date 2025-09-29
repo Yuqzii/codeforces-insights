@@ -35,6 +35,7 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	if err != nil {
 		return nil, fmt.Errorf("getting submissions from Codeforces: %w", err)
 	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
