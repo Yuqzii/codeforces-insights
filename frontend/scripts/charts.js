@@ -186,8 +186,8 @@ export class RatingHistory {
 					label: 'Performance',
 					data: this.#performanceData.performance,
 					tension: 0.25,
-					borderColor: yellowColor,
-					backgroundColor: yellowColor,
+					borderColor: greenColor,
+					backgroundColor: greenColor,
 				},
 				{
 					label: 'Solved Problems',
