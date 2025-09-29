@@ -165,6 +165,13 @@ export class RatingHistory {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+
+		const xAxisMin = this.#ratingData.labels[0];
+		let xAxisMax = this.#ratingData.labels[this.#ratingData.labels.length - 1];
+		if (this.#solvedData.length > 0)
+			xAxisMax = Math.max(xAxisMax, this.#solvedData[this.#solvedData.length - 1].x);
+		const xAxisPad = (xAxisMax - xAxisMin) * 0.01;
+
 		this.#chart = new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -199,9 +206,8 @@ export class RatingHistory {
 						time: {
 							unit: 'month'
 						},
-						min: this.#ratingData.labels[0],
-						max: Math.max(this.#ratingData.labels[this.#ratingData.labels.length - 1],
-							this.#solvedData[this.#solvedData.length - 1]),
+						min: xAxisMin - xAxisPad,
+						max: xAxisMax + xAxisPad
 					},
 				},
 				layout: {
