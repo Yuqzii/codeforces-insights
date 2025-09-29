@@ -32,6 +32,7 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("getting user from Codeforces: %w", err)
 	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
