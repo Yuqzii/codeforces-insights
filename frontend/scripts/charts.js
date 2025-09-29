@@ -220,7 +220,7 @@ export class RatingHistory {
 			},
 			plugins: [{
 				id: 'rankVisualPlugin',
-				beforeDraw: (chart) => {
+				afterDraw: (chart) => {
 					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
 					const lineWidth = 5;
 
@@ -237,10 +237,10 @@ export class RatingHistory {
 						ctx.beginPath();
 						ctx.strokeStyle = range.color;
 						ctx.lineWidth = lineWidth;
-						ctx.moveTo(left - lineWidth / 1.5, yMin);
-						ctx.lineTo(left - lineWidth / 1.5, yMax);
-						ctx.moveTo(right + lineWidth / 1.5, yMin);
-						ctx.lineTo(right + lineWidth / 1.5, yMax);
+						ctx.moveTo(left - lineWidth / 2, yMin);
+						ctx.lineTo(left - lineWidth / 2, yMax);
+						ctx.moveTo(right + lineWidth / 2, yMin);
+						ctx.lineTo(right + lineWidth / 2, yMax);
 						ctx.stroke();
 
 
