@@ -203,6 +203,11 @@ export class RatingHistory {
 				beforeDraw: (chart) => {
 					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
 
+					ctx.save();
+					ctx.beginPath();
+					ctx.rect(left, top, right - left, bottom - top);
+					ctx.clip();
+
 					// Define y-ranges with colors
 					const ranges = [
 						{ from: 0, to: 1200, color: newbieColor },
@@ -224,6 +229,8 @@ export class RatingHistory {
 						ctx.fillStyle = range.color;
 						ctx.fillRect(left, yStart, right - left, yEnd - yStart);
 					});
+
+					ctx.restore();
 				}
 			}]
 		});
