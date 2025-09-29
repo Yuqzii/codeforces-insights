@@ -202,6 +202,11 @@ export class RatingHistory {
 						min: this.#ratingData.labels[0],
 						max: Math.max(this.#ratingData.labels[this.#ratingData.labels.length - 1],
 							this.#solvedData[this.#solvedData.length - 1]),
+					},
+				},
+				layout: {
+					padding: {
+						right: 10
 					}
 				},
 				maintainAspectRatio: false,
@@ -211,10 +216,11 @@ export class RatingHistory {
 				id: 'rankVisualPlugin',
 				beforeDraw: (chart) => {
 					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
+					const lineWidth = 5;
 
 					ctx.save();
 					ctx.beginPath();
-					ctx.rect(left, top, right - left, bottom - top);
+					ctx.rect(left - lineWidth, top, right - left + 2 * lineWidth, bottom - top);
 					ctx.clip();
 
 					ratingRanges.forEach(range => {
@@ -224,12 +230,14 @@ export class RatingHistory {
 						ctx.save();
 						ctx.beginPath();
 						ctx.strokeStyle = range.color;
-						ctx.lineWidth = 8;
-						ctx.moveTo(left, yMin);
-						ctx.lineTo(left, yMax);
-						ctx.moveTo(right, yMin);
-						ctx.lineTo(right, yMax);
+						ctx.lineWidth = lineWidth;
+						ctx.moveTo(left - lineWidth / 1.5, yMin);
+						ctx.lineTo(left - lineWidth / 1.5, yMax);
+						ctx.moveTo(right + lineWidth / 1.5, yMin);
+						ctx.lineTo(right + lineWidth / 1.5, yMax);
 						ctx.stroke();
+
+
 						ctx.restore();
 					});
 
