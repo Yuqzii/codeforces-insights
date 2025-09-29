@@ -1,6 +1,10 @@
 var fgColor, bgColor, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 
+const newbieColor = '#cccccc55', pupilColor = '#77ff7775', specialistColor = '#77ddbb75', expertColor = '#aaaaff75',
+	cmasterColor = '#ff88ff75', masterColor = '#ffcc8875', imasterColor = '#ffbb5575', gmasterColor = '#ff777775',
+	igmasterColor = '#ff333375', lgmasterColor = '#aa000075';
+
 getColors();
 
 export class SolvedTags {
@@ -124,7 +128,7 @@ export class SolvedRatings {
 				},
 				maintainAspectRatio: false,
 				responsive: true
-			}
+			},
 		});
 	}
 
@@ -173,7 +177,7 @@ export class RatingHistory {
 					label: 'Solved Problems',
 					type: 'scatter',
 					data: this.#solvedData,
-						borderColor: blueColor,
+					borderColor: blueColor,
 					backgroundColor: blueColor,
 					pointRadius: 2.5,
 				}]
@@ -193,7 +197,42 @@ export class RatingHistory {
 				},
 				maintainAspectRatio: false,
 				responsive: true
-			}
+			},
+			plugins: [{
+				id: 'backgroundColorByY',
+				beforeDraw: (chart) => {
+					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
+
+					ctx.save();
+					ctx.beginPath();
+					ctx.rect(left, top, right - left, bottom - top);
+					ctx.clip();
+
+					// Define y-ranges with colors
+					const ranges = [
+						{ from: 0, to: 1200, color: newbieColor },
+						{ from: 1200, to: 1400, color: pupilColor },
+						{ from: 1400, to: 1600, color: specialistColor },
+						{ from: 1600, to: 1900, color: expertColor },
+						{ from: 1900, to: 2100, color: cmasterColor },
+						{ from: 2100, to: 2300, color: masterColor },
+						{ from: 2300, to: 2400, color: imasterColor },
+						{ from: 2400, to: 2600, color: gmasterColor },
+						{ from: 2600, to: 3000, color: igmasterColor },
+						{ from: 3000, to: 10000, color: lgmasterColor }
+					];
+
+					ranges.forEach(range => {
+						const yStart = y.getPixelForValue(range.to);
+						const yEnd = y.getPixelForValue(range.from);
+
+						ctx.fillStyle = range.color;
+						ctx.fillRect(left, yStart, right - left, yEnd - yStart);
+					});
+
+					ctx.restore();
+				}
+			}]
 		});
 	}
 
