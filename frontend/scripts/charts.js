@@ -1,11 +1,20 @@
 var fgColor, bgColor, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 
-const newbieColor = '#cccccc55', pupilColor = '#77ff7775', specialistColor = '#77ddbb75', expertColor = '#aaaaff75',
-	cmasterColor = '#ff88ff75', masterColor = '#ffcc8875', imasterColor = '#ffbb5575', gmasterColor = '#ff777775',
-	igmasterColor = '#ff333375', lgmasterColor = '#aa000075';
-
 getColors();
+
+const ratingRanges = [
+	{ min: 0, max: 1199, color: '#ccccccff', label: "Newbie" },
+	{ min: 1200, max: 1399, color: '#77ff77ff', label: "Pupil" },
+	{ min: 1400, max: 1599, color: '#77ddbbff', label: "Specialist" },
+	{ min: 1600, max: 1899, color: '#aaaaffff', label: "Expert" },
+	{ min: 1900, max: 2099, color: '#ff88ffff', label: "Canditate Master" },
+	{ min: 2100, max: 2299, color: '#ffcc88ff', label: "Master" },
+	{ min: 2300, max: 2399, color: '#ffbb55ff', label: "International Master" },
+	{ min: 2400, max: 2599, color: '#ff7777ff', label: "Grandmaster" },
+	{ min: 2600, max: 2999, color: '#ff3333ff', label: "International Grandmaster" },
+	{ min: 3000, max: 10000, color: '#aa0000ff', label: "Legendary Grandmaster" }
+];
 
 export class SolvedTags {
 	N = 10;
@@ -156,6 +165,13 @@ export class RatingHistory {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+
+		const xAxisMin = this.#ratingData.labels[0];
+		let xAxisMax = this.#ratingData.labels[this.#ratingData.labels.length - 1];
+		if (this.#solvedData.length > 0)
+			xAxisMax = Math.max(xAxisMax, this.#solvedData[this.#solvedData.length - 1].x);
+		const xAxisPad = (xAxisMax - xAxisMin) * 0.01;
+
 		this.#chart = new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -170,8 +186,8 @@ export class RatingHistory {
 					label: 'Performance',
 					data: this.#performanceData.performance,
 					tension: 0.25,
-					borderColor: yellowColor,
-					backgroundColor: yellowColor,
+					borderColor: greenColor,
+					backgroundColor: greenColor,
 				},
 				{
 					label: 'Solved Problems',
@@ -190,44 +206,45 @@ export class RatingHistory {
 						time: {
 							unit: 'month'
 						},
-						min: this.#ratingData.labels[0],
-						max: Math.max(this.#ratingData.labels[this.#ratingData.labels.length - 1],
-							this.#solvedData[this.#solvedData.length - 1]),
+						min: xAxisMin - xAxisPad,
+						max: xAxisMax + xAxisPad
+					},
+				},
+				layout: {
+					padding: {
+						right: 10
 					}
 				},
 				maintainAspectRatio: false,
 				responsive: true
 			},
 			plugins: [{
-				id: 'backgroundColorByY',
-				beforeDraw: (chart) => {
+				id: 'rankVisualPlugin',
+				afterDraw: (chart) => {
 					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
+					const lineWidth = 5;
 
 					ctx.save();
 					ctx.beginPath();
-					ctx.rect(left, top, right - left, bottom - top);
+					ctx.rect(left - lineWidth, top, right - left + 2 * lineWidth, bottom - top);
 					ctx.clip();
 
-					// Define y-ranges with colors
-					const ranges = [
-						{ from: 0, to: 1200, color: newbieColor },
-						{ from: 1200, to: 1400, color: pupilColor },
-						{ from: 1400, to: 1600, color: specialistColor },
-						{ from: 1600, to: 1900, color: expertColor },
-						{ from: 1900, to: 2100, color: cmasterColor },
-						{ from: 2100, to: 2300, color: masterColor },
-						{ from: 2300, to: 2400, color: imasterColor },
-						{ from: 2400, to: 2600, color: gmasterColor },
-						{ from: 2600, to: 3000, color: igmasterColor },
-						{ from: 3000, to: 10000, color: lgmasterColor }
-					];
+					ratingRanges.forEach(range => {
+						const yMin = y.getPixelForValue(range.min);
+						const yMax = y.getPixelForValue(range.max);
 
-					ranges.forEach(range => {
-						const yStart = y.getPixelForValue(range.to);
-						const yEnd = y.getPixelForValue(range.from);
+						ctx.save();
+						ctx.beginPath();
+						ctx.strokeStyle = range.color;
+						ctx.lineWidth = lineWidth;
+						ctx.moveTo(left - lineWidth / 2, yMin);
+						ctx.lineTo(left - lineWidth / 2, yMax);
+						ctx.moveTo(right + lineWidth / 2, yMin);
+						ctx.lineTo(right + lineWidth / 2, yMax);
+						ctx.stroke();
 
-						ctx.fillStyle = range.color;
-						ctx.fillRect(left, yStart, right - left, yEnd - yStart);
+
+						ctx.restore();
 					});
 
 					ctx.restore();
