@@ -150,10 +150,20 @@ input.glow-interactive:focus {
 	transition: background-color var(--bg-transition-speed) ease;
 }
 
-.hero-section::before {
+.hero-section::before,
+.hero-section::after {
 	content: "";
 	position: absolute;
 	inset: 0;
+}
+
+.hero-section::before {
+	background-size: 40px 40px;
+	background-image: radial-gradient(circle, var(--bg2) 1px, rgba(0, 0, 0, 0) 1px);
+	background-attachment: fixed;
+}
+
+.hero-section::after {
 	background: linear-gradient(to bottom, transparent 85%, var(--bg1));
 	pointer-events: none;
 }
@@ -162,6 +172,7 @@ input.glow-interactive:focus {
 	font-size: 7rem;
 	margin: 5rem 0 0 0;
 	text-align: center;
+	z-index: 1;
 }
 
 .hero-section h2 {
