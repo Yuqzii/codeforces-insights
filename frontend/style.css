@@ -165,34 +165,40 @@ input.glow-interactive:focus {
 	flex-direction: column;
 	align-items: left;
 	margin: 5rem 0 0 7rem;
-	width: 35vw;
+	font-size: clamp(18px, 1vw, 24px);
+	width: 32em;
 	z-index: 1;
 }
 
 .hero-main h1 {
-	font-size: 7rem;
+	font-size: 6em;
 	margin: 0;
 	text-align: left;
 }
 
 .hero-main p {
-	font-size: 1.3rem;
-	margin-top: 1.2em;
+	font-size: 1.1em;
+	margin-top: 1em;
 }
 
 .hero-main h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
-	font-size: 1.5rem;
+	font-size: 1.3em;
 	margin: 2em 0 1em 0;
 	position: relative;
 	width: max-content;
 }
 
+.hero-main h2 span {
+	color: var(--blue);
+	font-weight: 450;
+}
+
 #user-form {
 	display: flex;
 	flex-direction: row;
-	font-size: 1.25rem;
+	font-size: 1.1em;
 	gap: 0.5em;
 }
 
@@ -334,24 +340,6 @@ input.glow-interactive:focus {
 	}
 }
 
-.hero-section h2 span {
-	color: var(--blue);
-	font-weight: 450;
-}
-
-.hero-section form {
-	display: flex;
-	flex-direction: column;
-	gap: 1em;
-	font-size: 1.15rem;
-	z-index: 1;
-}
-
-#handle-input {
-	padding: 0.65em 1.3em;
-	text-align: center;
-}
-
 div.theme-select {
 	position: fixed;
 	top: 1em;
@@ -397,10 +385,6 @@ main h1 {
 }
 
 @media (max-aspect-ratio: 6/5) {
-	.hero-section h1 {
-		font-size: 4.75rem;
-	}
-
 	.user-info-grid {
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 50vh 50vh 50vh;
