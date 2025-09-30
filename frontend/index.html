@@ -21,40 +21,42 @@
 <body>
 	<header class="hero-section">
 		<div class="dots-bg"></div>
-		<h1 class=" glow-text">Codeforces Insights</h1>
-			<h2 class="typing-animation"><span class="glow-text">Analyze</span> your Codeforces history.</h2>
+		<div class="hero-main">
+			<h1 class=" glow-text">Codeforces<br>Insights</h1>
+			<p>Track your rating progress, identify strengths, and discover patterns to improve faster.
+			</p>
+			<h2 class="typing-animation"><span class="glow-text">Analyze</span> your Codeforces history now.</h2>
 			<form id="user-form" autocomplete="off">
 				<input type="text" id="handle-input" class="glow-interactive" placeholder="Enter Username">
 				<button type="submit" class="glow-interactive">Analyze</button>
 			</form>
+		</div>
 
-			<div class="hero-graph-container">
-				<svg viewBox="0 0 400 200">
-					<defs>
-						<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-							<feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="currentColor"
-								flood-opacity="0.25" />
-						</filter>
-					</defs>
-					<g filter="url(#glow)">
-						<polyline class="animated-line" points="0,210 100,110 160,130 240,70 300,90 390,10"
-							fill="none" />
-						<circle data-index="0" cx="100" cy="110" r="2.25" />
-						<circle data-index="1" cx="160" cy="130" r="2.25" />
-						<circle data-index="2" cx="240" cy="70" r="2.25" />
-						<circle data-index="3" cx="300" cy="90" r="2.25" />
-						<circle data-index="4" cx="390" cy="10" r="2.25" />
-					</g>
-				</svg>
-			</div>
+		<div class="hero-graph-container">
+			<svg viewBox="0 0 400 200">
+				<defs>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+						<feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="currentColor" flood-opacity="0.25" />
+					</filter>
+				</defs>
+				<g filter="url(#glow)">
+					<polyline class="animated-line" points="0,210 100,110 160,130 240,70 300,90 390,10" fill="none" />
+					<circle data-index="0" cx="100" cy="110" r="2.25" />
+					<circle data-index="1" cx="160" cy="130" r="2.25" />
+					<circle data-index="2" cx="240" cy="70" r="2.25" />
+					<circle data-index="3" cx="300" cy="90" r="2.25" />
+					<circle data-index="4" cx="390" cy="10" r="2.25" />
+				</g>
+			</svg>
+		</div>
 
-			<div class="theme-select">
-				<label for="theme-select">Select Theme</label>
-				<select id="theme-select" class="glow-interactive">
-					<option value="theme-catppuccin">Catppuccin Mocha</option>
-					<option value="theme-gruvbox">Gruvbox</option>
-				</select>
-			</div>
+		<div class="theme-select">
+			<label for="theme-select">Select Theme</label>
+			<select id="theme-select" class="glow-interactive">
+				<option value="theme-catppuccin">Catppuccin Mocha</option>
+				<option value="theme-gruvbox">Gruvbox</option>
+			</select>
+		</div>
 	</header>
 
 	<main>
