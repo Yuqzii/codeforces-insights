@@ -16,6 +16,9 @@ const ratingHistory = new RatingHistory();
 
 let controller = new AbortController();
 
+let cursorX = window.innerWidth / 2;
+let cursorY = window.innerHeight / 2;
+
 document.addEventListener('DOMContentLoaded', () => {
 	const savedTheme = localStorage.getItem('theme') || 'theme-catppuccin';
 	setTheme(savedTheme);
@@ -48,8 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('mousemove', (e) => {
-	root.style.setProperty('--cursor-x', (e.clientX + window.scrollX) + 'px');
-	root.style.setProperty('--cursor-y', (e.clientY + window.scrollY) + 'px');
+	cursorX = e.clientX;
+	cursorY = e.clientY;
+	updateCursorCSS();
+});
+
+window.addEventListener('scroll', () => {
+	updateCursorCSS();
 });
 
 async function analyzeUser(handle) {
@@ -155,4 +163,9 @@ function setTheme(theme) {
 	solvedRatings.updateChart();
 	solvedTags.updateChart();
 	ratingHistory.updateChart();
+}
+
+function updateCursorCSS() {
+	root.style.setProperty('--cursor-x', (cursorX + window.scrollX) + 'px');
+	root.style.setProperty('--cursor-y', (cursorY + window.scrollY) + 'px');
 }
