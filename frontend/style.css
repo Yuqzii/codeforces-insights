@@ -184,8 +184,11 @@ input.glow-interactive:focus {
 	position: absolute;
 	inset: 0;
 	background-size: 40px 40px;
-	background-image: radial-gradient(circle, var(--bg2) 1px, rgba(0, 0, 0, 0) 1px);
+	background-image: radial-gradient(circle, var(--bg3) 1px, rgba(0, 0, 0, 0) 1px);
 	background-attachment: fixed;
+
+	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
+			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.4) 100%);
 }
 
 /* Typing animation */

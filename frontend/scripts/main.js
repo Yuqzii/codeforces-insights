@@ -47,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 });
 
+window.addEventListener('mousemove', (e) => {
+	root.style.setProperty('--cursor-x', e.clientX + 'px');
+	root.style.setProperty('--cursor-y', e.clientY + 'px');
+});
+
 async function analyzeUser(handle) {
 	controller.abort();
 	controller = new AbortController();
