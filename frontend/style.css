@@ -166,13 +166,13 @@ input.glow-interactive:focus {
 	align-items: left;
 	margin: 5rem 0 0 7rem;
 	width: 35vw;
+	z-index: 1;
 }
 
 .hero-main h1 {
 	font-size: 7rem;
 	margin: 0;
 	text-align: left;
-	z-index: 1;
 }
 
 .hero-main p {
