@@ -24,22 +24,25 @@
 		<h2 class="typing-animation"><span class="glow-text">Analyze</span> your Codeforces history.</h2>
 		<form id="user-form" autocomplete="off">
 			<input type="text" id="handle-input" class="glow-interactive" placeholder="Enter Username">
-			<button type="submit" class="glow-interactive">Show Analytics</button>
+			<button type="submit" class="glow-interactive">Analyze</button>
 		</form>
 
 		<div class="hero-graph-container">
 			<svg viewBox="0 0 400 200">
 				<defs>
 					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-						<feDropShadow dx="0" dy="0" stdDeviation="1.1" flood-color="currentColor" flood-opacity="0.175" />
+						<feDropShadow dx="0" dy="0" stdDeviation="1.1" flood-color="currentColor"
+							flood-opacity="0.175" />
 					</filter>
 				</defs>
 				<g filter="url(#glow)">
-					<polyline class="animated-line" points="-10,200 50,140 110,150 170,60 280,55 360,-10" fill="none" />
-					<circle data-index="0" cx="50" cy="140" r="1.75" />
-					<circle data-index="1" cx="110" cy="150" r="1.75" />
-					<circle data-index="2" cx="170" cy="60" r="1.75" />
-					<circle data-index="3" cx="280" cy="55" r="1.75" />
+					<polyline class="animated-line" points="10,180 100,110 160,130 240,90 300,100 390,30" fill="none" />
+					<circle data-index="0" cx="10" cy="180" r="1.75" />
+					<circle data-index="1" cx="100" cy="110" r="1.75" />
+					<circle data-index="2" cx="160" cy="130" r="1.75" />
+					<circle data-index="3" cx="240" cy="90" r="1.75" />
+					<circle data-index="4" cx="300" cy="100" r="1.75" />
+					<circle data-index="5" cx="390" cy="30" r="1.75" />
 				</g>
 			</svg>
 		</div>
