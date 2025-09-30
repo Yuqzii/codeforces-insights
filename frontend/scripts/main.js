@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('mousemove', (e) => {
-	root.style.setProperty('--cursor-x', e.clientX + 'px');
-	root.style.setProperty('--cursor-y', e.clientY + 'px');
+	root.style.setProperty('--cursor-x', (e.clientX + window.scrollX) + 'px');
+	root.style.setProperty('--cursor-y', (e.clientY + window.scrollY) + 'px');
 });
 
 async function analyzeUser(handle) {
