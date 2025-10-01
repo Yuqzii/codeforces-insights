@@ -507,6 +507,10 @@ main h1 {
 	#user-form button {
 		display: none;
 	}
+
+	.hero-graph-container {
+		display: none;
+	}
 }
 
 .user-info-item {
