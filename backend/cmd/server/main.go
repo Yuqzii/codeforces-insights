@@ -57,5 +57,5 @@ func main() {
 	mux.HandleFunc("GET /users/solved-ratings-time/{handle}", h.HandleGetRatingTime)
 
 	log.Println("Server listening on port 8080")
-	http.ListenAndServe(":8080", mux)
+	log.Fatalln(http.ListenAndServe(":8080", mux))
 }
