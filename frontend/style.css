@@ -202,15 +202,36 @@ input.glow-interactive:focus {
 	gap: 0.5em;
 }
 
-.dots-bg {
+.grid-bg {
+	--grid-grap: 40px;
+	--dot-size: 2px;
+	--line-thickness: 1px;
+
 	position: absolute;
 	inset: 0;
-	background-size: 40px 40px;
-	background-image: radial-gradient(circle, var(--bg3) 1px, rgba(0, 0, 0, 0) 1px);
+	background-size: var(--grid-grap) var(--grid-grap);
+	background-image: radial-gradient(circle, var(--bg3) var(--dot-size), transparent var(--dot-size));
 	background-attachment: fixed;
-
+	background-position: 0 0;
 	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
-			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.4) 100%);
+			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.2) 100%);
+	will-change: mask-image;
+}
+
+.grid-bg::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-size: var(--grid-grap) var(--grid-grap);
+	background-image:
+		linear-gradient(to right, var(--bg3) var(--line-thickness), transparent var(--line-thickness)),
+		linear-gradient(to bottom, var(--bg3) var(--line-thickness), transparent var(--line-thickness));
+	background-attachment: fixed;
+	--background-offset: calc(var(--grid-grap) / 2 - var(--line-thickness) / 2);
+	background-position: var(--background-offset) var(--background-offset);
+	mask-image: radial-gradient(circle 150px at var(--cursor-x) var(--cursor-y),
+			rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+	will-change: mask-image;
 }
 
 /* Typing animation */
