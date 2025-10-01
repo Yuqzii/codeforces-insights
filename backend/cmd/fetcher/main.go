@@ -58,7 +58,7 @@ func main() {
 
 	results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, db)
 	for err := range results {
-		bar.Add(1)
+		bar.Add(1) //nolint:errcheck
 		if err != nil {
 			if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 				// Usually means contest was unrated
