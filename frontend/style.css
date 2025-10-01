@@ -290,8 +290,9 @@ input.glow-interactive:focus {
 
 .hero-graph-container svg {
 	width: 100%;
+	height: 100%;
 	max-width: 100%;
-	height: auto;
+	max-height: 100%;
 }
 
 .hero-graph-container svg circle {
@@ -301,7 +302,7 @@ input.glow-interactive:focus {
 }
 
 .hero-graph-container svg circle[data-index="0"] {
-	animation-delay: calc(var(--graph-anim-delay) + 0.275s);
+	animation-delay: calc(var(--graph-anim-delay) + 0.3s);
 }
 
 .hero-graph-container svg circle[data-index="1"] {
@@ -309,15 +310,15 @@ input.glow-interactive:focus {
 }
 
 .hero-graph-container svg circle[data-index="2"] {
-	animation-delay: calc(var(--graph-anim-delay) + 0.65s);
+	animation-delay: calc(var(--graph-anim-delay) + 0.75s);
 }
 
 .hero-graph-container svg circle[data-index="3"] {
-	animation-delay: calc(var(--graph-anim-delay) + 0.825s);
+	animation-delay: calc(var(--graph-anim-delay) + 0.85s);
 }
 
 .hero-graph-container svg circle[data-index="4"] {
-	animation-delay: calc(var(--graph-anim-delay) + 1.1s);
+	animation-delay: calc(var(--graph-anim-delay) + 1.25s);
 }
 
 @keyframes show-circle {
@@ -330,7 +331,7 @@ input.glow-interactive:focus {
 	stroke-dasharray: 1000;
 	stroke-dashoffset: 1000;
 	stroke: var(--bg3);
-	stroke-width: 2;
+	stroke-width: 2.5;
 	animation: draw-line 2.25s var(--graph-anim-delay) linear forwards;
 }
 
