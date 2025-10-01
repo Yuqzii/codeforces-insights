@@ -214,7 +214,7 @@ input.glow-interactive:focus {
 	background-attachment: fixed;
 	background-position: 0 0;
 	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
-			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.2) 100%);
+			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
 	will-change: mask-image;
 }
 
@@ -230,7 +230,7 @@ input.glow-interactive:focus {
 	--background-offset: calc(var(--grid-grap) / 2 - var(--line-thickness) / 2);
 	background-position: var(--background-offset) var(--background-offset);
 	mask-image: radial-gradient(circle 150px at var(--cursor-x) var(--cursor-y),
-			rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+			rgba(255, 255, 255, 0.3) 0%, transparent 100%);
 	will-change: mask-image;
 }
 

@@ -50,15 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 });
 
-window.addEventListener('mousemove', (e) => {
+window.addEventListener('mousemove', throttle((e) => {
 	cursorX = e.clientX;
 	cursorY = e.clientY;
 	updateCursorCSS();
-});
+}, 50));
 
-window.addEventListener('scroll', () => {
+window.addEventListener('scroll', throttle(() => {
 	updateCursorCSS();
-});
+}, 50));
 
 async function analyzeUser(handle) {
 	controller.abort();
@@ -168,4 +168,15 @@ function setTheme(theme) {
 function updateCursorCSS() {
 	root.style.setProperty('--cursor-x', (cursorX + window.scrollX) + 'px');
 	root.style.setProperty('--cursor-y', (cursorY + window.scrollY) + 'px');
+}
+
+function throttle(fn, delay) {
+	let t = 0;
+	return function(...args) {
+		const now = Date.now();
+		if (now - t >= delay) {
+			fn.apply(this, args);
+			t = now;
+		}
+	}
 }
