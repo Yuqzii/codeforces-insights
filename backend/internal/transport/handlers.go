@@ -53,7 +53,6 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +76,6 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +99,6 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +131,6 @@ func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request) {
@@ -155,7 +151,6 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
@@ -196,7 +191,6 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +232,4 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
