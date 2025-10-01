@@ -129,9 +129,12 @@ button:hover {
 }
 
 .purple-text {
-		color: var(--purple);
+	color: var(--purple);
 }
 
+.weight-450 {
+	font-weight: 450;
+}
 
 .glow-interactive {
 	background-color: var(--bg1);
@@ -217,10 +220,6 @@ input.glow-interactive:focus {
 	margin: 2em 0 1em 0;
 	position: relative;
 	width: max-content;
-}
-
-.hero-main h2 span {
-	font-weight: 450;
 }
 
 #user-form {
