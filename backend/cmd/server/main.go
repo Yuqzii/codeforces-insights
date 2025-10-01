@@ -46,7 +46,6 @@ func main() {
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", h.HandleRoot)
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
 	mux.HandleFunc("GET /users/solved-ratings/{handle}", h.HandleGetRatings)
 	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
