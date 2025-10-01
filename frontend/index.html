@@ -19,104 +19,127 @@
 </head>
 
 <body>
-	<header class="hero-section">
-		<h1 class="glow-text">Codeforces Insights</h1>
-		<h2 class="typing-animation"><span class="glow-text">Analyze</span> your Codeforces history.</h2>
-		<form id="user-form" autocomplete="off">
-			<input type="text" id="handle-input" class="glow-interactive" placeholder="Enter Username">
-			<button type="submit" class="glow-interactive">Show Analytics</button>
-		</form>
-
-		<div class="hero-graph-container">
-			<svg viewBox="0 0 400 200">
-				<defs>
-					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-						<feDropShadow dx="0" dy="0" stdDeviation="1.1" flood-color="currentColor" flood-opacity="0.175" />
-					</filter>
-				</defs>
-				<g filter="url(#glow)">
-					<polyline class="animated-line" points="-10,200 50,140 110,150 170,60 280,55 360,-10" fill="none" />
-					<circle data-index="0" cx="50" cy="140" r="1.75" />
-					<circle data-index="1" cx="110" cy="150" r="1.75" />
-					<circle data-index="2" cx="170" cy="60" r="1.75" />
-					<circle data-index="3" cx="280" cy="55" r="1.75" />
-				</g>
-			</svg>
-		</div>
-
-		<div class="theme-select">
-			<label for="theme-select">Select Theme</label>
-			<select id="theme-select" class="glow-interactive">
-				<option value="theme-catppuccin">Catppuccin Mocha</option>
-				<option value="theme-gruvbox">Gruvbox</option>
-			</select>
-		</div>
-	</header>
-
-	<main>
-		<h1 class="glow-text">Analytics</h1>
-		<div class="user-info-grid">
-			<div id="user-details" class="user-info-item glow-border" style="grid-area: user-info">
-				<header class="user-info-header">
-					<h2>User Info</h2>
-				</header>
-				<div class="user-info-content">
-					<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg" alt="User Title Photo">
-					<h3 id="username">Placeholder</h3>
-					<div>
-						<ul class="user-stats">
-							<li>Rating: <span id="user-rating">0</span></li>
-							<li>Peak rating: <span id="user-peak-rating">0</span></li>
-							<li>Country: <span id="user-country"></span></li>
-						</ul>
-					</div>
-					<div class="loader"></div>
+	<div class="hero-wrapper">
+		<header class="hero-section">
+			<div class="grid-bg"></div>
+			<div class="hero-main">
+				<h1 class="glow-text">Codeforces<br>Insights</h1>
+				<p>
+					<span class="blue-text">Track</span> your rating progress,
+					<span class="blue-text">identify</span> your strengths and improvement opportunities,
+					and <span class="blue-text">discover</span> patterns that help you
+					<span class="aqua-text weight-450 glow-pulse">rank up faster</span>.
+				</p>
+				<div class="user-form-container">
+					<h2 class="typing-animation">
+						<span class="blue-text weight-450 glow-text">Analyze</span>
+						your Codeforces history now.
+					</h2>
+					<form id="user-form" autocomplete="off">
+						<input type="text" id="handle-input" class="glow-interactive" placeholder="Enter Username">
+						<button type="submit" class="glow-interactive">Analyze</button>
+					</form>
 				</div>
 			</div>
-			<div id="solved-ratings" class="user-info-item glow-border" style="grid-area: solved-ratings">
-				<header class="user-info-header">
-					<h2>Rating distribution of solved problems</h2>
-				</header>
-				<div class="user-info-content">
-					<div class=" chart-container">
-						<canvas id="solved-ratings-chart"></canvas>
-					</div>
-					<div class="loader"></div>
-				</div>
+
+			<div class="hero-graph-container">
+				<svg viewBox="0 0 400 400" preserveAspectRatio="xMinYMax slice">
+					<defs>
+						<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+							<feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="currentColor"
+								flood-opacity="0.25" />
+						</filter>
+					</defs>
+					<g filter="url(#glow)">
+						<polyline class="animated-line" points="0,410 100,300 140,330 240,220 280,250 380,120"
+							fill="none" />
+						<circle data-index="0" cx="100" cy="300" r="3" />
+						<circle data-index="1" cx="140" cy="330" r="3" />
+						<circle data-index="2" cx="240" cy="220" r="3" />
+						<circle data-index="3" cx="280" cy="250" r="3" />
+						<circle data-index="4" cx="380" cy="120" r="3" />
+					</g>
+				</svg>
 			</div>
-			<div id="solved-tags" class="user-info-item glow-border" style="grid-area: solved-tags">
-				<header class="user-info-header">
-					<h2>Solved Tags</h2>
-					<button id="toggle-other-tags" class="glow-interactive" type="button" style="display: none;">
-						Toggle Other
-					</button>
-				</header>
-				<div class="user-info-content">
-					<div class="chart-container" style="align-self: center; aspect-ratio: 1">
-						<canvas id="solved-tags-chart"></canvas>
-					</div>
-					<div class="loader"></div>
-				</div>
+
+			<div class="theme-select">
+				<label for="theme-select">Select Theme</label>
+				<select id="theme-select" class="glow-interactive">
+					<option value="theme-catppuccin">Catppuccin Mocha</option>
+					<option value="theme-gruvbox">Gruvbox</option>
+				</select>
 			</div>
-			<div id="rating-history" class="user-info-item glow-border" style="grid-area: rating-history">
-				<header class="user-info-header">
-					<h2>Rating History</h2>
-					<div id="performance-loader" style="display: none;">
-						<p>Calculating performance</p>
+		</header>
+		<div class="hero-shadow"></div>
+	</div>
+
+	<div class="main-wrapper">
+		<main>
+			<h1 class="glow-text">Analytics</h1>
+			<div class="user-info-grid">
+				<div id="user-details" class="user-info-item glow-border" style="grid-area: user-info">
+					<header class="user-info-header">
+						<h2>User Info</h2>
+					</header>
+					<div class="user-info-content">
+						<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg"
+							alt="User Title Photo">
+						<h3 id="username">Placeholder</h3>
 						<div>
-							<div class="loader-small"></div>
+							<ul class="user-stats">
+								<li>Rating: <span id="user-rating">0</span></li>
+								<li>Peak rating: <span id="user-peak-rating">0</span></li>
+								<li>Country: <span id="user-country"></span></li>
+							</ul>
 						</div>
+						<div class="loader"></div>
 					</div>
-				</header>
-				<div class="user-info-content">
-					<div class="chart-container">
-						<canvas id="rating-history-chart"></canvas>
+				</div>
+				<div id="solved-ratings" class="user-info-item glow-border" style="grid-area: solved-ratings">
+					<header class="user-info-header">
+						<h2>Rating distribution of solved problems</h2>
+					</header>
+					<div class="user-info-content">
+						<div class=" chart-container">
+							<canvas id="solved-ratings-chart"></canvas>
+						</div>
+						<div class="loader"></div>
 					</div>
-					<div class="loader"></div>
+				</div>
+				<div id="solved-tags" class="user-info-item glow-border" style="grid-area: solved-tags">
+					<header class="user-info-header">
+						<h2>Solved Tags</h2>
+						<button id="toggle-other-tags" class="glow-interactive" type="button" style="display: none;">
+							Toggle Other
+						</button>
+					</header>
+					<div class="user-info-content">
+						<div class="chart-container" style="align-self: center; aspect-ratio: 1">
+							<canvas id="solved-tags-chart"></canvas>
+						</div>
+						<div class="loader"></div>
+					</div>
+				</div>
+				<div id="rating-history" class="user-info-item glow-border" style="grid-area: rating-history">
+					<header class="user-info-header">
+						<h2>Rating History</h2>
+						<div id="performance-loader" style="display: none;">
+							<p>Calculating performance</p>
+							<div>
+								<div class="loader-small"></div>
+							</div>
+						</div>
+					</header>
+					<div class="user-info-content">
+						<div class="chart-container">
+							<canvas id="rating-history-chart"></canvas>
+						</div>
+						<div class="loader"></div>
+					</div>
 				</div>
 			</div>
-		</div>
-	</main>
+		</main>
+	</div>
 </body>
 
 </html>
