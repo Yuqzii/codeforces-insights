@@ -46,7 +46,6 @@ func main() {
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", h.HandleRoot)
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
 	mux.HandleFunc("GET /users/solved-ratings/{handle}", h.HandleGetRatings)
 	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
@@ -57,5 +56,5 @@ func main() {
 	mux.HandleFunc("GET /users/solved-ratings-time/{handle}", h.HandleGetRatingTime)
 
 	log.Println("Server listening on port 8080")
-	http.ListenAndServe(":8080", mux)
+	log.Fatalln(http.ListenAndServe(":8080", mux))
 }

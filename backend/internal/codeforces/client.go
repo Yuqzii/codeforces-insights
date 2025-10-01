@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"golang.org/x/time/rate"
 )
 
-var ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED")
+var ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
 
 type client struct {
 	client  *http.Client
@@ -42,4 +43,8 @@ type apiResponse[T any] struct {
 	Status  string `json:"status"`
 	Result  []T    `json:"result"`
 	Comment string `json:"comment,omitempty"`
+}
+
+func closeResponseBody(b io.ReadCloser) {
+	_ = b.Close()
 }

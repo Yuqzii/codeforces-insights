@@ -35,7 +35,7 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	if err != nil {
 		return nil, fmt.Errorf("getting submissions from Codeforces: %w", err)
 	}
-	defer resp.Body.Close()
+	defer closeResponseBody(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -43,7 +43,9 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	}
 
 	var apiResp apiResponse[Submission]
-	json.Unmarshal(body, &apiResp)
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)

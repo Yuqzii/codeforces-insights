@@ -3,7 +3,6 @@ package transport
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"slices"
 
@@ -36,10 +35,6 @@ func NewHandler(api Client, crp ContestResultsProvider) *Handler {
 	}
 }
 
-func (h *Handler) HandleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello, world!")
-}
-
 func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	user, err := h.client.GetUser(context.TODO(), handle)
@@ -54,8 +49,11 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
@@ -75,8 +73,11 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
@@ -96,8 +97,11 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request) {
@@ -126,8 +130,11 @@ func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request) {
@@ -144,8 +151,11 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
@@ -182,8 +192,11 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
 
 func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
@@ -221,6 +234,9 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(j)
 }
