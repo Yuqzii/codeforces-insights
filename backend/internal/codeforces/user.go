@@ -40,7 +40,9 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	}
 
 	var apiResp apiResponse[User]
-	json.Unmarshal(body, &apiResp)
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)

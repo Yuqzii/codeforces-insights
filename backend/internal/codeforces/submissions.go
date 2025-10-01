@@ -43,7 +43,9 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	}
 
 	var apiResp apiResponse[Submission]
-	json.Unmarshal(body, &apiResp)
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)

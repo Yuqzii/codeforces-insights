@@ -41,7 +41,9 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 	}
 
 	var apiResp apiResponse[RatingChange]
-	json.Unmarshal(body, &apiResp)
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
@@ -71,7 +73,9 @@ func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingC
 	defer closeResponseBody(resp.Body)
 
 	var apiResp apiResponse[RatingChange]
-	json.Unmarshal(body, &apiResp)
+	if err = json.Unmarshal(body, &apiResp); err != nil {
+		return nil, err
+	}
 
 	if apiResp.Status != "OK" {
 		if strings.Contains(apiResp.Comment, "Rating changes are unavailable for this contest") {
