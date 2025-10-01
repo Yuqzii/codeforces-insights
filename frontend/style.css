@@ -163,7 +163,21 @@ input.glow-interactive:focus {
 }
 
 .glow-text {
-	text-shadow: 0 0 0.075em var(--shadow);
+	text-shadow: 0 0 0.1em var(--shadow);
+}
+
+.glow-pulse {
+	animation: glow-pulse 1s infinite alternate;
+}
+
+@keyframes glow-pulse {
+	0% {
+		text-shadow: 0 0 0.15em var(--shadow), 0 0 0.075em var(--shadow);
+	}
+
+	100% {
+		text-shadow: 0 0 0.5em var(--shadow), 0 0 0.25em var(--shadow), 0 0 0.15em var(--shadow);
+	}
 }
 
 .glow-border {
