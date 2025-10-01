@@ -33,7 +33,7 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 	if err != nil {
 		return nil, fmt.Errorf("getting rating from Codeforces: %w", err)
 	}
-	defer resp.Body.Close()
+	defer closeResponseBody(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingC
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer closeResponseBody(resp.Body)
 
 	var apiResp apiResponse[RatingChange]
 	json.Unmarshal(body, &apiResp)
