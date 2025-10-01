@@ -470,26 +470,42 @@ main h1 {
 	}
 
 	.hero-section {
-		align-items: start;
+		flex-direction: column;
+		align-items: center;
 		justify-content: start;
 		width: 100vw;
 		height: 100vh;
 	}
 
-	.hero-section h1 {
-		font-size: 17vw;
-		margin-top: 10vh;
-		margin-left: 3vh;
+	.hero-main {
+		align-items: center;
+		margin: 5em 0 0 0;
+		width: 90vw;
+		font-size: clamp(24px, 1.5vh, 32px)
 	}
 
-	.hero-section h2 {
-		font-size: 4.5vw;
-		margin: 4vh auto;
+	.hero-main h1 {
+		font-size: 5em;
+		text-align: center;
 	}
 
-	.hero-section form {
-		margin: 2vh auto;
-		font-size: min(5vw, 3vh);
+	.hero-main p {
+		font-size: 1em;
+		text-align: center;
+	}
+
+	.hero-main h2 {
+		font-size: 1.25em;
+		text-align: center;
+		margin: 2em 0 1.5em 0;
+	}
+
+	#user-form {
+		font-size: 1.25em;
+	}
+
+	#user-form button {
+		display: none;
 	}
 }
 
