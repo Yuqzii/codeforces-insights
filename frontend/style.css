@@ -104,6 +104,35 @@ button:hover {
 	cursor: pointer;
 }
 
+.red-text {
+	color: var(--red);
+}
+
+.orange-text {
+	color: var(--orange);
+}
+
+.yellow-text {
+	color: var(--yellow);
+}
+
+.green-text {
+	color: var(--green);
+}
+
+.aqua-text {
+	color: var(--aqua);
+}
+
+.blue-text {
+	color: var(--blue);
+}
+
+.purple-text {
+		color: var(--purple);
+}
+
+
 .glow-interactive {
 	background-color: var(--bg1);
 	color: var(--fg);
@@ -191,7 +220,6 @@ input.glow-interactive:focus {
 }
 
 .hero-main h2 span {
-	color: var(--blue);
 	font-weight: 450;
 }
 
