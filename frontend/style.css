@@ -188,11 +188,10 @@ input.glow-interactive:focus {
 	position: relative;
 	display: flex;
 	flex-direction: row;
-	align-items: top;
+	z-index: 0;
 
 	height: 100vh;
 	border-bottom: 1px solid var(--border);
-	box-shadow: 0 0 15px var(--shadow);
 
 	background-color: var(--bg);
 	transition: background-color var(--bg-transition-speed) ease;
@@ -212,7 +211,6 @@ input.glow-interactive:focus {
 	margin: 5rem 0 0 7rem;
 	font-size: clamp(20px, 1.1vw, 24px);
 	width: 32em;
-	z-index: 1;
 }
 
 .hero-main h1 {
@@ -263,6 +261,7 @@ input.glow-interactive:focus {
 	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
 			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
 	will-change: mask-image;
+	z-index: -1;
 }
 
 .grid-bg::before {
@@ -347,13 +346,13 @@ input.glow-interactive:focus {
 .hero-graph-container {
 	--graph-anim-delay: 250ms;
 
-	flex: 1;
+	position: fixed;
 	pointer-events: none;
-	z-index: 0;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	z-index: -1;
+	right: 0;
+	bottom: 0;
+	width: 65vw;
+	min-width: 1000px;
 }
 
 .hero-graph-container svg {
@@ -409,6 +408,14 @@ input.glow-interactive:focus {
 	}
 }
 
+.hero-shadow {
+	position: absolute;
+	z-index: 1;
+	inset: 0;
+	box-shadow: 0 0 15px var(--shadow);
+	pointer-events: none;
+}
+
 div.theme-select {
 	position: fixed;
 	top: 1em;
@@ -419,8 +426,16 @@ div.theme-select {
 	gap: 0.5em;
 }
 
+.main-wrapper {
+	width: 100%;
+	background-color: var(--bg);
+	padding: 3rem 0;
+	position: relative;
+	z-index: 0;
+}
+
 main {
-	margin: 3rem auto;
+	margin: 0 auto;
 	width: 90%;
 }
 
@@ -438,8 +453,7 @@ main h1 {
 
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 25vw 25vw;
-	grid-template-areas:
-		"user-info solved-ratings solved-ratings solved-tags"
+	grid-template-areas: "user-info solved-ratings solved-ratings solved-tags"
 		"rating-history rating-history rating-history .";
 }
 
@@ -447,8 +461,7 @@ main h1 {
 	.user-info-grid {
 		grid-template-columns: 1fr 1fr 1fr;
 		grid-template-rows: 32.5vw 32.5vw 32.5vw;
-		grid-template-areas:
-			"user-info solved-ratings solved-ratings"
+		grid-template-areas: "user-info solved-ratings solved-ratings"
 			"rating-history rating-history solved-tags";
 	}
 }
@@ -457,8 +470,7 @@ main h1 {
 	.user-info-grid {
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 50vh 50vh 50vh;
-		grid-template-areas:
-			"user-info solved-tags"
+		grid-template-areas: "user-info solved-tags"
 			"solved-ratings solved-ratings"
 			"rating-history rating-history";
 	}
