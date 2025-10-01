@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  },
+  "scripts": {
+	"watch": "esbuild scripts/main.js --bundle --outdir=dist --sourcemap --watch --serve",
+    "build": "esbuild scripts/main.js --bundle -outdir=dist"
+  }
+}
