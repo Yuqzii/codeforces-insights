@@ -203,7 +203,7 @@ input.glow-interactive:focus {
 }
 
 .grid-bg {
-	--grid-grap: 40px;
+	--grid-grap: 60px;
 	--dot-size: 2px;
 	--line-thickness: 1px;
 
