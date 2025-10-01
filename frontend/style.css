@@ -209,7 +209,6 @@ input.glow-interactive:focus {
 .hero-main {
 	display: flex;
 	flex-direction: column;
-	align-items: left;
 	margin: 5rem 0 0 7rem;
 	font-size: clamp(18px, 1vw, 24px);
 	width: 32em;
@@ -234,6 +233,13 @@ input.glow-interactive:focus {
 	margin: 2em 0 1em 0;
 	position: relative;
 	width: max-content;
+}
+
+.user-form-container {
+	display: flex;
+	width: fit-content;
+	flex-direction: column;
+	align-items: center;
 }
 
 #user-form {
