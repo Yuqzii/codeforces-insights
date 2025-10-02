@@ -58,15 +58,14 @@ services:
       "up"
     ]
 
-  nginx:
-    image: nginx:stable-alpine
+  frontend:
+    build: ./frontend
     volumes:
-      - ./frontend:/usr/share/nginx/html:ro,Z
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z
+      - ./frontend:/app:Z
+    command: sh -c "npm run dev & npm run serve"
     ports:
-      - "80:80"
-    depends_on:
-      - server
+      - "3000:3000" # Browsersync site
+      - "3001:3001" # Browsersync UI
 
 volumes:
   db:
