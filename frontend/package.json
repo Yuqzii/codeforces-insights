@@ -1,9 +1,10 @@
 {
   "devDependencies": {
+    "browser-sync": "^3.0.4",
     "esbuild": "0.25.10"
   },
   "scripts": {
-	"dev": "mkdir -p dist && cp -r ./public/* ./dist/ && esbuild src/main.js src/style.css --bundle --outdir=./dist --sourcemap --watch=forever",
+    "dev": "mkdir -p dist && cp -r ./public/* ./dist/ && esbuild src/main.js src/style.css --bundle --outdir=./dist --sourcemap --watch=forever",
     "prod": "esbuild src/main.js src/style.css --bundle -outdir=dist --minify"
   }
 }

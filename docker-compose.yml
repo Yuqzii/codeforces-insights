@@ -63,6 +63,9 @@ services:
     volumes:
       - ./frontend:/app:z
     working_dir: /app
+    command: sh -c "npm run dev & node bs-config.js"
+    ports:
+      - "3000:3000" # BrowserSync
 
   nginx:
     image: nginx:stable-alpine
