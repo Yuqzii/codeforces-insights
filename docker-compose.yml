@@ -58,15 +58,22 @@ services:
       "up"
     ]
 
+  frontend:
+    build:
+      context: ./frontend
+    working_dir: /app
+    command: npm run dev
+
   nginx:
     image: nginx:stable-alpine
     volumes:
-      - ./frontend:/usr/share/nginx/html:ro,Z
+      - ./frontend:/usr/share/nginx/html:Z
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z
     ports:
       - "80:80"
     depends_on:
       - server
+      - frontend
 
 volumes:
   db:
