@@ -65,7 +65,9 @@ services:
     working_dir: /app
     command: sh -c "npm run dev & npm run serve"
     ports:
-      - "3000:3000" # BrowserSync
+      - "3000:3000" # Browsersync site
+      - "3001:3001" # Browsersync UI
+
 
   nginx:
     image: nginx:stable-alpine
