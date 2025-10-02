@@ -61,24 +61,11 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - ./frontend:/app:z
-    working_dir: /app
+      - ./frontend:/app:Z
     command: sh -c "npm run dev & npm run serve"
     ports:
       - "3000:3000" # Browsersync site
       - "3001:3001" # Browsersync UI
-
-
-  nginx:
-    image: nginx:stable-alpine
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro,z
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z
-    ports:
-      - "80:80"
-    depends_on:
-      - server
-      - frontend
 
 volumes:
   db:
