@@ -59,15 +59,17 @@ services:
     ]
 
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
+    volumes:
+      - dist:/app/dist
+      - ./frontend:/app:Z
     working_dir: /app
     command: npm run dev
 
   nginx:
     image: nginx:stable-alpine
     volumes:
-      - ./frontend:/usr/share/nginx/html:Z
+      - dist:/usr/share/nginx/html:ro,Z
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z
     ports:
       - "80:80"
@@ -77,3 +79,4 @@ services:
 
 volumes:
   db:
+  dist:
