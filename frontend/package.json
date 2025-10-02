@@ -1,10 +1,12 @@
 {
   "devDependencies": {
     "browser-sync": "^3.0.4",
-    "esbuild": "0.25.10"
+    "esbuild": "0.25.10",
+    "http-proxy": "^1.18.1"
   },
   "scripts": {
     "dev": "mkdir -p dist && node esbuild.config.js",
+    "serve": "node bs-config.js",
     "prod": "esbuild src/main.js src/style.css --bundle -outdir=dist --minify"
   }
 }

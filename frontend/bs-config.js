@@ -6,6 +6,30 @@ bs.init({
 	port: 3000,
 	open: false,
 	notify: false,
+	middleware: [
+		{
+			route: "/api",
+			handle: function (req, res, next) {
+				const proxy = require("http-proxy").createProxyServer({
+					target: "http://server:8080",
+					changeOrigin: true,
+					ws: true,
+					proxyTimeout: 300000, // 5 minutes
+				});
+
+				// Rewrite the path to remove /api prefix
+				req.url = req.url.replace(/^\/api/, "");
+
+				proxy.web(req, res, {}, function (err) {
+					if (err) {
+						console.error("Proxy error:", err);
+						res.writeHead(502, { "Content-Type": "text/plain" });
+						res.end("Bad Gateway");
+					}
+				});
+			}
+		}
+	]
 });
 
 const shutdown = () => {
