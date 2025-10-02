@@ -3,7 +3,7 @@
     "esbuild": "0.25.10"
   },
   "scripts": {
-	"dev": "esbuild src/main.js src/style.css --bundle --outdir=dist --sourcemap --watch=forever",
+	"dev": "cp -r ./public/* ./dist/ && esbuild src/main.js src/style.css --bundle --outdir=./dist --sourcemap --watch=forever",
     "prod": "esbuild src/main.js src/style.css --bundle -outdir=dist --minify"
   }
 }
