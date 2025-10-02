@@ -29,7 +29,7 @@ bs.init({
 				});
 			}
 		}
-	]
+	],
 });
 
 const shutdown = () => {

@@ -27,7 +27,7 @@ async function start() {
 	});
 
 	await ctx.watch();
-	console.log("Watching for changes");
+	console.log("[esbuild] Watching for changes");
 
 	copyDir("./public/", "./dist/");
 	const watcher = fs.watch("./public/", { recursive: true }, () => {
