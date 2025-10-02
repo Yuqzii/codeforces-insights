@@ -2,8 +2,6 @@ esbuild = require("esbuild");
 fs = require("fs");
 path = require("path");
 
-prod = process.env.NODE_ENV === "production";
-
 function copyDir(srcDir, destDir) {
 	fs.mkdirSync(destDir, { recursive: true });
 	for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
@@ -22,8 +20,8 @@ async function start() {
 		bundle: true,
 		platform: "node",
 		outdir: "./dist/",
-		sourcemap: !prod,
-		minify: prod,
+		sourcemap: true,
+		minify: false,
 	});
 
 	await ctx.watch();

@@ -5,8 +5,8 @@
     "http-proxy-middleware": "^3.0.5"
   },
   "scripts": {
-    "dev": "mkdir -p dist && node esbuild-config.js",
+    "dev": "mkdir -p dist && node esbuild-config-dev.js",
     "serve": "node bs-config.js",
-    "prod": "esbuild src/main.js src/style.css --bundle -outdir=dist --minify"
+    "build": "esbuild src/main.js src/style.css --bundle -outdir=dist --minify"
   }
 }
