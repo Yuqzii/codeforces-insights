@@ -1,13 +1,11 @@
 import { updateAnalytics, solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
-import { hideLoader, getColors } from "./charts.js";
+import { getColors } from "./charts.js";
 
 const root = document.documentElement;
 
-const userDetails = document.getElementById('user-details');
 const form = document.getElementById('user-form');
 const input = document.getElementById('handle-input');
 const themeSelect = document.getElementById('theme-select');
-
 
 let controller = new AbortController();
 
@@ -53,26 +51,6 @@ async function analyzeUser(handle) {
 	});
 
 	updateAnalytics(handle, controller.signal);
-
-	updateUserInfo(handle);
-}
-
-async function updateUserInfo(username) {
-	let data;
-	try {
-		data = await fetchUserInfo(username);
-	} catch (err) {
-		console.error(err);
-		return;
-	}
-
-	hideLoader(userDetails);
-
-	document.getElementById('user-title-photo').src = data.titlePhoto;
-	document.getElementById('username').textContent = data.handle;
-	document.getElementById('user-rating').textContent = data.rating;
-	document.getElementById('user-peak-rating').textContent = data.maxRating;
-	document.getElementById('user-country').textContent = data.country;
 }
 
 function setTheme(theme) {

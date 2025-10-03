@@ -1,4 +1,4 @@
-import { SolvedTags, SolvedRatings, RatingHistory } from "./charts.js";
+import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader } from "./charts.js";
 
 const apiUrl = '/api/'
 
@@ -7,11 +7,10 @@ export const solvedTags = new SolvedTags(toggleOtherTags);
 export const solvedRatings = new SolvedRatings();
 export const ratingHistory = new RatingHistory();
 
-const perfLoader = document.getElementById('performance-loader');
+const userDetails = document.getElementById('user-details')
 
 document.addEventListener('DOMContentLoaded', () => {
 	toggleOtherTags.style.display = 'none';
-	perfLoader.style.display = 'none';
 
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
@@ -31,6 +30,7 @@ export async function updateAnalytics(handle, signal) {
 	solvedRatings.updateChart();
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
+	showLoader(userDetails);
 
 	// Prevent displaying stale data
 	ratingHistory.updatePerfomanceData([]);
@@ -43,6 +43,7 @@ export async function updateAnalytics(handle, signal) {
 	updateRatingChanges(handle, signal);
 	updateSolvedRatingsTime(handle, signal);
 	updatePerformance(handle, signal);
+	updateUserInfo(handle, signal);
 }
 
 async function updateTags(handle, signal) {
@@ -81,8 +82,18 @@ async function updatePerformance(handle, signal) {
 	return safeUpdate(`users/performance/${handle}`, data => {
 		ratingHistory.updatePerfomanceData(data);
 		ratingHistory.loading = false;
-		perfLoader.style.display = 'none';
 		ratingHistory.updateChart();
+	}, signal);
+}
+
+async function updateUserInfo(handle, signal) {
+	return safeUpdate(`users/${handle}`, data => {
+		hideLoader(userDetails);
+		document.getElementById('user-title-photo').src = data.titlePhoto;
+		document.getElementById('username').textContent = data.handle;
+		document.getElementById('user-rating').textContent = data.rating;
+		document.getElementById('user-peak-rating').textContent = data.maxRating;
+		document.getElementById('user-country').textContent = data.country;
 	}, signal);
 }
 
