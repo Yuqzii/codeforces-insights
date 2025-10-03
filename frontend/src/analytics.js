@@ -46,65 +46,54 @@ export async function updateAnalytics(handle, signal) {
 }
 
 async function updateTags(handle, signal) {
-	try {
-		const data = await fetchHelper(apiUrl + `users/solved-tags/${handle}`, signal);
+	return safeUpdate(`users/solved-tags/${handle}`, data => {
 		solvedTags.updateData(data);
 		solvedTags.loading = false;
 		solvedTags.updateChart();
-	} catch (err) {
-		console.error("Failed to update solved tags:", err);
-	}
+	}, signal);
 }
 
 async function updateSolvedRatings(handle, signal) {
-	try {
-		const data = await fetchHelper(apiUrl + `users/solved-ratings/${handle}`, signal);
+	return safeUpdate(`users/solved-ratings/${handle}`, data => {
 		solvedRatings.updateData(data);
 		solvedRatings.loading = false;
 		solvedRatings.updateChart();
-	} catch (err) {
-		console.error("Failed to update solved ratings:", err);
-	}
+	}, signal);
 }
 
 async function updateRatingChanges(handle, signal) {
-	try {
-		const data = await fetchHelper(apiUrl + `users/rating/${handle}`, signal);
+	return safeUpdate(`users/rating/${handle}`, data => {
 		ratingHistory.updateRatingData(data);
 		ratingHistory.loading = false;
 		ratingHistory.updateChart();
-	} catch (err) {
-		console.error("Failed to update rating changes:", err);
-	}
+	}, signal);
 }
 
 async function updateSolvedRatingsTime(handle, signal) {
-	try {
-		const data = await fetchHelper(apiUrl + `users/solved-ratings-time/${handle}`, signal);
+	return safeUpdate(`users/solved-ratings-time/${handle}`, data => {
 		ratingHistory.updateSolvedData(data);
 		ratingHistory.loading = false;
 		ratingHistory.updateChart();
-	} catch (err) {
-		console.error("Failed to update solved ratings over time:", err);
-	}
+	}, signal);
 }
 
 async function updatePerformance(handle, signal) {
-	try {
-		perfLoader.style.display = 'flex';
-		const data = await fetchHelper(apiUrl + `users/performance/${handle}`, signal);
+	return safeUpdate(`users/performance/${handle}`, data => {
 		ratingHistory.updatePerfomanceData(data);
 		ratingHistory.loading = false;
 		perfLoader.style.display = 'none';
 		ratingHistory.updateChart();
-	} catch (err) {
-		console.error("Failed to update performance:", err);
-	}
+	}, signal);
 }
 
-async function fetchHelper(url, signal) {
-	const resp = await fetch(url, { signal });
-	if (!resp.ok)
-		throw new Error(`response not ok: ${resp.statusText}`);
-	return resp.json();
+async function safeUpdate(endpoint, updater, signal) {
+	try {
+		const resp = await fetch(apiUrl + endpoint, { signal });
+		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
+		const data = await resp.json();
+		updater(data);
+	} catch (err) {
+		if (err.name === "AbortError") return;
+		console.error("Request failed:", err);
+	}
 }
