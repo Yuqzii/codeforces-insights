@@ -1,5 +1,4 @@
 import { updateAnalytics, solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
-import { fetchUserInfo } from "./api.js";
 import { hideLoader, getColors } from "./charts.js";
 
 const root = document.documentElement;
