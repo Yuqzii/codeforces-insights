@@ -1,8 +1,7 @@
 {
   "devDependencies": {
     "browser-sync": "^3.0.4",
-    "esbuild": "0.25.10",
-    "http-proxy-middleware": "^3.0.5"
+    "esbuild": "0.25.10"
   },
   "scripts": {
     "dev": "mkdir -p dist && node esbuild-config-dev.js",

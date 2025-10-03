@@ -154,8 +154,9 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(r.Context(), handle)
+	ratings, err := h.client.GetRatingChanges(ctx, handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -168,9 +169,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 
 	perf := make([]performance, len(ratings))
 	for i := range ratings {
-		contestants, contest, err := h.crp.GetContestResults(
-			r.Context(), ratings[i].ContestID,
-		)
+		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
