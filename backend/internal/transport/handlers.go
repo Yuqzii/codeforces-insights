@@ -37,7 +37,7 @@ func NewHandler(api Client, crp ContestResultsProvider) *Handler {
 
 func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	user, err := h.client.GetUser(context.TODO(), handle)
+	user, err := h.client.GetUser(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -57,7 +57,7 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -80,7 +80,7 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -103,7 +103,7 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -135,7 +135,7 @@ func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request
 
 func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(context.TODO(), handle)
+	ratings, err := h.client.GetRatingChanges(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -154,8 +154,9 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(context.TODO(), handle)
+	ratings, err := h.client.GetRatingChanges(ctx, handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -168,9 +169,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 
 	perf := make([]performance, len(ratings))
 	for i := range ratings {
-		contestants, contest, err := h.crp.GetContestResults(
-			context.TODO(), ratings[i].ContestID,
-		)
+		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -195,7 +194,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
-	s, err := h.client.GetSubmissions(context.TODO(), handle)
+	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

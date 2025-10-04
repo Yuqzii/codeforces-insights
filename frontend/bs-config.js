@@ -1,31 +1,23 @@
 const bs = require("browser-sync").create();
-const { createProxyMiddleware } = require("http-proxy-middleware");
 
 bs.init({
 	server: "dist",
 	files: ["dist/**/*"],
-	port: 3000,
 	open: false,
 	notify: false,
 	port: 3000,
 	ui: {
 		port: 3001
 	},
-	middleware: [
-		createProxyMiddleware({
-			target: "http://server:8080",
-			changeOrigin: true,
-			pathFilter: "/api/**",
-			pathRewrite: { "^/api": "" },
-			proxyTimeout: 300000, // 5 minutes
-			onError: (err, req, res) => {
-				console.error("Proxy error:", err);
-				res.writeHead(502, { "Content-Type": "text/plain:" });
-				res.end("Bad Gateway");
-			}
-		})
-	],
 });
+
+console.log(`
+------------------------------------------------------------------------------
+IMPORTANT NOTE:
+In this project Browsersync is mainly used for hot-reloading.
+It is recommended you go to https://localhost:443 instead when nginx starts.
+This is to allow HTTPS and HTTP/2 for proper request cancelling on the backend.
+------------------------------------------------------------------------------`)
 
 const shutdown = () => {
 	console.log("Stopping Browsersync");

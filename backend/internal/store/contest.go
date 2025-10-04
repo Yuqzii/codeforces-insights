@@ -19,6 +19,10 @@ func (s *Store) GetContestResults(ctx context.Context, id int) (
 		return contestants, contest, nil
 	}
 
+	if errors.Is(err, context.Canceled) {
+		return nil, nil, err
+	}
+
 	if !errors.Is(err, db.ErrContestNotStored) {
 		log.Printf("unexpected error querying db: %v\ntrying api", err)
 	}
