@@ -2,6 +2,7 @@ package codeforces
 
 import (
 	"context"
+	"encoding"
 	"errors"
 	"fmt"
 	"io"
@@ -120,6 +121,18 @@ func (c *client) receiversCancelled(endpoint string) bool {
 		}
 	}
 	return true
+}
+
+// Sends err to all receivers of endpoint and closes the channels.
+func (c *client) sendErrToReceivers(err error, endpoint string) {
+	result := requestResult{
+		resp: nil,
+		err:  err,
+	}
+	for _, recvr := range c.receivers[endpoint] {
+		recvr.chn <- result
+		close(recvr.chn)
+	}
 }
 
 func closeResponseBody(b io.ReadCloser) {
