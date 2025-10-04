@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
@@ -16,8 +17,7 @@ const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
 
-	cfRequestsPerSecond float64 = 0.5
-	cfMaxBurst          int     = 1
+	cfTimeBetweenReqs time.Duration = 2 * time.Second
 )
 
 func main() {
@@ -36,8 +36,8 @@ func main() {
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
-		cfRequestsPerSecond,
-		cfMaxBurst)
+		cfTimeBetweenReqs,
+	)
 
 	store := store.New(cfClient, db)
 

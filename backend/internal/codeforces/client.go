@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"golang.org/x/time/rate"
+	"time"
 )
 
 var (
@@ -16,20 +15,21 @@ var (
 )
 
 type client struct {
-	client    *http.Client
-	limiter   *rate.Limiter
-	url       string
+	client          *http.Client
+	url             string
+	timeBetweenReqs time.Duration
+
 	requests  reqQueue
 	receivers map[string][]receiver
 }
 
-func NewClient(httpClient *http.Client, url string, requestsPerSecond float64, burst int) *client {
+func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
 	return &client{
-		client:    httpClient,
-		limiter:   rate.NewLimiter(rate.Limit(requestsPerSecond), burst),
-		url:       url,
-		requests:  reqQueue{},
-		receivers: make(map[string][]receiver),
+		client:          httpClient,
+		timeBetweenReqs: timeBetweenReqs,
+		url:             url,
+		requests:        reqQueue{},
+		receivers:       make(map[string][]receiver),
 	}
 }
 
