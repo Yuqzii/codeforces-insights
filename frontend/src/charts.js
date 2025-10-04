@@ -25,7 +25,7 @@ export class SolvedTags {
 	#chart;
 
 	constructor(toggleOtherButton) {
-		this.toggleOtherButton = toggleOtherButton
+		this.toggleOtherButton = toggleOtherButton;
 	}
 
 	async updateChart() {
@@ -100,8 +100,13 @@ export class SolvedTags {
 
 export class SolvedRatings {
 	loading = true;
+	#show800 = true;
 	#chart;
 	#data;
+
+	constructor(toggle800Button) {
+		this.toggle800Button = toggle800Button;
+	}
 
 	updateChart() {
 		const ctx = document.getElementById('solved-ratings-chart');
@@ -115,6 +120,7 @@ export class SolvedRatings {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
+		this.toggle800Button.style.display = 'inline';
 		this.#chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
@@ -143,6 +149,16 @@ export class SolvedRatings {
 
 	updateData(data) {
 		this.#data = data;
+	}
+
+	toggle800Rating() {
+		if (this.#show800) {
+			this.#show800 = false;
+			this.toggle800Button.innerText = "Show 800 Rating";
+		} else {
+			this.#show800 = true;
+			this.toggle800Button.innerText = "Hide 800 Rating";
+		}
 	}
 }
 
