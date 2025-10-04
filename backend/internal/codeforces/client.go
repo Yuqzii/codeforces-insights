@@ -3,13 +3,17 @@ package codeforces
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
 	"golang.org/x/time/rate"
 )
 
-var ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
+var (
+	ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
+	ErrAllReceiversCancelled  = errors.New("all receivers to request cancelled")
+)
 
 type client struct {
 	client    *http.Client
@@ -39,6 +43,12 @@ type requestResult struct {
 	err  error
 }
 
+type apiResponse[T any] struct {
+	Status  string `json:"status"`
+	Result  []T    `json:"result"`
+	Comment string `json:"comment,omitempty"`
+}
+
 func (c *client) makeRequest(ctx context.Context, method, endpoint string) <-chan requestResult {
 	reqs, queued := c.receivers[endpoint]
 	if queued {
@@ -64,10 +74,52 @@ func (c *client) makeRequest(ctx context.Context, method, endpoint string) <-cha
 	return respChan
 }
 
-type apiResponse[T any] struct {
-	Status  string `json:"status"`
-	Result  []T    `json:"result"`
-	Comment string `json:"comment,omitempty"`
+func (c *client) sendNextRequest() error {
+	endpoint, err := c.requests.front()
+	if err != nil {
+		return fmt.Errorf("getting next request: %w", err)
+	}
+	if err = c.requests.pop(); err != nil {
+		return fmt.Errorf("popping request queue: %w", err)
+	}
+
+	if c.receiversCancelled(endpoint) {
+		return ErrAllReceiversCancelled
+	}
+
+	req, err := http.NewRequest("GET", c.url+endpoint, nil)
+	if err != nil {
+		return fmt.Errorf("creating request: %w", err)
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
+	}
+
+	result := requestResult{
+		resp: resp,
+		err:  nil,
+	}
+	for _, recvr := range c.receivers[endpoint] {
+		recvr.chn <- result
+		close(recvr.chn)
+	}
+
+	return nil
+}
+
+// Returns true if all receivers to endpoint has cancelled their context.
+func (c *client) receiversCancelled(endpoint string) bool {
+	for _, r := range c.receivers[endpoint] {
+		select {
+		case <-r.ctx.Done():
+			continue
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func closeResponseBody(b io.ReadCloser) {
