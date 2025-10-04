@@ -1,17 +1,8 @@
 # Codeforces Stats
 Website for displaying stats about your Codeforces profile.
 
-## Running dev environment
-### Setting up SSL certs
-These are necessary for nginx to run HTTPS and therefore HTTP/2.\
-There are many ways to generate these, but I use
-```
-mkcrt localhost
-```
-Be sure to place these inside `/certs` from the project root.\
-You can also optionally install these certificates with `mkcrt -install` to avoid a warning from the browser.
-
-### Running services
+## Dev Environment
+### Running Services
 For running the site locally use the provided `docker-compose.yml` with standard `docker compose` commands.\
 It is intended to visit the site locally through nginx on port 443, although the frontend will still work when visiting through Browsersync on port 3000.
 This is because nginx reverse-proxies requests with HTTPS and HTTP/2 to support request cancellation.\
@@ -21,6 +12,9 @@ To start the services normally run
 ```
 docker compose up --build
 ```
+[!NOTE]
+The nginx container uses self-signed SSL certificates which will likely cause your browser to warn you about entering the site.\
+You can ignore this warning by clicking "Advanced" and then "Continue"/"Proceed".
 
 ### Contest Fetcher
 There is also another entrypoint for the Go backend called `fetcher`.\
