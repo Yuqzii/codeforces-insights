@@ -2,7 +2,6 @@ package codeforces
 
 import (
 	"context"
-	"encoding"
 	"errors"
 	"fmt"
 	"io"
@@ -25,13 +24,15 @@ type client struct {
 }
 
 func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
-	return &client{
+	c := &client{
 		client:          httpClient,
 		timeBetweenReqs: timeBetweenReqs,
 		url:             url,
 		requests:        reqQueue{},
 		receivers:       make(map[string][]receiver),
 	}
+	c.listenForRequests()
+	return c
 }
 
 type receiver struct {
@@ -75,27 +76,43 @@ func (c *client) makeRequest(ctx context.Context, method, endpoint string) <-cha
 	return respChan
 }
 
-func (c *client) sendNextRequest() error {
+func (c *client) listenForRequests() {
+	timer := time.NewTimer(0)
+
+	go func() {
+		for {
+			<-timer.C // Wait until we can send request
+			t, err := c.sendNextRequest()
+			if errors.Is(err, ErrAllReceiversCancelled) || errors.Is(err, ErrQueueEmpty) {
+				// No request was sendt, does not need to wait before sending next
+				timer.Reset(0)
+			} else {
+				timer.Reset(c.timeBetweenReqs - time.Since(t))
+			}
+		}
+	}()
+}
+
+// Sends the next request in the queue and broadcasts the result to all receivers.
+// Returns the time at which the request was sendt.
+func (c *client) sendNextRequest() (time.Time, error) {
 	endpoint, err := c.requests.front()
 	if err != nil {
-		return fmt.Errorf("getting next request: %w", err)
+		return time.Time{}, fmt.Errorf("getting next request: %w", err)
 	}
 	if err = c.requests.pop(); err != nil {
-		return fmt.Errorf("popping request queue: %w", err)
+		return time.Time{}, fmt.Errorf("popping request queue: %w", err)
 	}
 
 	if c.receiversCancelled(endpoint) {
-		return ErrAllReceiversCancelled
+		return time.Time{}, ErrAllReceiversCancelled
 	}
 
-	req, err := http.NewRequest("GET", c.url+endpoint, nil)
+	sendTime := time.Now()
+	resp, err := c.client.Get(c.url + endpoint)
 	if err != nil {
-		return fmt.Errorf("creating request: %w", err)
-	}
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
+		c.sendErrToReceivers(err, endpoint)
+		return time.Time{}, fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
 	result := requestResult{
@@ -107,7 +124,7 @@ func (c *client) sendNextRequest() error {
 		close(recvr.chn)
 	}
 
-	return nil
+	return sendTime, nil
 }
 
 // Returns true if all receivers to endpoint has cancelled their context.
