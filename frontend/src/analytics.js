@@ -1,13 +1,14 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader } from "./charts.js";
 
-const apiUrl = '/api/'
+const apiUrl = '/api/';
 
-const toggleOtherTags = document.getElementById('toggle-other-tags')
+const toggleOtherTags = document.getElementById('toggle-other-tags');
+const toggle800Probs = document.getElementById('toggle-800-rating');
 export const solvedTags = new SolvedTags(toggleOtherTags);
-export const solvedRatings = new SolvedRatings();
+export const solvedRatings = new SolvedRatings(toggle800Probs);
 export const ratingHistory = new RatingHistory();
 
-const userDetails = document.getElementById('user-details')
+const userDetails = document.getElementById('user-details');
 
 document.addEventListener('DOMContentLoaded', () => {
 	toggleOtherTags.style.display = 'none';
@@ -18,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	toggleOtherTags.addEventListener('click', () => {
 		solvedTags.toggleOther();
+	});
+
+	toggle800Probs.addEventListener('click', () => {
+		solvedRatings.toggle800Rating();
 	});
 });
 
