@@ -64,13 +64,13 @@ services:
       - ./frontend:/app:Z
     command: sh -c "npm run dev & npm run serve"
     ports:
-      - "3000:3000"
+      - "3000:3000" # Browsersync site, not meant to be used
       - "3001:3001" # Browsersync UI
 
   nginx:
     build: ./nginx
     ports:
-      - "443:443"
+      - "443:443" # This is where you should visit the site for HTTPS and HTTP/2
     depends_on:
       - server
       - frontend
