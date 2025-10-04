@@ -116,6 +116,11 @@ export class SolvedRatings {
 			return;
 		}
 
+		let data = Object.assign({}, this.#data);
+		if (!this.#show800) {
+			delete data[800];
+		}
+
 		if (this.#chart != null)
 			this.#chart.destroy();
 
@@ -126,7 +131,7 @@ export class SolvedRatings {
 			data: {
 				datasets: [{
 					label: '# of Solved Problems',
-					data: this.#data,
+					data: data,
 					backgroundColor: blueColor,
 				}]
 			},
@@ -159,6 +164,7 @@ export class SolvedRatings {
 			this.#show800 = true;
 			this.toggle800Button.innerText = "Hide 800 Rating";
 		}
+		this.updateChart();
 	}
 }
 
