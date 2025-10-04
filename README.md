@@ -12,9 +12,9 @@ To start the services normally run
 ```
 docker compose up --build
 ```
-[!NOTE]
-The nginx container uses self-signed SSL certificates which will likely cause your browser to warn you about entering the site.\
-You can ignore this warning by clicking "Advanced" and then "Continue"/"Proceed".
+> [!NOTE]
+> The nginx container uses self-signed SSL certificates which will likely cause your browser to warn you about entering the site.\
+> You can ignore this warning by clicking "Advanced" and then "Continue"/"Proceed".
 
 ### Contest Fetcher
 There is also another entrypoint for the Go backend called `fetcher`.\
