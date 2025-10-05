@@ -51,7 +51,7 @@ type apiResponse[T any] struct {
 	Comment string `json:"comment,omitempty"`
 }
 
-func (c *client) makeRequest(ctx context.Context, method, endpoint string) <-chan requestResult {
+func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan requestResult {
 	reqs, queued := c.receivers[endpoint]
 	if queued {
 		// Request is already queued, just add to receivers
