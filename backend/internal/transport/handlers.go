@@ -118,38 +118,6 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) HandleGetTagsAndRatings(w http.ResponseWriter, r *http.Request) {
-	handle := r.PathValue("handle")
-	s, err := h.client.GetSubmissions(r.Context(), handle)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	solved := stats.FilterSolved(s)
-	tags := stats.SolvedTags(solved)
-	ratings := stats.SolvedRatings(solved)
-
-	type tagsAndRatings struct {
-		Tags    []stats.Tag `json:"tags"`
-		Ratings map[int]int `json:"ratings"`
-	}
-	combined := tagsAndRatings{
-		Tags:    tags,
-		Ratings: ratings,
-	}
-	j, err := json.Marshal(combined)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if _, err = w.Write(j); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
 func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	ratings, err := h.client.GetRatingChanges(r.Context(), handle)
