@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"slices"
 
@@ -40,17 +41,20 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	user, err := h.client.GetUser(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting user info: %v\n", err)
 		return
 	}
 
 	j, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling user info: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing user info: %v\n", err)
 		return
 	}
 }
@@ -60,6 +64,7 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting submissions for ratings: %v\n", err)
 		return
 	}
 
@@ -69,11 +74,13 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	j, err := json.Marshal(ratings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling user solved ratings: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing user solved ratings: %v\n", err)
 		return
 	}
 }
@@ -83,6 +90,7 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting submissions for solved tags: %v\n", err)
 		return
 	}
 
@@ -92,11 +100,13 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	j, err := json.Marshal(tags)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling user solved tags: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing user solved tags: %v\n", err)
 		return
 	}
 }
@@ -138,17 +148,20 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 	ratings, err := h.client.GetRatingChanges(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting user rating history: %v\n", err)
 		return
 	}
 
 	j, err := json.Marshal(ratings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling user rating history: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing user rating history: %v\n", err)
 		return
 	}
 }
@@ -159,6 +172,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	ratings, err := h.client.GetRatingChanges(ctx, handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting rating history for performance: %v\n", err)
 		return
 	}
 
@@ -172,6 +186,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting contest %d results for performance: %v\n", ratings[i].ContestID, err)
 			return
 		}
 
@@ -183,11 +198,13 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	j, err := json.Marshal(perf)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling performance: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing performance: %v\n", err)
 		return
 	}
 }
@@ -197,6 +214,7 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting submissions for solved rating time: %v\n", err)
 		return
 	}
 
@@ -224,11 +242,13 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	j, err := json.Marshal(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling solved ratings time: %v\n", err)
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing solved ratings time: %v\n", err)
 		return
 	}
 }
