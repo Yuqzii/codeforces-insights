@@ -36,7 +36,7 @@ func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duratio
 		requests:        make(chan string, requestBufferSize),
 		receivers:       make(map[string][]receiver),
 	}
-	c.listenForRequests()
+	go c.listenForRequests()
 	return c
 }
 
@@ -56,6 +56,7 @@ type apiResponse[T any] struct {
 	Comment string `json:"comment,omitempty"`
 }
 
+// Adds the request to the queue. If the request already exists adds the caller as a receiver.
 func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan requestResult {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -87,22 +88,20 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 }
 
 func (c *client) listenForRequests() {
-	go func() {
-		for {
-			endpoint := <-c.requests
+	for {
+		endpoint := <-c.requests
 
-			if c.receiversCancelled(endpoint) {
-				continue
-			}
-
-			t := time.Now()
-			err := c.sendRequest(endpoint)
-			if err != nil {
-				log.Printf("Error sending request: %v\n", err)
-			}
-			time.Sleep(c.timeBetweenReqs - time.Since(t))
+		if c.receiversCancelled(endpoint) {
+			continue
 		}
-	}()
+
+		t := time.Now()
+		err := c.sendRequest(endpoint)
+		if err != nil {
+			log.Printf("Error sending request: %v\n", err)
+		}
+		time.Sleep(c.timeBetweenReqs - time.Since(t))
+	}
 }
 
 // Sends the request for the specified endpoint and broadcasts the result to all receivers.
