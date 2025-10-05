@@ -52,11 +52,11 @@ type apiResponse[T any] struct {
 }
 
 func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan requestResult {
-	reqs, queued := c.receivers[endpoint]
+	_, queued := c.receivers[endpoint]
 	if queued {
 		// Request is already queued, just add to receivers
 		respChan := make(chan requestResult)
-		reqs = append(reqs, receiver{
+		c.receivers[endpoint] = append(c.receivers[endpoint], receiver{
 			ctx: ctx,
 			chn: respChan,
 		})
