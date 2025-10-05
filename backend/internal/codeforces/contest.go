@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 	"strconv"
 	"time"
@@ -40,15 +39,8 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 
 	resChan := c.makeRequest(ctx, endpoint+params.Encode())
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", r.err)
-	}
-	defer closeResponseBody(r.resp.Body)
-
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, nil, err
 	}
 
 	// Special apiResponse struct as the Codeforces API returns an unusual json format for this endpoint.
@@ -61,7 +53,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		Comment string `json:"comment,omitempty"`
 	}
 	var apiResp apiResponse
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, nil, err
 	}
 
@@ -77,19 +69,12 @@ func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 
 	resChan := c.makeRequest(ctx, endpoint)
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, fmt.Errorf("getting contest list from Codeforces: %w", r.err)
 	}
-	defer closeResponseBody(r.resp.Body)
-
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var apiResp apiResponse[Contest]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 

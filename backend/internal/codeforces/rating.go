@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 	"strconv"
 	"strings"
@@ -31,19 +30,12 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 
 	resChan := c.makeRequest(ctx, endpoint+params.Encode())
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, fmt.Errorf("getting rating from Codeforces: %w", r.err)
 	}
-	defer closeResponseBody(r.resp.Body)
-
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var apiResp apiResponse[RatingChange]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 
@@ -65,19 +57,12 @@ func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingC
 
 	resChan := c.makeRequest(ctx, endpoint+params.Encode())
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, fmt.Errorf("getting contest rating changes from Codeforces: %w", r.err)
 	}
 
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	defer closeResponseBody(r.resp.Body)
-
 	var apiResp apiResponse[RatingChange]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 

@@ -46,7 +46,7 @@ type receiver struct {
 }
 
 type requestResult struct {
-	resp *http.Response
+	body []byte
 	err  error
 }
 
@@ -113,8 +113,15 @@ func (c *client) sendRequest(endpoint string) error {
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.sendErrToReceivers(err, endpoint)
+		return fmt.Errorf("reading '%s' response body: %w", endpoint, err)
+	}
+	resp.Body.Close() // nolint:errcheck
+
 	result := requestResult{
-		resp: resp,
+		body: body,
 		err:  nil,
 	}
 
@@ -149,7 +156,7 @@ func (c *client) receiversCancelled(endpoint string) bool {
 // Sends err to all receivers of endpoint and closes the channels.
 func (c *client) sendErrToReceivers(err error, endpoint string) {
 	result := requestResult{
-		resp: nil,
+		body: nil,
 		err:  err,
 	}
 	c.mu.Lock()
@@ -158,8 +165,4 @@ func (c *client) sendErrToReceivers(err error, endpoint string) {
 		recvr.chn <- result
 		close(recvr.chn)
 	}
-}
-
-func closeResponseBody(b io.ReadCloser) {
-	_ = b.Close()
 }

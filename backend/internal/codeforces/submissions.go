@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/url"
 )
 
@@ -33,19 +32,12 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 
 	resChan := c.makeRequest(ctx, endpoint+params.Encode())
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, fmt.Errorf("getting submissions from Codeforces: %w", r.err)
 	}
-	defer closeResponseBody(r.resp.Body)
-
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var apiResp apiResponse[Submission]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 

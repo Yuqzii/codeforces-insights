@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 )
 
@@ -30,19 +29,12 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 
 	resChan := c.makeRequest(ctx, endpoint+params.Encode())
 	r := <-resChan
-
 	if r.err != nil {
 		return nil, fmt.Errorf("getting user from Codeforces: %w", r.err)
 	}
-	defer closeResponseBody(r.resp.Body)
-
-	body, err := io.ReadAll(r.resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var apiResp apiResponse[User]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 
