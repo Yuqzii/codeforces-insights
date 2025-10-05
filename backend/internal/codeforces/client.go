@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -23,14 +24,15 @@ type client struct {
 	timeBetweenReqs time.Duration
 
 	requests  chan string
+	mu        sync.Mutex
 	receivers map[string][]receiver
 }
 
 func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
 	c := &client{
 		client:          httpClient,
-		timeBetweenReqs: timeBetweenReqs,
 		url:             url,
+		timeBetweenReqs: timeBetweenReqs,
 		requests:        make(chan string, requestBufferSize),
 		receivers:       make(map[string][]receiver),
 	}
@@ -55,6 +57,9 @@ type apiResponse[T any] struct {
 }
 
 func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan requestResult {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	_, queued := c.receivers[endpoint]
 	if queued {
 		// Request is already queued, just add to receivers
@@ -112,6 +117,10 @@ func (c *client) sendRequest(endpoint string) error {
 		resp: resp,
 		err:  nil,
 	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	for _, recvr := range c.receivers[endpoint] {
 		recvr.chn <- result
 		close(recvr.chn)
@@ -124,6 +133,8 @@ func (c *client) sendRequest(endpoint string) error {
 
 // Returns true if all receivers to endpoint has cancelled their context.
 func (c *client) receiversCancelled(endpoint string) bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	for _, r := range c.receivers[endpoint] {
 		select {
 		case <-r.ctx.Done():
@@ -141,6 +152,8 @@ func (c *client) sendErrToReceivers(err error, endpoint string) {
 		resp: nil,
 		err:  err,
 	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	for _, recvr := range c.receivers[endpoint] {
 		recvr.chn <- result
 		close(recvr.chn)
