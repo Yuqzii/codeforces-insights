@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -81,34 +82,30 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 }
 
 func (c *client) listenForRequests() {
-	timer := time.NewTimer(0)
-
 	go func() {
 		for {
 			endpoint := <-c.requests
-			t, err := c.sendRequest(endpoint)
-			if errors.Is(err, ErrAllReceiversCancelled) {
-				// No request was sendt, does not need to wait before sending next
-				timer.Reset(100 * time.Millisecond)
-			} else {
-				timer.Reset(c.timeBetweenReqs - time.Since(t))
+
+			if c.receiversCancelled(endpoint) {
+				continue
 			}
+
+			t := time.Now()
+			err := c.sendRequest(endpoint)
+			if err != nil {
+				log.Printf("Error sending request: %v\n", err)
+			}
+			time.Sleep(c.timeBetweenReqs - time.Since(t))
 		}
 	}()
 }
 
-// Sends the next request for the specified endpoint and broadcasts the result to all receivers.
-// Returns the time at which the request was sendt.
-func (c *client) sendRequest(endpoint string) (time.Time, error) {
-	if c.receiversCancelled(endpoint) {
-		return time.Time{}, ErrAllReceiversCancelled
-	}
-
-	sendTime := time.Now()
+// Sends the request for the specified endpoint and broadcasts the result to all receivers.
+func (c *client) sendRequest(endpoint string) error {
 	resp, err := c.client.Get(c.url + endpoint)
 	if err != nil {
 		c.sendErrToReceivers(err, endpoint)
-		return time.Time{}, fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
+		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
 	result := requestResult{
@@ -120,7 +117,9 @@ func (c *client) sendRequest(endpoint string) (time.Time, error) {
 		close(recvr.chn)
 	}
 
-	return sendTime, nil
+	delete(c.receivers, endpoint)
+
+	return nil
 }
 
 // Returns true if all receivers to endpoint has cancelled their context.
