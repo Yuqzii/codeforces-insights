@@ -29,13 +29,15 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 	params := url.Values{}
 	params.Set("handle", handle)
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
-	if err != nil {
-		return nil, fmt.Errorf("getting rating from Codeforces: %w", err)
-	}
-	defer closeResponseBody(resp.Body)
+	resChan := c.makeRequest(ctx, endpoint+params.Encode())
+	r := <-resChan
 
-	body, err := io.ReadAll(resp.Body)
+	if r.err != nil {
+		return nil, fmt.Errorf("getting rating from Codeforces: %w", r.err)
+	}
+	defer closeResponseBody(r.resp.Body)
+
+	body, err := io.ReadAll(r.resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -61,16 +63,18 @@ func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingC
 	params := url.Values{}
 	params.Set("contestId", strconv.Itoa(id))
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
-	if err != nil {
-		return nil, fmt.Errorf("getting contest rating changes from Codeforces: %w", err)
+	resChan := c.makeRequest(ctx, endpoint+params.Encode())
+	r := <-resChan
+
+	if r.err != nil {
+		return nil, fmt.Errorf("getting contest rating changes from Codeforces: %w", r.err)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(r.resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	defer closeResponseBody(resp.Body)
+	defer closeResponseBody(r.resp.Body)
 
 	var apiResp apiResponse[RatingChange]
 	if err = json.Unmarshal(body, &apiResp); err != nil {

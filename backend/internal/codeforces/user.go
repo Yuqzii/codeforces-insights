@@ -28,13 +28,15 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	params := url.Values{}
 	params.Set("handles", handle)
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
-	if err != nil {
-		return nil, fmt.Errorf("getting user from Codeforces: %w", err)
-	}
-	defer closeResponseBody(resp.Body)
+	resChan := c.makeRequest(ctx, endpoint+params.Encode())
+	r := <-resChan
 
-	body, err := io.ReadAll(resp.Body)
+	if r.err != nil {
+		return nil, fmt.Errorf("getting user from Codeforces: %w", r.err)
+	}
+	defer closeResponseBody(r.resp.Body)
+
+	body, err := io.ReadAll(r.resp.Body)
 	if err != nil {
 		return nil, err
 	}

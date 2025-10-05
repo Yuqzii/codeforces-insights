@@ -31,13 +31,15 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	params.Set("from", "1")           // Get submissions starting from most recent
 	params.Set("count", "1000000000") // Max allowed from Codeforces
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
-	if err != nil {
-		return nil, fmt.Errorf("getting submissions from Codeforces: %w", err)
-	}
-	defer closeResponseBody(resp.Body)
+	resChan := c.makeRequest(ctx, endpoint+params.Encode())
+	r := <-resChan
 
-	body, err := io.ReadAll(resp.Body)
+	if r.err != nil {
+		return nil, fmt.Errorf("getting submissions from Codeforces: %w", r.err)
+	}
+	defer closeResponseBody(r.resp.Body)
+
+	body, err := io.ReadAll(r.resp.Body)
 	if err != nil {
 		return nil, err
 	}
