@@ -30,8 +30,18 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 	params.Set("from", "1")           // Get submissions starting from most recent
 	params.Set("count", "1000000000") // Max allowed from Codeforces
 
-	resChan := c.makeRequest(ctx, endpoint+params.Encode())
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, fmt.Errorf("getting submissions from Codeforces: %w", r.err)
 	}

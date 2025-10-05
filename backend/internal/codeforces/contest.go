@@ -37,8 +37,18 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	params.Set("from", "1")
 	params.Set("showUnofficial", "false")
 
-	resChan := c.makeRequest(ctx, endpoint+params.Encode())
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", r.err)
 	}
@@ -67,8 +77,18 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 	endpoint := "contest.list"
 
-	resChan := c.makeRequest(ctx, endpoint)
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, fmt.Errorf("getting contest list from Codeforces: %w", r.err)
 	}

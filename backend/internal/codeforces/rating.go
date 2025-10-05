@@ -28,8 +28,18 @@ func (c *client) GetRatingChanges(ctx context.Context, handle string) ([]RatingC
 	params := url.Values{}
 	params.Set("handle", handle)
 
-	resChan := c.makeRequest(ctx, endpoint+params.Encode())
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, fmt.Errorf("getting rating from Codeforces: %w", r.err)
 	}
@@ -55,8 +65,18 @@ func (c *client) GetContestRatingChanges(ctx context.Context, id int) ([]RatingC
 	params := url.Values{}
 	params.Set("contestId", strconv.Itoa(id))
 
-	resChan := c.makeRequest(ctx, endpoint+params.Encode())
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, fmt.Errorf("getting contest rating changes from Codeforces: %w", r.err)
 	}

@@ -57,7 +57,13 @@ type apiResponse[T any] struct {
 }
 
 // Adds the request to the queue. If the request already exists adds the caller as a receiver.
-func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan requestResult {
+func (c *client) makeRequest(ctx context.Context, endpoint string) (<-chan requestResult, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -69,7 +75,7 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 			ctx: ctx,
 			chn: respChan,
 		})
-		return respChan
+		return respChan, nil
 	}
 
 	// Create receiver list
@@ -84,7 +90,7 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 	// Push request to queue
 	c.requests <- endpoint
 
-	return respChan
+	return respChan, nil
 }
 
 func (c *client) listenForRequests() {
@@ -128,7 +134,11 @@ func (c *client) sendRequest(endpoint string) error {
 	defer c.mu.Unlock()
 
 	for _, recvr := range c.receivers[endpoint] {
-		recvr.chn <- result
+		select {
+		case <-recvr.ctx.Done(): // Don't send to cancelled receiver
+		default:
+			recvr.chn <- result
+		}
 		close(recvr.chn)
 	}
 
@@ -161,7 +171,11 @@ func (c *client) sendErrToReceivers(err error, endpoint string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	for _, recvr := range c.receivers[endpoint] {
-		recvr.chn <- result
+		select {
+		case <-recvr.ctx.Done(): // Don't send to cancelled receiver
+		default:
+			recvr.chn <- result
+		}
 		close(recvr.chn)
 	}
 }

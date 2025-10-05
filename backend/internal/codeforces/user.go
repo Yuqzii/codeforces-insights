@@ -27,8 +27,18 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 	params := url.Values{}
 	params.Set("handles", handle)
 
-	resChan := c.makeRequest(ctx, endpoint+params.Encode())
-	r := <-resChan
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
 	if r.err != nil {
 		return nil, fmt.Errorf("getting user from Codeforces: %w", r.err)
 	}
