@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"slices"
@@ -40,8 +41,10 @@ func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	user, err := h.client.GetUser(r.Context(), handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting user info: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting user info: %v\n", err)
+		}
 		return
 	}
 
@@ -63,8 +66,10 @@ func (h *Handler) HandleGetRatings(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting submissions for ratings: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting submissions for ratings: %v\n", err)
+		}
 		return
 	}
 
@@ -89,8 +94,10 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting submissions for solved tags: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting submissions for solved tags: %v\n", err)
+		}
 		return
 	}
 
@@ -147,8 +154,10 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 	handle := r.PathValue("handle")
 	ratings, err := h.client.GetRatingChanges(r.Context(), handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting user rating history: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting user rating history: %v\n", err)
+		}
 		return
 	}
 
@@ -171,8 +180,10 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	ratings, err := h.client.GetRatingChanges(ctx, handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting rating history for performance: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting rating history for performance: %v\n", err)
+		}
 		return
 	}
 
@@ -185,8 +196,10 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	for i := range ratings {
 		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("Error getting contest %d results for performance: %v\n", ratings[i].ContestID, err)
+			if !errors.Is(err, context.Canceled) {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Printf("Error getting contest %d results for performance: %v\n", ratings[i].ContestID, err)
+			}
 			return
 		}
 
@@ -213,8 +226,10 @@ func (h *Handler) HandleGetRatingTime(w http.ResponseWriter, r *http.Request) {
 	handle := r.PathValue("handle")
 	s, err := h.client.GetSubmissions(r.Context(), handle)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error getting submissions for solved rating time: %v\n", err)
+		if !errors.Is(err, context.Canceled) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error getting submissions for solved rating time: %v\n", err)
+		}
 		return
 	}
 
