@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
@@ -16,8 +17,7 @@ const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
 
-	cfRequestsPerSecond float64 = 0.5
-	cfMaxBurst          int     = 1
+	cfTimeBetweenReqs time.Duration = 2 * time.Second
 )
 
 func main() {
@@ -36,8 +36,8 @@ func main() {
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
-		cfRequestsPerSecond,
-		cfMaxBurst)
+		cfTimeBetweenReqs,
+	)
 
 	store := store.New(cfClient, db)
 
@@ -49,8 +49,6 @@ func main() {
 	mux.HandleFunc("GET /users/{handle}", h.HandleGetUser)
 	mux.HandleFunc("GET /users/solved-ratings/{handle}", h.HandleGetRatings)
 	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
-	// Prefer calling this to minimize Codeforces API calls.
-	mux.HandleFunc("GET /users/solved-tags-ratings/{handle}", h.HandleGetTagsAndRatings)
 	mux.HandleFunc("GET /users/rating/{handle}", h.HandleGetRatingChanges)
 	mux.HandleFunc("GET /users/performance/{handle}", h.HandleGetPerformance)
 	mux.HandleFunc("GET /users/solved-ratings-time/{handle}", h.HandleGetRatingTime)

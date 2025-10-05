@@ -2,10 +2,7 @@ module github.com/yuqzii/cf-stats
 
 go 1.24.6
 
-require (
-	github.com/jackc/pgx/v5 v5.7.6
-	golang.org/x/time v0.12.0
-)
+require github.com/jackc/pgx/v5 v5.7.6
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 	"strconv"
 	"time"
@@ -38,15 +37,20 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	params.Set("from", "1")
 	params.Set("showUnofficial", "false")
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint+params.Encode())
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
 	if err != nil {
-		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", err)
+		return nil, nil, fmt.Errorf("making request: %w", err)
 	}
-	defer closeResponseBody(resp.Body)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, nil, err
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, nil, ctx.Err()
+	case r = <-resChan:
+	}
+
+	if r.err != nil {
+		return nil, nil, fmt.Errorf("getting contest standings from Codeforces: %w", r.err)
 	}
 
 	// Special apiResponse struct as the Codeforces API returns an unusual json format for this endpoint.
@@ -59,7 +63,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		Comment string `json:"comment,omitempty"`
 	}
 	var apiResp apiResponse
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, nil, err
 	}
 
@@ -73,19 +77,24 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 	endpoint := "contest.list"
 
-	resp, err := c.makeRequest(ctx, "GET", endpoint)
+	resChan, err := c.makeRequest(ctx, endpoint)
 	if err != nil {
-		return nil, fmt.Errorf("getting contest list from Codeforces: %w", err)
+		return nil, fmt.Errorf("making request: %w", err)
 	}
-	defer closeResponseBody(resp.Body)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
+	if r.err != nil {
+		return nil, fmt.Errorf("getting contest list from Codeforces: %w", r.err)
 	}
 
 	var apiResp apiResponse[Contest]
-	if err = json.Unmarshal(body, &apiResp); err != nil {
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
 		return nil, err
 	}
 
