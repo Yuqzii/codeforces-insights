@@ -14,12 +14,14 @@ var (
 	ErrAllReceiversCancelled  = errors.New("all receivers to request cancelled")
 )
 
+const requestBufferSize int = 1000
+
 type client struct {
 	client          *http.Client
 	url             string
 	timeBetweenReqs time.Duration
 
-	requests  reqQueue
+	requests  chan string
 	receivers map[string][]receiver
 }
 
@@ -28,7 +30,7 @@ func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duratio
 		client:          httpClient,
 		timeBetweenReqs: timeBetweenReqs,
 		url:             url,
-		requests:        reqQueue{},
+		requests:        make(chan string, requestBufferSize),
 		receivers:       make(map[string][]receiver),
 	}
 	c.listenForRequests()
@@ -63,8 +65,7 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 		return respChan
 	}
 
-	// Push request to queue and create receiver list
-	c.requests.push(endpoint)
+	// Create receiver list
 	c.receivers[endpoint] = make([]receiver, 0, 1)
 
 	respChan := make(chan requestResult)
@@ -72,6 +73,9 @@ func (c *client) makeRequest(ctx context.Context, endpoint string) <-chan reques
 		ctx: ctx,
 		chn: respChan,
 	})
+
+	// Push request to queue
+	c.requests <- endpoint
 
 	return respChan
 }
@@ -81,11 +85,11 @@ func (c *client) listenForRequests() {
 
 	go func() {
 		for {
-			<-timer.C // Wait until we can send request
-			t, err := c.sendNextRequest()
-			if errors.Is(err, ErrAllReceiversCancelled) || errors.Is(err, ErrQueueEmpty) {
+			endpoint := <-c.requests
+			t, err := c.sendRequest(endpoint)
+			if errors.Is(err, ErrAllReceiversCancelled) {
 				// No request was sendt, does not need to wait before sending next
-				timer.Reset(0)
+				timer.Reset(100 * time.Millisecond)
 			} else {
 				timer.Reset(c.timeBetweenReqs - time.Since(t))
 			}
@@ -93,17 +97,9 @@ func (c *client) listenForRequests() {
 	}()
 }
 
-// Sends the next request in the queue and broadcasts the result to all receivers.
+// Sends the next request for the specified endpoint and broadcasts the result to all receivers.
 // Returns the time at which the request was sendt.
-func (c *client) sendNextRequest() (time.Time, error) {
-	endpoint, err := c.requests.front()
-	if err != nil {
-		return time.Time{}, fmt.Errorf("getting next request: %w", err)
-	}
-	if err = c.requests.pop(); err != nil {
-		return time.Time{}, fmt.Errorf("popping request queue: %w", err)
-	}
-
+func (c *client) sendRequest(endpoint string) (time.Time, error) {
 	if c.receiversCancelled(endpoint) {
 		return time.Time{}, ErrAllReceiversCancelled
 	}
