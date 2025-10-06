@@ -61,7 +61,8 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - ./frontend:/app:Z
+      - ./frontend/public:/app/public:ro,Z
+      - ./frontend/src:/app/src:ro,Z
     command: sh -c "npm run dev & npm run serve"
     ports:
       - "3000:3000" # Browsersync site, not meant to be used
