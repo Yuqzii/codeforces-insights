@@ -218,7 +218,7 @@ input.glow-interactive:focus {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(to bottom, transparent 85%, var(--bg1));
+	background: linear-gradient(to bottom, transparent 85%, var(--bg));
 	pointer-events: none;
 }
 
