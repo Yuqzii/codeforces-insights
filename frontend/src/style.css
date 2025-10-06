@@ -17,10 +17,6 @@
 	--blue: #83a598;
 	--purple: #d3869b;
 	--aqua: #83c07c;
-
-	--shadow1:
-		inset 0 2px 4px var(--bg2),
-		0 4px 3px var(--bg-shadow);
 }
 
 .theme-catppuccin {
@@ -186,6 +182,12 @@ input.glow-interactive:focus {
 	100% {
 		text-shadow: 0 0 0.5em var(--glow), 0 0 0.25em var(--glow), 0 0 0.15em var(--glow);
 	}
+}
+
+.depth-2 {
+	box-shadow:
+		inset 0 2px 4px var(--bg2),
+		0 4px 3px var(--bg-shadow);
 }
 
 .hero-section {
@@ -536,9 +538,7 @@ main h1 {
 	display: flex;
 	flex-direction: column;
 
-	/*border: 1.5px solid var(--border);*/
 	border-radius: var(--card-border-radius);
-	box-shadow: var(--shadow1);
 	background-color: var(--bg);
 }
 
