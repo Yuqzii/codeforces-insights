@@ -8,7 +8,7 @@
 	--bg2: #504945;
 	--bg3: #665c54;
 	--fg: #ebdbb2;
-	--shadow: #92837455;
+	--glow: #92837455;
 	--border: #92837488;
 	--red: #fb4934;
 	--orange: #fe8019;
@@ -17,6 +17,10 @@
 	--blue: #83a598;
 	--purple: #d3869b;
 	--aqua: #83c07c;
+
+	--shadow1:
+		inset 0 2px 4px var(--bg2),
+		0 4px 3px var(--bg-shadow);
 }
 
 .theme-catppuccin {
@@ -24,8 +28,10 @@
 	--bg1: #313244;
 	--bg2: #45475a;
 	--bg3: #585b70;
+	--bg-dark: #181825;
+	--bg-shadow: #11111b;
 	--fg: #cdd6f4;
-	--shadow: #7f849c55;
+	--glow: #7f849c55;
 	--border: #7f849c88;
 	--red: #f38ba8;
 	--orange: #fab387;
@@ -41,8 +47,10 @@
 	--bg1: #3c3836;
 	--bg2: #504945;
 	--bg3: #665c54;
+	--bg-dark: #1d2021;
+	--bg-shadow: #161819;
 	--fg: #ebdbb2;
-	--shadow: #92837455;
+	--glow: #92837455;
 	--border: #92837488;
 	--red: #fb4934;
 	--orange: #fe8019;
@@ -142,13 +150,13 @@ button:hover {
 	display: inline-block;
 	border: 1px solid var(--border);
 	border-radius: 0.5em;
-	box-shadow: 0 0 2px 1px var(--shadow);
+	box-shadow: 0 0 2px 1px var(--glow);
 	transition: background-color var(--bg-transition-speed) ease, box-shadow var(--bg-transition-speed);
 }
 
 .glow-interactive:hover {
 	background-color: var(--bg2);
-	box-shadow: 0 0 3px 2px var(--shadow);
+	box-shadow: 0 0 3px 2px var(--glow);
 	transition: background-color 50ms, box-shadow 50ms;
 }
 
@@ -158,12 +166,12 @@ button.glow-interactive:active {
 
 input.glow-interactive:focus {
 	background-color: var(--bg3);
-	box-shadow: 0 0 3px 2px var(--shadow);
+	box-shadow: 0 0 3px 2px var(--glow);
 	outline: none;
 }
 
 .glow-text {
-	text-shadow: 0 0 0.1em var(--shadow);
+	text-shadow: 0 0 0.1em var(--glow);
 }
 
 .glow-pulse {
@@ -172,16 +180,12 @@ input.glow-interactive:focus {
 
 @keyframes glow-pulse {
 	0% {
-		text-shadow: 0 0 0.15em var(--shadow), 0 0 0.075em var(--shadow);
+		text-shadow: 0 0 0.15em var(--glow), 0 0 0.075em var(--glow);
 	}
 
 	100% {
-		text-shadow: 0 0 0.5em var(--shadow), 0 0 0.25em var(--shadow), 0 0 0.15em var(--shadow);
+		text-shadow: 0 0 0.5em var(--glow), 0 0 0.25em var(--glow), 0 0 0.15em var(--glow);
 	}
-}
-
-.glow-border {
-	box-shadow: 0 0 5px 2px var(--shadow);
 }
 
 .hero-section {
@@ -193,7 +197,7 @@ input.glow-interactive:focus {
 	height: 100vh;
 	border-bottom: 1px solid var(--border);
 
-	background-color: var(--bg);
+	background-color: var(--bg-dark);
 	transition: background-color var(--bg-transition-speed) ease;
 }
 
@@ -412,7 +416,7 @@ input.glow-interactive:focus {
 	position: absolute;
 	z-index: 1;
 	inset: 0;
-	box-shadow: 0 0 15px var(--shadow);
+	box-shadow: 0 0 15px var(--glow);
 	pointer-events: none;
 }
 
@@ -428,7 +432,7 @@ div.theme-select {
 
 .main-wrapper {
 	width: 100%;
-	background-color: var(--bg);
+	background-color: var(--bg-dark);
 	padding: 3rem 0;
 	position: relative;
 	z-index: 0;
@@ -532,8 +536,10 @@ main h1 {
 	display: flex;
 	flex-direction: column;
 
-	border: 1.5px solid var(--border);
+	/*border: 1.5px solid var(--border);*/
 	border-radius: var(--card-border-radius);
+	box-shadow: var(--shadow1);
+	background-color: var(--bg);
 }
 
 .chart-container {
@@ -573,7 +579,7 @@ main h1 {
 	border-radius: 8px;
 	width: 150px;
 	height: auto;
-	box-shadow: 0 0 3px 2px var(--shadow);
+	box-shadow: 0 0 3px 2px var(--glow);
 }
 
 .user-info-content {
@@ -589,10 +595,10 @@ main h1 {
 .loader,
 .loader-small {
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+	bottom: 2.5%;
+	left: 2.5%;
+	width: 95%;
+	height: 95%;
 	background-color: var(--bg);
 	border-radius: var(--card-border-radius);
 
