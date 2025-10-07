@@ -193,6 +193,7 @@ input.glow-interactive:focus {
 		0 3px 2px var(--bg-dark),
 		0 0 5px var(--bg-dark);
 	background-color: var(--bg1);
+	transition-duration: var(--bg-transition-speed);
 }
 
 .depth-2 {
@@ -201,6 +202,7 @@ input.glow-interactive:focus {
 		0 5px 4px var(--bg-shadow),
 		0 0 5px var(--bg-shadow);
 	background-color: var(--bg);
+	transition-duration: var(--bg-transition-speed);
 }
 
 .depth-interactive {
