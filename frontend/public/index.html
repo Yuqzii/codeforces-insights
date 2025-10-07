@@ -77,12 +77,12 @@
 	<div class="main-wrapper">
 		<main>
 			<h1 class="glow-text">Analytics</h1>
-			<div class="user-info-grid">
-				<div id="user-details" class="user-info-item depth-2" style="grid-area: user-info">
-					<header class="user-info-header">
+			<div class="analytics-grid">
+				<div id="user-details" class="analytics-container depth-2" style="grid-area: user-info">
+					<header class="analytics-header">
 						<h2>User Info</h2>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg"
 							alt="User Title Photo">
 						<h3 id="username">Placeholder</h3>
@@ -96,37 +96,38 @@
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-ratings" class="user-info-item depth-2" style="grid-area: solved-ratings">
-					<header class="user-info-header">
+				<div id="solved-ratings" class="analytics-container depth-2" style="grid-area: solved-ratings">
+					<header class="analytics-header">
 						<h2>Rating distribution of solved problems</h2>
 						<button id="toggle-800-rating" class="depth-1 depth-interactive" type="button"
 							style="display: none;">
 							Hide 800 Rating
 						</button>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class=" chart-container">
 							<canvas id="solved-ratings-chart"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-tags" class="user-info-item depth-2" style="grid-area: solved-tags">
-					<header class="user-info-header">
+				<div id="solved-tags" class="analytics-container depth-2" style="grid-area: solved-tags">
+					<header class="analytics-header">
 						<h2>Solved Tags</h2>
-						<button id="toggle-other-tags" class="depth-1 depth-interactive" type="button" style="display: none;">
+						<button id="toggle-other-tags" class="depth-1 depth-interactive" type="button"
+							style="display: none;">
 							Toggle Other
 						</button>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class="chart-container" style="align-self: center; aspect-ratio: 1">
 							<canvas id="solved-tags-chart"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="rating-history" class="user-info-item depth-2" style="grid-area: rating-history">
-					<header class="user-info-header">
+				<div id="rating-history" class="analytics-container depth-2" style="grid-area: rating-history">
+					<header class="analytics-header">
 						<h2>Rating History</h2>
 						<div id="performance-loader" style="display: none;">
 							<p>Calculating performance</p>
@@ -135,7 +136,7 @@
 							</div>
 						</div>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class="chart-container">
 							<canvas id="rating-history-chart"></canvas>
 						</div>

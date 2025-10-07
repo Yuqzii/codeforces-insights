@@ -500,7 +500,7 @@ main h1 {
 	font-size: 3.5rem;
 }
 
-.user-info-grid {
+.analytics-grid {
 	display: grid;
 	margin-top: 1.5rem;
 	gap: 1rem;
@@ -515,7 +515,7 @@ main h1 {
 }
 
 @media (max-aspect-ratio: 6/5) {
-	.user-info-grid {
+	.analytics-grid {
 		grid-template-columns: 1fr;
 		grid-auto-rows: 40vh;
 		grid-template-areas:
@@ -575,7 +575,7 @@ main h1 {
 	}
 }
 
-.user-info-item {
+.analytics-container {
 	--card-border-radius: 0.8em;
 
 	display: flex;
@@ -599,17 +599,16 @@ main h1 {
 	display: block;
 }
 
-.user-info-header {
+.analytics-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin: 1.5em 1.5em 0 1.5em;
-	font-size: 0.9rem;
 }
 
-.user-info-header h2 {
+.analytics-header h2 {
 	margin: 0;
-	font-size: 1.5rem;
+	font-size: 1.65rem;
 }
 
 .user-stats {
@@ -625,7 +624,7 @@ main h1 {
 	box-shadow: 0 0 3px 2px var(--glow);
 }
 
-.user-info-content {
+.analytics-content {
 	position: relative;
 	display: flex;
 	min-height: 0;
