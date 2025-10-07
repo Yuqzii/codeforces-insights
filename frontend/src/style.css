@@ -518,19 +518,18 @@ main h1 {
 
 @media (max-aspect-ratio: 6/5) {
 	.analytics-grid {
-		grid-template-columns: 1fr;
-		grid-auto-rows: 40vh;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-rows: 55vh;
 		grid-template-areas:
-			"user-info"
-			"solved-tags"
-			"solved-ratings"
-			"rating-history";
+			"user-info solved-tags"
+			"solved-ratings solved-ratings"
+			"rating-history rating-history";
 	}
 }
 
 @media (max-aspect-ratio: 4/5) {
 	html {
-		font-size: 18px;
+		font-size: 20px;
 	}
 
 	.hero-section {
@@ -574,6 +573,20 @@ main h1 {
 
 	.hero-graph-container {
 		display: none;
+	}
+
+	.analytics-grid {
+		grid-template-columns: 1fr;
+		grid-auto-rows: 55vh;
+		grid-template-areas:
+			"user-info"
+			"solved-tags"
+			"solved-ratings"
+			"rating-history";
+	}
+
+	#user-details {
+		font-size: 1.25rem;
 	}
 }
 
@@ -619,16 +632,16 @@ main h1 {
 }
 
 #user-title-photo {
-	border-radius: 0.4em;
-	width: clamp(150px, 12.5vw, 250px);
+	border-radius: 8px;
+	width: clamp(150px, max(12.5vw, 12.5vh), 200px);
 	height: auto;
 	display: block;
 }
 
 div:has(> #user-title-photo) {
 	width: fit-content;
-	padding: 0.5em;
-	border-radius: 0.5em;
+	padding: 10px;
+	border-radius: 10px;
 }
 
 .analytics-content {
