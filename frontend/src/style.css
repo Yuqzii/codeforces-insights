@@ -201,6 +201,27 @@ input.glow-interactive:focus {
 	background-color: var(--bg);
 }
 
+.depth-interactive {
+	transition-duration: var(--bg-transition-speed);
+}
+
+.depth-interactive:hover {
+	box-shadow:
+		inset 0 1px 1px var(--bg3),
+		0 1px 2px var(--bg-shadow),
+		0 0 3px 1px var(--bg-dark);
+	background-color: var(--bg2);
+	transition-duration: 50ms;
+}
+
+button.depth-interactive:active {
+	background-color: var(--bg1);
+	box-shadow:
+		inset 0 2px 2px var(--bg-shadow),
+		inset 0 -1px 1px var(--bg3),
+		inset 0 0 3px 1px var(--bg-dark);
+}
+
 .hero-section {
 	position: relative;
 	display: flex;
