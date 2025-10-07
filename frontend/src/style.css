@@ -619,11 +619,16 @@ main h1 {
 }
 
 #user-title-photo {
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	width: 150px;
+	border-radius: 0.4em;
+	width: clamp(150px, 12.5vw, 250px);
 	height: auto;
-	box-shadow: 0 0 3px 2px var(--glow);
+	display: block;
+}
+
+div:has(> #user-title-photo) {
+	width: fit-content;
+	padding: 0.5em;
+	border-radius: 0.5em;
 }
 
 .analytics-content {
