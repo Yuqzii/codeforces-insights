@@ -644,10 +644,10 @@ main h1 {
 .loader,
 .loader-small {
 	position: absolute;
-	bottom: 2.5%;
-	left: 2.5%;
-	width: 95%;
-	height: 95%;
+	bottom: 1%;
+	left: 1%;
+	width: 98%;
+	height: 98%;
 	background-color: var(--bg);
 	border-radius: var(--card-border-radius);
 
