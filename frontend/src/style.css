@@ -634,6 +634,12 @@ main h1 {
 	margin-top: 0.25em;
 }
 
+#user-rating,
+#user-peak-rating {
+	color: var(--text-color);
+	text-shadow: 0 0 1.5px var(--text-color);
+}
+
 .loader,
 .loader-small {
 	position: absolute;

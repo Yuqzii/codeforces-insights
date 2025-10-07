@@ -319,6 +319,10 @@ export function getColors() {
 	Chart.defaults.borderColor = borderColor;
 }
 
+export function getRatingColor(rating) {
+	return ratingRanges.find(range => rating >= range.min && rating <= range.max)?.color || '#ffffff';
+}
+
 export function showLoader(container) {
 	container.querySelector(".loader").style.display = "flex";
 }

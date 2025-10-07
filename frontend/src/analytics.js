@@ -1,4 +1,4 @@
-import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader } from "./charts.js";
+import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 
 const apiUrl = '/api/';
 
@@ -96,9 +96,14 @@ async function updateUserInfo(handle, signal) {
 		hideLoader(userDetails);
 		document.getElementById('user-title-photo').src = data.titlePhoto;
 		document.getElementById('username').textContent = data.handle;
-		document.getElementById('user-rating').textContent = data.rating;
-		document.getElementById('user-peak-rating').textContent = data.maxRating;
 		document.getElementById('user-country').textContent = data.country;
+
+		const rating = document.getElementById('user-rating');
+		rating.textContent = data.rating;
+		rating.style.setProperty('--text-color', getRatingColor(data.rating));
+		const peakRating = document.getElementById('user-peak-rating');
+		peakRating.textContent = data.maxRating;
+		peakRating.style.setProperty('--text-color', getRatingColor(data.maxRating));
 	}, signal);
 }
 
