@@ -507,10 +507,10 @@ main h1 {
 	align-items: stretch;
 	justify-items: stretch;
 
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	grid-template-rows: 25vw 25vw;
-	grid-template-areas: "user-info solved-ratings solved-ratings solved-tags"
-		"rating-history rating-history rating-history .";
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: 55vh 55vh;
+	grid-template-areas: "user-info solved-ratings solved-ratings"
+		"rating-history rating-history solved-tags";
 }
 
 @media (max-aspect-ratio: 8/5) or (max-width: 1000px) {
