@@ -508,27 +508,21 @@ main h1 {
 	justify-items: stretch;
 
 	grid-template-columns: 1fr 1fr 1fr;
-	grid-template-rows: 55vh 55vh;
-	grid-template-areas: "user-info solved-ratings solved-ratings"
+	grid-auto-rows: clamp(400px, 32.5vw, 55vh);
+	grid-template-areas:
+		"user-info solved-ratings solved-ratings"
 		"rating-history rating-history solved-tags";
-}
-
-@media (max-aspect-ratio: 8/5) or (max-width: 1000px) {
-	.user-info-grid {
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 32.5vw 32.5vw 32.5vw;
-		grid-template-areas: "user-info solved-ratings solved-ratings"
-			"rating-history rating-history solved-tags";
-	}
 }
 
 @media (max-aspect-ratio: 6/5) {
 	.user-info-grid {
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 50vh 50vh 50vh;
-		grid-template-areas: "user-info solved-tags"
-			"solved-ratings solved-ratings"
-			"rating-history rating-history";
+		grid-template-columns: 1fr;
+		grid-auto-rows: 40vh;
+		grid-template-areas:
+			"user-info"
+			"solved-tags"
+			"solved-ratings"
+			"rating-history";
 	}
 }
 
