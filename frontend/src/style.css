@@ -452,7 +452,7 @@ div.theme-select {
 
 main {
 	margin: 0 auto;
-	width: 90%;
+	width: 85%;
 }
 
 main h1 {
@@ -468,7 +468,7 @@ main h1 {
 	justify-items: stretch;
 
 	grid-template-columns: 1fr 1fr 1fr;
-	grid-auto-rows: clamp(400px, 32.5vw, 50vh);
+	grid-auto-rows: clamp(400px, 32.5vw, 48.5vh);
 	grid-template-areas:
 		"user-info solved-ratings solved-ratings"
 		"rating-history rating-history solved-tags";
@@ -477,6 +477,10 @@ main h1 {
 @media (max-aspect-ratio: 6/5) {
 	html {
 		font-size: 18px;
+	}
+
+	main {
+		width: 90%;
 	}
 
 	.analytics-grid {
