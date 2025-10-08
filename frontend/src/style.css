@@ -1,7 +1,7 @@
 :root {
 	--bg-transition-speed: 150ms;
-	--cursor-x: 50vw;
-	--cursor-y: 50vh;
+	--cursor-x: -100px;
+	--cursor-y: -100px;
 
 	--bg: #282828;
 	--bg1: #3c3836;
