@@ -58,8 +58,6 @@ export class SolvedTags {
 
 		hideLoader(ctx.parentNode.parentNode);
 
-		this.toggleOtherButton.style.display = 'inline';
-
 		this.#chart = new Chart(ctx, {
 			type: 'pie',
 			data: {
@@ -125,7 +123,7 @@ export class SolvedRatings {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
-		this.toggle800Button.style.display = 'inline';
+
 		this.#chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
