@@ -241,6 +241,20 @@ input.depth-interactive:focus {
 	transform: scaleY(1.02) scaleX(1.01);
 }
 
+.fade-in {
+	opacity: 0;
+	transform: translateY(2vh);
+
+	animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+	100% {
+		opacity: 100%;
+		transform: translateY(0);
+	}
+}
+
 .hero-section {
 	position: relative;
 	display: flex;
