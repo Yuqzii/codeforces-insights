@@ -616,7 +616,7 @@ div:has(> #user-title-photo) {
 	min-height: 0;
 	flex: 1;
 	flex-direction: column;
-	padding: 1.5em 1.25em 1.5em 1.5em;
+	padding: 1em 1.5em 1.5em 1.5em;
 	margin-top: 0.25em;
 }
 
