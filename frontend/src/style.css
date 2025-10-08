@@ -249,12 +249,6 @@ input.depth-interactive:focus {
 	animation: fadeIn 1s ease-out forwards;
 }
 
-.fade-in-fast {
-	opacity: 0;
-	transform: translateY(1.5vh);
-	animation: fadeIn 0.5s ease-out forwards;
-}
-
 @keyframes fadeIn {
 	0% {
 		opacity: 0;

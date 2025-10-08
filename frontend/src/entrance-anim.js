@@ -3,7 +3,7 @@ export function observeAndAnimate() {
 	const observer = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
 			if (entry.isIntersecting) {
-				entry.target.classList.toggle('fade-in-fast', true);
+				entry.target.classList.toggle('fade-in', true);
 			}
 		});
 	});
@@ -11,6 +11,7 @@ export function observeAndAnimate() {
 	analyticsElements.forEach(element => {
 		element.style.opacity = '0';
 		element.style.animationDelay = '0.1s';
+		element.style.animationDuration = '0.5s';
 		observer.observe(element);
 	});
 }
