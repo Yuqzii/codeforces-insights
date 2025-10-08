@@ -219,7 +219,6 @@ export class RatingHistory {
 				}]
 			},
 			options: {
-				responsive: true,
 				scales: {
 					x: {
 						type: 'time',
