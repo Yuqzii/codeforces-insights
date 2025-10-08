@@ -10,6 +10,7 @@ export function observeAndAnimate() {
 
 	analyticsElements.forEach(element => {
 		element.style.opacity = '0';
+		element.style.animationDelay = '0.1s';
 		observer.observe(element);
 	});
 }
