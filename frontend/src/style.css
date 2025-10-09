@@ -493,7 +493,7 @@ main h1 {
 
 @media (max-aspect-ratio: 4/5) {
 	html {
-		font-size: 20px;
+		font-size: 18px;
 	}
 
 	.hero-section {
@@ -549,7 +549,7 @@ main h1 {
 			"rating-history";
 	}
 
-	#user-details {
+	#user-details .analytics-content {
 		font-size: 1.25rem;
 	}
 }
