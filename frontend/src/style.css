@@ -559,9 +559,11 @@ main h1 {
 
 	display: flex;
 	flex-direction: column;
-
 	border-radius: var(--card-border-radius);
 	background-color: var(--bg);
+	opacity: 0;
+	animation-delay: 100ms;
+	animation-duration: 500ms;
 }
 
 .chart-container {

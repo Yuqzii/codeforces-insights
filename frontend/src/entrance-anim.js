@@ -9,9 +9,6 @@ export function observeAndAnimate() {
 	});
 
 	analyticsElements.forEach(element => {
-		element.style.opacity = '0';
-		element.style.animationDelay = '0.1s';
-		element.style.animationDuration = '0.5s';
 		observer.observe(element);
 	});
 }
