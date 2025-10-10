@@ -261,7 +261,7 @@ input.depth-interactive:focus {
 	}
 }
 
-.hero-section {
+header.hero {
 	position: relative;
 	display: flex;
 	flex-direction: row;
@@ -271,7 +271,7 @@ input.depth-interactive:focus {
 	transition: background-color var(--bg-transition-speed);
 }
 
-.hero-section::after {
+header.hero::after {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -279,26 +279,26 @@ input.depth-interactive:focus {
 	pointer-events: none;
 }
 
-.hero-main {
+div.hero {
 	display: flex;
 	flex-direction: column;
-	margin: 5rem 0 0 7rem;
+	margin: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
 	font-size: clamp(20px, 1.1vw, 24px);
 	width: 32em;
 }
 
-.hero-main h1 {
+div.hero h1 {
 	font-size: 6em;
 	margin: 0;
 	text-align: left;
 }
 
-.hero-main p {
+div.hero p {
 	font-size: 1em;
 	margin-top: 1em;
 }
 
-.hero-main h2 {
+div.hero h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
 	font-size: 1.3em;
@@ -493,7 +493,7 @@ main {
 		font-size: 18px;
 	}
 
-	.hero-section {
+	header.hero {
 		flex-direction: column;
 		align-items: center;
 		justify-content: start;
@@ -501,24 +501,24 @@ main {
 		height: 100vh;
 	}
 
-	.hero-main {
+	div.hero {
 		align-items: center;
 		margin: 5em 0 0 0;
 		width: 90vw;
 		font-size: clamp(24px, 1.5vh, 32px)
 	}
 
-	.hero-main h1 {
+	div.hero h1 {
 		font-size: 5em;
 		text-align: center;
 	}
 
-	.hero-main p {
+	div.hero p {
 		font-size: 1em;
 		text-align: center;
 	}
 
-	.hero-main h2 {
+	div.hero h2 {
 		font-size: 1.25em;
 		text-align: center;
 		margin: 2em 0 1.5em 0;
