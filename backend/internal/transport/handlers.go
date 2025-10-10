@@ -26,14 +26,19 @@ type ContestResultsProvider interface {
 }
 
 type Handler struct {
-	client Client
-	crp    ContestResultsProvider
+	client  Client
+	crp     ContestResultsProvider
+	perfMan perfManager
 }
 
-func NewHandler(api Client, crp ContestResultsProvider) *Handler {
+func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int) *Handler {
 	return &Handler{
 		client: api,
 		crp:    crp,
+		perfMan: perfManager{
+			perfJobs:      make(chan int, perfJobsBuffer),
+			perfListeners: make(map[int][]chan<- perfResult),
+		},
 	}
 }
 
@@ -139,53 +144,6 @@ func (h *Handler) HandleGetRatingChanges(w http.ResponseWriter, r *http.Request)
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error writing user rating history: %v\n", err)
-		return
-	}
-}
-
-func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(ctx, handle)
-	if err != nil {
-		if !errors.Is(err, context.Canceled) {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("Error getting rating history for performance: %v\n", err)
-		}
-		return
-	}
-
-	type performance struct {
-		Rating    int `json:"rating"`
-		Timestamp int `json:"timestamp"`
-	}
-
-	perf := make([]performance, len(ratings))
-	for i := range ratings {
-		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
-		if err != nil {
-			if !errors.Is(err, context.Canceled) {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Printf("Error getting contest %d results for performance: %v\n", ratings[i].ContestID, err)
-			}
-			return
-		}
-
-		seed := stats.CalculateSeed(contestants, contest)
-		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
-		perf[i].Timestamp = ratings[i].Timestamp
-	}
-
-	j, err := json.Marshal(perf)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error marshalling performance: %v\n", err)
-		return
-	}
-
-	if _, err = w.Write(j); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Error writing performance: %v\n", err)
 		return
 	}
 }
