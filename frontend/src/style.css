@@ -438,7 +438,7 @@ div.theme-select {
 	gap: 0.5em;
 }
 
-.main-bg {
+main {
 	width: 100%;
 	background-color: var(--bg-dark);
 	position: relative;
@@ -446,13 +446,13 @@ div.theme-select {
 	transition-duration: var(--bg-transition-speed);
 }
 
-main {
+.main-section {
 	margin: 0 auto;
 	padding: 3rem 0;
 	width: 85%;
 }
 
-main h1 {
+.main-section h1 {
 	text-align: center;
 	font-size: 3.5rem;
 	margin-top: 0;
