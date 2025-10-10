@@ -20,24 +20,25 @@
 
 <body>
 	<div class="hero-wrapper">
-		<header class="hero-section">
+		<header class="hero">
 			<div class="grid-bg"></div>
-			<div class="hero-main">
-				<h1 class="glow-text">Codeforces<br>Insights</h1>
-				<p>
+			<div class="hero">
+				<h1 class="glow-text fade-in" style="animation-delay: 0.1s;">Codeforces<br>Insights</h1>
+				<p class="fade-in" style="animation-delay: 0.35s;">
 					<span class="blue-text">Track</span> your rating progress,
 					<span class="blue-text">identify</span> your strengths and improvement opportunities,
 					and <span class="blue-text">discover</span> patterns that help you
 					<span class="aqua-text weight-450 glow-pulse">rank up faster</span>.
 				</p>
-				<div class="user-form-container">
-					<h2 class="typing-animation">
+				<div class="user-form-container fade-in" style="animation-delay: 0.5s;">
+					<h2 class="">
 						<span class="blue-text weight-450 glow-text">Analyze</span>
 						your Codeforces history now.
 					</h2>
 					<form id="user-form" autocomplete="off">
-						<input type="text" id="handle-input" class="glow-interactive" placeholder="Enter Username">
-						<button type="submit" class="glow-interactive">Analyze</button>
+						<input type="text" id="handle-input" class="depth-1 depth-interactive"
+							placeholder="Enter Username">
+						<button type="submit" class="depth-1 depth-interactive">Analyze</button>
 					</form>
 				</div>
 			</div>
@@ -46,8 +47,7 @@
 				<svg viewBox="0 0 400 400" preserveAspectRatio="xMinYMax slice">
 					<defs>
 						<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-							<feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="currentColor"
-								flood-opacity="0.25" />
+							<feDropShadow dx="0" dy="3" stdDeviation="1.5" flood-color="black" flood-opacity="0.05" />
 						</filter>
 					</defs>
 					<g filter="url(#glow)">
@@ -73,58 +73,62 @@
 		<div class="hero-shadow"></div>
 	</div>
 
-	<div class="main-wrapper">
-		<main>
+	<main>
+		<section class="main-section">
 			<h1 class="glow-text">Analytics</h1>
-			<div class="user-info-grid">
-				<div id="user-details" class="user-info-item glow-border" style="grid-area: user-info">
-					<header class="user-info-header">
+			<div class="analytics-grid">
+				<div id="user-details" class="analytics-container depth-2" style="grid-area: user-info">
+					<header class="analytics-header">
 						<h2>User Info</h2>
 					</header>
-					<div class="user-info-content">
-						<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg"
-							alt="User Title Photo">
+					<div class="analytics-content">
+						<div class="depth-1">
+							<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg"
+								alt="User Title Photo">
+						</div>
 						<h3 id="username">Placeholder</h3>
 						<div>
 							<ul class="user-stats">
-								<li>Rating: <span id="user-rating">0</span></li>
-								<li>Peak rating: <span id="user-peak-rating">0</span></li>
+								<li>Rating: <span id="user-rating" class="weight-450">0</span></li>
+								<li>Peak rating: <span id="user-peak-rating" class="weight-450">0</span></li>
 								<li>Country: <span id="user-country"></span></li>
 							</ul>
 						</div>
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-ratings" class="user-info-item glow-border" style="grid-area: solved-ratings">
-					<header class="user-info-header">
+				<div id="solved-ratings" class="analytics-container depth-2" style="grid-area: solved-ratings">
+					<header class="analytics-header">
 						<h2>Rating distribution of solved problems</h2>
-						<button id="toggle-800-rating" class="glow-interactive" type="button" style="display: none;">
+						<button id="toggle-800-rating" class="depth-1 depth-interactive" type="button"
+							style="display: none;">
 							Hide 800 Rating
 						</button>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class=" chart-container">
 							<canvas id="solved-ratings-chart"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-tags" class="user-info-item glow-border" style="grid-area: solved-tags">
-					<header class="user-info-header">
+				<div id="solved-tags" class="analytics-container depth-2" style="grid-area: solved-tags">
+					<header class="analytics-header">
 						<h2>Solved Tags</h2>
-						<button id="toggle-other-tags" class="glow-interactive" type="button" style="display: none;">
+						<button id="toggle-other-tags" class="depth-1 depth-interactive" type="button"
+							style="display: none;">
 							Toggle Other
 						</button>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class="chart-container" style="align-self: center; aspect-ratio: 1">
 							<canvas id="solved-tags-chart"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="rating-history" class="user-info-item glow-border" style="grid-area: rating-history">
-					<header class="user-info-header">
+				<div id="rating-history" class="analytics-container depth-2" style="grid-area: rating-history">
+					<header class="analytics-header">
 						<h2>Rating History</h2>
 						<div id="performance-loader" style="display: none;">
 							<p>Calculating performance</p>
@@ -133,7 +137,7 @@
 							</div>
 						</div>
 					</header>
-					<div class="user-info-content">
+					<div class="analytics-content">
 						<div class="chart-container">
 							<canvas id="rating-history-chart"></canvas>
 						</div>
@@ -141,8 +145,8 @@
 					</div>
 				</div>
 			</div>
-		</main>
-	</div>
+		</section>
+	</main>
 </body>
 
 </html>

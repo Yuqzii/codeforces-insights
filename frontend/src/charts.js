@@ -58,8 +58,6 @@ export class SolvedTags {
 
 		hideLoader(ctx.parentNode.parentNode);
 
-		this.toggleOtherButton.style.display = 'inline';
-
 		this.#chart = new Chart(ctx, {
 			type: 'pie',
 			data: {
@@ -125,7 +123,7 @@ export class SolvedRatings {
 			this.#chart.destroy();
 
 		hideLoader(ctx.parentNode.parentNode);
-		this.toggle800Button.style.display = 'inline';
+
 		this.#chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
@@ -221,7 +219,6 @@ export class RatingHistory {
 				}]
 			},
 			options: {
-				responsive: true,
 				scales: {
 					x: {
 						type: 'time',
@@ -317,6 +314,10 @@ export function getColors() {
 
 	Chart.defaults.color = fgColor;
 	Chart.defaults.borderColor = borderColor;
+}
+
+export function getRatingColor(rating) {
+	return ratingRanges.find(range => rating >= range.min && rating <= range.max)?.color || '#ffffff';
 }
 
 export function showLoader(container) {

@@ -1,5 +1,6 @@
 import { updateAnalytics, solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
 import { getColors } from "./charts.js";
+import { observeAndAnimate } from "./entrance-anim.js";
 
 const root = document.documentElement;
 
@@ -30,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const theme = e.target.value;
 		setTheme(theme);
 	});
+
+	observeAndAnimate();
 });
 
 window.addEventListener('mousemove', throttle((e) => {

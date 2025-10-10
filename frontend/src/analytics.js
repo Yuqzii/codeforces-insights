@@ -1,4 +1,4 @@
-import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader } from "./charts.js";
+import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 
 const apiUrl = '/api/';
 
@@ -11,8 +11,6 @@ export const ratingHistory = new RatingHistory();
 const userDetails = document.getElementById('user-details');
 
 document.addEventListener('DOMContentLoaded', () => {
-	toggleOtherTags.style.display = 'none';
-
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
 	ratingHistory.updateChart();
@@ -30,9 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
 export async function updateAnalytics(handle, signal) {
 	// Set charts to loading
 	solvedTags.loading = true;
+	toggleOtherTags.style.display = 'none';
 	solvedTags.updateChart();
 	solvedRatings.loading = true;
+	toggle800Probs.style.display = 'none';
 	solvedRatings.updateChart();
+
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
 	showLoader(userDetails);
@@ -55,6 +56,7 @@ async function updateTags(handle, signal) {
 	return safeUpdate(`users/solved-tags/${handle}`, data => {
 		solvedTags.updateData(data);
 		solvedTags.loading = false;
+		toggleOtherTags.style.display = 'inline';
 		solvedTags.updateChart();
 	}, signal);
 }
@@ -63,6 +65,7 @@ async function updateSolvedRatings(handle, signal) {
 	return safeUpdate(`users/solved-ratings/${handle}`, data => {
 		solvedRatings.updateData(data);
 		solvedRatings.loading = false;
+		toggle800Probs.style.display = 'inline';
 		solvedRatings.updateChart();
 	}, signal);
 }
@@ -96,9 +99,14 @@ async function updateUserInfo(handle, signal) {
 		hideLoader(userDetails);
 		document.getElementById('user-title-photo').src = data.titlePhoto;
 		document.getElementById('username').textContent = data.handle;
-		document.getElementById('user-rating').textContent = data.rating;
-		document.getElementById('user-peak-rating').textContent = data.maxRating;
 		document.getElementById('user-country').textContent = data.country;
+
+		const rating = document.getElementById('user-rating');
+		rating.textContent = data.rating;
+		rating.style.setProperty('--text-color', getRatingColor(data.rating));
+		const peakRating = document.getElementById('user-peak-rating');
+		peakRating.textContent = data.maxRating;
+		peakRating.style.setProperty('--text-color', getRatingColor(data.maxRating));
 	}, signal);
 }
 
