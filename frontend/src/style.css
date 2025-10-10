@@ -266,12 +266,9 @@ input.depth-interactive:focus {
 	display: flex;
 	flex-direction: row;
 	z-index: 0;
-
 	height: 100vh;
-	border-bottom: 1px solid var(--border);
-
 	background-color: var(--bg-dark);
-	transition: background-color var(--bg-transition-speed) ease;
+	transition: background-color var(--bg-transition-speed);
 }
 
 .hero-section::after {
@@ -427,7 +424,7 @@ input.depth-interactive:focus {
 	position: absolute;
 	z-index: 1;
 	inset: 0;
-	box-shadow: 0 0 15px var(--glow);
+	box-shadow: 0 2px 8px var(--bg1);
 	pointer-events: none;
 }
 
