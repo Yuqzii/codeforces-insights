@@ -18,6 +18,9 @@ const (
 	dbPort uint16 = 5432
 
 	cfTimeBetweenReqs time.Duration = 2 * time.Second
+
+	perfJobsBuffer int = 1000
+	perfWorkerCnt  int = 10
 )
 
 func main() {
@@ -42,7 +45,7 @@ func main() {
 	store := store.New(cfClient, db)
 
 	log.Println("Setting up API handler")
-	h := transport.NewHandler(cfClient, store)
+	h := transport.NewHandler(cfClient, store, perfJobsBuffer, perfWorkerCnt)
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()

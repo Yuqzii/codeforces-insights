@@ -31,8 +31,8 @@ type Handler struct {
 	perf   perfManager
 }
 
-func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int) *Handler {
-	return &Handler{
+func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers int) *Handler {
+	h := &Handler{
 		client: api,
 		crp:    crp,
 		perf: perfManager{
@@ -40,6 +40,12 @@ func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int) *Han
 			crp:  crp,
 		},
 	}
+
+	for range perfWorkers {
+		go h.perf.perfWorker()
+	}
+
+	return h
 }
 
 func (h *Handler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
