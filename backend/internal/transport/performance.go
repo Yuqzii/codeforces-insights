@@ -6,7 +6,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/stats"
@@ -24,11 +23,12 @@ type perfJob struct {
 	contestID int
 	rank      int
 	rating    int
+	timestamp int
 }
 
 type perfResult struct {
 	performance int
-	timestamp   time.Time
+	timestamp   int
 	err         error
 }
 
@@ -46,8 +46,8 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type performance struct {
-		Rating    int   `json:"rating"`
-		Timestamp int64 `json:"timestamp"`
+		Rating    int `json:"rating"`
+		Timestamp int `json:"timestamp"`
 	}
 
 	perf := make([]performance, 0, len(ratings))
@@ -70,7 +70,7 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 			}
 			perf = append(perf, performance{
 				Rating:    perfRes.performance,
-				Timestamp: perfRes.timestamp.Unix(),
+				Timestamp: perfRes.timestamp,
 			})
 		case <-ctx.Done():
 			cancel()
@@ -103,6 +103,7 @@ func (p *perfManager) addJob(ctx context.Context, r *codeforces.RatingChange, re
 		contestID: r.ContestID,
 		rank:      r.Rank,
 		rating:    r.OldRating,
+		timestamp: r.Timestamp,
 	}
 }
 
@@ -131,6 +132,7 @@ func (p *perfManager) perfWorker() {
 
 		job.chn <- perfResult{
 			performance: perf,
+			timestamp:   job.timestamp,
 		}
 	}
 }
