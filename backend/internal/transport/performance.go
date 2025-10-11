@@ -6,16 +6,15 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"sync"
+	"time"
 
+	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/stats"
 )
 
 type perfManager struct {
 	jobs chan perfJob
-	mu   sync.Mutex
-
-	crp ContestResultsProvider
+	crp  ContestResultsProvider
 }
 
 type perfJob struct {
@@ -29,11 +28,12 @@ type perfJob struct {
 
 type perfResult struct {
 	performance int
+	timestamp   time.Time
 	err         error
 }
 
 func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithCancel(r.Context())
 	handle := r.PathValue("handle")
 	ratings, err := h.client.GetRatingChanges(ctx, handle)
 	if err != nil {
@@ -41,56 +41,69 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			log.Printf("Error getting rating history for performance: %v\n", err)
 		}
+		cancel()
 		return
 	}
 
 	type performance struct {
-		Rating    int `json:"rating"`
-		Timestamp int `json:"timestamp"`
+		Rating    int   `json:"rating"`
+		Timestamp int64 `json:"timestamp"`
 	}
 
-	perf := make([]performance, len(ratings))
+	perf := make([]performance, 0, len(ratings))
+	resChan := make(chan perfResult, len(ratings))
+
 	for i := range ratings {
-		contestants, contest, err := h.crp.GetContestResults(ctx, ratings[i].ContestID)
-		if err != nil {
-			if !errors.Is(err, context.Canceled) {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Printf("Error getting contest %d results for performance: %v\n", ratings[i].ContestID, err)
+		h.perf.addJob(ctx, &ratings[i], resChan)
+	}
+
+	for range ratings {
+		select {
+		case perfRes := <-resChan:
+			if perfRes.err != nil {
+				http.Error(w, perfRes.err.Error(), http.StatusInternalServerError)
+				log.Printf("Error getting performance: %v\n", perfRes.err)
+				// Cancel context so we don't make unnecessary calculations, and avoids leaking channel
+				cancel()
+				close(resChan)
+				return
 			}
+			perf = append(perf, performance{
+				Rating:    perfRes.performance,
+				Timestamp: perfRes.timestamp.Unix(),
+			})
+		case <-ctx.Done():
+			cancel()
 			return
 		}
-
-		seed := stats.CalculateSeed(contestants, contest)
-		perf[i].Rating = seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
-		perf[i].Timestamp = ratings[i].Timestamp
 	}
 
 	j, err := json.Marshal(perf)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error marshalling performance: %v\n", err)
+		cancel()
 		return
 	}
 
 	if _, err = w.Write(j); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error writing performance: %v\n", err)
+		cancel()
 		return
 	}
+
+	cancel()
 }
 
-func (p *perfManager) makeJob(ctx context.Context, id int, rank int, rating int) <-chan perfResult {
-	resChan := make(chan perfResult)
-
+func (p *perfManager) addJob(ctx context.Context, r *codeforces.RatingChange, resChan chan<- perfResult) {
 	p.jobs <- perfJob{
 		ctx:       ctx,
 		chn:       resChan,
-		contestID: id,
-		rank:      rank,
-		rating:    rating,
+		contestID: r.ContestID,
+		rank:      r.Rank,
+		rating:    r.OldRating,
 	}
-
-	return resChan
 }
 
 func (p *perfManager) perfWorker() {
@@ -109,7 +122,6 @@ func (p *perfManager) perfWorker() {
 				job.chn <- perfResult{
 					err: err,
 				}
-				close(job.chn)
 			}
 			return
 		}
@@ -120,6 +132,5 @@ func (p *perfManager) perfWorker() {
 		job.chn <- perfResult{
 			performance: perf,
 		}
-		close(job.chn)
 	}
 }

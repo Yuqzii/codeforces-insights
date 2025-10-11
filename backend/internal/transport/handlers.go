@@ -26,16 +26,16 @@ type ContestResultsProvider interface {
 }
 
 type Handler struct {
-	client  Client
-	crp     ContestResultsProvider
-	perfMan perfManager
+	client Client
+	crp    ContestResultsProvider
+	perf   perfManager
 }
 
 func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int) *Handler {
 	return &Handler{
 		client: api,
 		crp:    crp,
-		perfMan: perfManager{
+		perf: perfManager{
 			jobs: make(chan perfJob, perfJobsBuffer),
 			crp:  crp,
 		},
