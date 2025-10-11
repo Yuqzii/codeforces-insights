@@ -88,6 +88,8 @@ async function updateSolvedRatingsTime(handle, signal) {
 
 async function updatePerformance(handle, signal) {
 	return safeUpdate(`users/performance/${handle}`, data => {
+		data.sort((a, b) => a.timestamp > b.timestamp);
+
 		ratingHistory.updatePerfomanceData(data);
 		ratingHistory.loading = false;
 		ratingHistory.updateChart();
