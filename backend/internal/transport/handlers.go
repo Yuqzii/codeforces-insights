@@ -36,8 +36,8 @@ func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int) *Han
 		client: api,
 		crp:    crp,
 		perfMan: perfManager{
-			perfJobs:      make(chan int, perfJobsBuffer),
-			perfListeners: make(map[int][]chan<- perfResult),
+			jobs: make(chan perfJob, perfJobsBuffer),
+			crp:  crp,
 		},
 	}
 }

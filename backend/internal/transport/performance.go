@@ -12,16 +12,19 @@ import (
 )
 
 type perfManager struct {
-	jobs      chan int
-	listeners map[int][]perfListener
-	mu        sync.Mutex
+	jobs chan perfJob
+	mu   sync.Mutex
 
 	crp ContestResultsProvider
 }
 
-type perfListener struct {
+type perfJob struct {
 	ctx context.Context
 	chn chan<- perfResult
+
+	contestID int
+	rank      int
+	rating    int
 }
 
 type perfResult struct {
@@ -76,71 +79,47 @@ func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (p *perfManager) makeJob(ctx context.Context, id int) <-chan perfResult {
+func (p *perfManager) makeJob(ctx context.Context, id int, rank int, rating int) <-chan perfResult {
 	resChan := make(chan perfResult)
 
-	_, queued := p.listeners[id]
-	if !queued {
-		p.listeners[id] = make([]perfListener, 0, 1)
+	p.jobs <- perfJob{
+		ctx:       ctx,
+		chn:       resChan,
+		contestID: id,
+		rank:      rank,
+		rating:    rating,
 	}
-
-	p.listeners[id] = append(p.listeners[id], perfListener{
-		ctx: ctx,
-		chn: resChan,
-	})
 
 	return resChan
 }
 
 func (p *perfManager) perfWorker() {
 	for {
-		id := <-p.jobs
+		job := <-p.jobs
 
-		if p.listenersCancelled(id) {
+		select {
+		case <-job.ctx.Done():
 			continue
+		default:
 		}
 
-		contestants, contest, err := p.crp.GetContestResults(context.Background(), id)
+		contestants, contest, err := p.crp.GetContestResults(context.Background(), job.contestID)
 		if err != nil {
 			if !errors.Is(err, context.Canceled) {
-				p.sendErrToListeners(err, id)
+				job.chn <- perfResult{
+					err: err,
+				}
+				close(job.chn)
 			}
 			return
 		}
 
 		seed := stats.CalculateSeed(contestants, contest)
-		_ = seed
-		//perf := seed.CalculatePerformance(ratings[i].Rank, ratings[i].OldRating)
-	}
-}
+		perf := seed.CalculatePerformance(job.rank, job.rating)
 
-func (p *perfManager) listenersCancelled(id int) bool {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	for _, l := range p.listeners[id] {
-		select {
-		case <-l.ctx.Done():
-			continue
-		default:
-			return false
+		job.chn <- perfResult{
+			performance: perf,
 		}
-	}
-	return true
-}
-
-func (p *perfManager) sendErrToListeners(err error, id int) {
-	result := perfResult{
-		performance: -1,
-		err:         err,
-	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	for _, l := range p.listeners[id] {
-		select {
-		case <-l.ctx.Done(): // Don't send to cancelled receiver
-		default:
-			l.chn <- result
-		}
-		close(l.chn)
+		close(job.chn)
 	}
 }
