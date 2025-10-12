@@ -9,8 +9,8 @@ import (
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/cf-stats/internal/handlers"
 	"github.com/yuqzii/cf-stats/internal/store"
-	"github.com/yuqzii/cf-stats/internal/transport"
 )
 
 const (
@@ -18,6 +18,9 @@ const (
 	dbPort uint16 = 5432
 
 	cfTimeBetweenReqs time.Duration = 2 * time.Second
+
+	perfJobsBuffer int = 1000
+	perfWorkerCnt  int = 10
 )
 
 func main() {
@@ -42,7 +45,7 @@ func main() {
 	store := store.New(cfClient, db)
 
 	log.Println("Setting up API handler")
-	h := transport.NewHandler(cfClient, store)
+	h := handlers.New(cfClient, store, perfJobsBuffer, perfWorkerCnt)
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()
