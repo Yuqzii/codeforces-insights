@@ -37,14 +37,21 @@ func (s *Store) GetContestResults(ctx context.Context, id int) (
 		return nil, nil, fmt.Errorf("getting contest ratings from api: %w", err)
 	}
 
+	MapRatingToContestants(ratings, contestants)
+
+	return contestants, contest, nil
+}
+
+// Adds the correct rating to each contestant. (Changes the provided contestants).
+func MapRatingToContestants(ratings []codeforces.RatingChange, contestants []codeforces.Contestant) {
 	ratingMap := make(map[string]*codeforces.RatingChange)
 	for i := range ratings {
 		ratingMap[ratings[i].Handle] = &ratings[i]
 	}
 
 	// Set ratings of contestants
-	for i, c := range contestants {
-		for _, handle := range c.MemberHandles {
+	for i := range contestants {
+		for _, handle := range contestants[i].MemberHandles {
 			r, ok := ratingMap[handle]
 			// Use rating of party member with maximum previous rating
 			if ok && r.OldRating > contestants[i].OldRating {
@@ -53,6 +60,4 @@ func (s *Store) GetContestResults(ctx context.Context, id int) (
 			}
 		}
 	}
-
-	return contestants, contest, nil
 }
