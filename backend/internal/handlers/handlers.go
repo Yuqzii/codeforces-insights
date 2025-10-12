@@ -1,4 +1,4 @@
-package transport
+package handlers
 
 import (
 	"context"
@@ -31,7 +31,7 @@ type Handler struct {
 	perf   perfManager
 }
 
-func NewHandler(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers int) *Handler {
+func New(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers int) *Handler {
 	h := &Handler{
 		client: api,
 		crp:    crp,
