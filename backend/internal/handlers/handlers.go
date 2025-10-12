@@ -42,7 +42,7 @@ func New(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers
 	}
 
 	for range perfWorkers {
-		go h.perf.perfWorker()
+		go h.perf.worker()
 	}
 
 	return h

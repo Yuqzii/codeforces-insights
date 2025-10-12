@@ -107,7 +107,7 @@ func (p *perfManager) addJob(ctx context.Context, r *codeforces.RatingChange, re
 	}
 }
 
-func (p *perfManager) perfWorker() {
+func (p *perfManager) worker() {
 	for {
 		job := <-p.jobs
 
