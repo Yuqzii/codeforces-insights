@@ -2,3 +2,7 @@
 node_modules/
 dist/
 certs/
+
+*.test
+*.prof
+*.out
