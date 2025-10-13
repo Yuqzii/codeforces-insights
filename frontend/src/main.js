@@ -7,6 +7,7 @@ const root = document.documentElement;
 const form = document.getElementById('user-form');
 const input = document.getElementById('handle-input');
 const themeSelect = document.getElementById('theme-select');
+const highContrastSlider = document.getElementById('high-contrast-slider');
 
 let controller = new AbortController();
 
@@ -30,6 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	themeSelect.addEventListener('change', (e) => {
 		const theme = e.target.value;
 		setTheme(theme);
+	});
+
+	highContrastSlider.addEventListener('change', (e) => {
+		if (e.target.checked === true)
+			root.classList.add('increased-contrast');
+		else
+			root.classList.remove('increased-contrast');
 	});
 
 	observeAndAnimate();
