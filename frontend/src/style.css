@@ -305,8 +305,8 @@ input:checked+.slider::before {
 }
 
 #hamburger span {
-	width: 2.75rem;
-	height: 0.3rem;
+	width: 2.5rem;
+	height: 0.25rem;
 	background-color: var(--fg);
 }
 
@@ -317,13 +317,16 @@ input:checked+.slider::before {
 	flex-direction: column;
 	justify-content: space-between;
 	z-index: 5;
+	left: 0;
+	/* This is changed with the active class */
+	transform: translateX(-100%);
 	width: 15em;
 	height: 100vh;
 
 	background-color: color-mix(in srgb, var(--bg), transparent 5%);
 	backdrop-filter: blur(10px);
 	box-shadow: inset -5px 0 15px color-mix(in srgb, var(--bg3), transparent 90%);
-	transition: background-color var(--bg-transition-speed);
+	transition-duration: var(--bg-transition-speed);
 }
 
 #nav-menu nav {
@@ -358,6 +361,10 @@ input:checked+.slider::before {
 
 #nav-menu nav a:hover::after {
 	transform: translateX(-50%) scaleX(1);
+}
+
+#nav-menu.active {
+	transform: translateX(0);
 }
 
 #high-contrast-container {
@@ -662,10 +669,6 @@ main {
 
 	#user-details .analytics-content {
 		font-size: 1.25rem;
-	}
-
-	#nav-menu {
-		display: none;
 	}
 }
 
