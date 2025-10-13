@@ -438,11 +438,11 @@ div.hero h2 {
 }
 
 .animated-line {
-	stroke-dasharray: 1000;
-	stroke-dashoffset: 1000;
+	stroke-dasharray: 600;
+	stroke-dashoffset: 600;
 	stroke: var(--bg3);
 	stroke-width: 2.5;
-	animation: draw-line 2.25s var(--graph-anim-delay) linear forwards;
+	animation: draw-line 1.4s var(--graph-anim-delay) linear forwards;
 }
 
 @keyframes draw-line {
@@ -493,10 +493,10 @@ main {
 
 @media (max-aspect-ratio: 6/5) {
 	html {
-		font-size: 18px;
+		font-size: 16px;
 	}
 
-	main {
+	.main-section {
 		width: 90%;
 	}
 
@@ -570,6 +570,10 @@ main {
 
 	#user-details .analytics-content {
 		font-size: 1.25rem;
+	}
+
+	#nav-bar {
+		display: none;
 	}
 }
 
