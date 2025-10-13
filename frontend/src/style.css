@@ -150,32 +150,6 @@ button:hover {
 	font-weight: 450;
 }
 
-.glow-interactive {
-	background-color: var(--bg1);
-	color: var(--fg);
-	display: inline-block;
-	border: 1px solid var(--border);
-	border-radius: 0.5em;
-	box-shadow: 0 0 2px 1px var(--glow);
-	transition: background-color var(--bg-transition-speed) ease, box-shadow var(--bg-transition-speed);
-}
-
-.glow-interactive:hover {
-	background-color: var(--bg2);
-	box-shadow: 0 0 3px 2px var(--glow);
-	transition: background-color 50ms, box-shadow 50ms;
-}
-
-button.glow-interactive:active {
-	background-color: var(--bg3);
-}
-
-input.glow-interactive:focus {
-	background-color: var(--bg3);
-	box-shadow: 0 0 3px 2px var(--glow);
-	outline: none;
-}
-
 .glow-text {
 	text-shadow: 0 0 0.1em var(--glow);
 }
