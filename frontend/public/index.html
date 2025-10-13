@@ -19,24 +19,33 @@
 </head>
 
 <body>
-	<div id="nav-bar">
+	<button type="button" id="hamburger">
+		<span></span>
+		<span></span>
+		<span></span>
+	</button>
+
+	<div id="nav-menu">
 		<nav>
 			<a href="#hero-section">Home</a>
 			<a href="#analytics-section">Analytics</a>
+			<a href="#practice-section">Practice</a>
 		</nav>
 		<div>
-			<span>High Contrast</span>
-			<label class="switch">
-				<input type="checkbox" id="high-contrast-slider">
-				<span class="slider"></span>
-			</label>
-		</div>
-		<div class="theme-select">
-			<label for="theme-select">Select Theme</label>
-			<select id="theme-select" class="depth-1 depth-interactive">
-				<option value="theme-catppuccin">Catppuccin Mocha</option>
-				<option value="theme-gruvbox">Gruvbox</option>
-			</select>
+			<div id="high-contrast-container">
+				<span>High Contrast</span>
+				<label class="switch">
+					<input type="checkbox" id="high-contrast-slider">
+					<span class="slider"></span>
+				</label>
+			</div>
+			<div class="theme-select">
+				<label for="theme-select">Select Theme</label>
+				<select id="theme-select" class="depth-1 depth-interactive">
+					<option value="theme-catppuccin">Catppuccin Mocha</option>
+					<option value="theme-gruvbox">Gruvbox</option>
+				</select>
+			</div>
 		</div>
 	</div>
 
@@ -162,6 +171,11 @@
 					</div>
 				</div>
 			</div>
+		</section>
+
+		<section id="practice-section" class="main-section">
+			<h1 class="glow-text">Practice</h1>
+			<h2>Coming Soon™!</h2>
 		</section>
 	</main>
 </body>

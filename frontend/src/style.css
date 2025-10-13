@@ -2,7 +2,6 @@
 	--bg-transition-speed: 150ms;
 	--cursor-x: -100px;
 	--cursor-y: -100px;
-	--nav-bar-height: clamp(3rem, 6.5vh, 6rem);
 
 	--bg: #1e1e2e;
 	--bg1: #313244;
@@ -67,10 +66,6 @@
 html {
 	font-size: clamp(14px, 0.9vw, 2vh);
 	scroll-behavior: smooth;
-}
-
-[id] {
-	scroll-margin-top: var(--nav-bar-height);
 }
 
 ::placeholder {
@@ -182,6 +177,7 @@ button:hover {
 		inset 0 1px 1px var(--bg3),
 		0 1px 2px var(--bg-dark),
 		0 0 5px var(--bg-dark);
+	border-radius: 0.5em;
 	background-color: var(--bg1);
 	transition-duration: var(--bg-transition-speed);
 }
@@ -191,6 +187,7 @@ button:hover {
 		inset 0 1.25px 2px var(--bg2),
 		0 5px 4px var(--bg-shadow),
 		0 0 5px var(--bg-shadow);
+	border-radius: 0.5em;
 	background-color: var(--bg);
 	transition-duration: var(--bg-transition-speed);
 }
@@ -252,8 +249,8 @@ input.depth-interactive:focus {
 .switch {
 	position: relative;
 	display: inline-block;
-	width: 5rem;
-	height: 2.5rem;
+	width: 5em;
+	height: 2.5em;
 }
 
 .switch input {
@@ -266,19 +263,26 @@ input.depth-interactive:focus {
 	position: absolute;
 	cursor: pointer;
 	inset: 0;
+	border-radius: 0.5em;
+	box-shadow:
+		inset 0 1px 1px var(--bg3),
+		0 2px 1px var(--bg-dark),
+		0 0 2px 1px var(--bg-dark);
 	background-color: var(--bg1);
-	transition-duration: 0.4s;
+	transition-duration: var(--bg-transition-speed);
 }
 
 .slider::before {
 	content: "";
 	position: absolute;
-	height: 2rem;
-	width: 2rem;
-	left: 0.25rem;
-	top: 0.25rem;
-	background-color: var(--fg);
-	transition-duration: 0.4s;
+	height: 2em;
+	width: 2em;
+	left: 0.25em;
+	top: 0.25em;
+	border-radius: 0.3em;
+	background-color: var(--bg3);
+	box-shadow: 0 0 1px var(--bg);
+	transition-duration: var(--bg-transition-speed);
 }
 
 input:checked+.slider {
@@ -286,31 +290,56 @@ input:checked+.slider {
 }
 
 input:checked+.slider::before {
-	transform: translateX(2.5rem);
+	transform: translateX(2.5em);
+	background-color: var(--fg);
+}
+
+#hamburger {
+	position: fixed;
+	top: 1.5rem;
+	left: 1.5rem;
+	z-index: 11;
+	background: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75em;
+	padding: 0;
+}
+
+#hamburger span {
+	width: 2.5em;
+	height: 0.25em;
+	background-color: var(--fg);
 }
 
 /* Nav bar */
-#nav-bar {
+#nav-menu {
 	position: fixed;
-	z-index: 10;
 	display: flex;
-	align-items: center;
+	flex-direction: column;
 	justify-content: space-between;
-	width: 100vw;
-	height: var(--nav-bar-height);
+	z-index: 5;
+	left: 0;
+	/* This is changed with the active class */
+	transform: translateX(-100%);
+	width: 15em;
+	height: 100vh;
 
-	background-color: color-mix(in srgb, var(--bg), transparent 15%);
+	background-color: color-mix(in srgb, var(--bg), transparent 5%);
 	backdrop-filter: blur(10px);
-	box-shadow: inset 0 -5px 15px color-mix(in srgb, var(--bg3), transparent 90%);
-	transition: background-color var(--bg-transition-speed);
+	box-shadow: inset -5px 0 15px color-mix(in srgb, var(--bg3), transparent 90%);
+	transition-duration: var(--bg-transition-speed);
 }
 
-#nav-bar nav {
+#nav-menu nav {
 	display: flex;
-	font-size: 1.2rem;
+	flex-direction: column;
+	font-size: 1.2em;
+	margin-top: 6rem;
+	gap: 1em;
 }
 
-#nav-bar nav a {
+#nav-menu nav a {
 	margin: auto 2em;
 	text-decoration: none;
 	color: var(--fg);
@@ -318,7 +347,7 @@ input:checked+.slider::before {
 	position: relative;
 }
 
-#nav-bar nav a::after {
+#nav-menu nav a::after {
 	content: "";
 	position: absolute;
 	left: 50%;
@@ -332,12 +361,35 @@ input:checked+.slider::before {
 	transition: transform 150ms ease;
 }
 
-#nav-bar nav a:hover::after {
+#nav-menu nav a:hover::after {
 	transform: translateX(-50%) scaleX(1);
 }
 
+#nav-menu.active {
+	transform: translateX(0);
+}
+
+#high-contrast-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+	margin-bottom: 2em;
+}
+
+#high-contrast-container .switch {
+	font-size: 0.9em;
+}
+
 .theme-select {
-	margin: auto 1em;
+	font-size: 1em;
+	margin: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.75em;
+	text-align: center;
 }
 
 /* Hero section */
@@ -621,8 +673,16 @@ main {
 		font-size: 1.25rem;
 	}
 
-	#nav-bar {
-		display: none;
+	#nav-menu {
+		font-size: 2rem;
+	}
+
+	#nav-menu nav {
+		margin-top: 10rem;
+	}
+
+	#hamburger {
+		font-size: 2rem;
 	}
 }
 
