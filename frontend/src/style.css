@@ -2,6 +2,7 @@
 	--bg-transition-speed: 150ms;
 	--cursor-x: -100px;
 	--cursor-y: -100px;
+	--nav-bar-height: clamp(3rem, 6.5vh, 6rem);
 
 	--bg: #1e1e2e;
 	--bg1: #313244;
@@ -60,8 +61,12 @@
 }
 
 html {
-	scroll-behavior: smooth;
 	font-size: clamp(14px, 0.9vw, 2vh);
+	scroll-behavior: smooth;
+}
+
+[id] {
+	scroll-margin-top: var(--nav-bar-height);
 }
 
 body {
@@ -268,10 +273,11 @@ nav {
 	display: flex;
 	align-items: center;
 	width: 100vw;
-	height: 7.5vh;
+	height: var(--nav-bar-height);
 	font-size: 1.2rem;
 
-	background-color: var(--bg);
+	background-color: color-mix(in srgb, var(--bg), transparent 20%);
+	backdrop-filter: blur(10px);
 }
 
 nav a {
