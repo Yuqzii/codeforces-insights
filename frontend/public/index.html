@@ -19,7 +19,21 @@
 </head>
 
 <body>
-	<div class="hero-wrapper">
+	<div id="nav-bar">
+		<nav>
+			<a href="#hero-section">Home</a>
+			<a href="#analytics-section">Analytics</a>
+		</nav>
+		<div class="theme-select">
+			<label for="theme-select">Select Theme</label>
+			<select id="theme-select" class="depth-1 depth-interactive">
+				<option value="theme-catppuccin">Catppuccin Mocha</option>
+				<option value="theme-gruvbox">Gruvbox</option>
+			</select>
+		</div>
+	</div>
+
+	<section id="hero-section" class="hero-wrapper">
 		<header class="hero">
 			<div class="grid-bg"></div>
 			<div class="hero">
@@ -62,19 +76,12 @@
 				</svg>
 			</div>
 
-			<div class="theme-select">
-				<label for="theme-select">Select Theme</label>
-				<select id="theme-select" class="glow-interactive">
-					<option value="theme-catppuccin">Catppuccin Mocha</option>
-					<option value="theme-gruvbox">Gruvbox</option>
-				</select>
-			</div>
 		</header>
 		<div class="hero-shadow"></div>
-	</div>
+	</section>
 
 	<main>
-		<section class="main-section">
+		<section id="analytics-section" class="main-section">
 			<h1 class="glow-text">Analytics</h1>
 			<div class="analytics-grid">
 				<div id="user-details" class="analytics-container depth-2" style="grid-area: user-info">
