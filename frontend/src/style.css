@@ -60,6 +60,10 @@
 	--aqua: #83c07c;
 }
 
+.increased-contrast {
+	filter: contrast(1.4) saturate(1.15);
+}
+
 html {
 	font-size: clamp(14px, 0.9vw, 2vh);
 	scroll-behavior: smooth;
@@ -243,6 +247,46 @@ input.depth-interactive:focus {
 		opacity: 100%;
 		transform: translateY(0);
 	}
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 5rem;
+	height: 2.5rem;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	inset: 0;
+	background-color: var(--bg1);
+	transition-duration: 0.4s;
+}
+
+.slider::before {
+	content: "";
+	position: absolute;
+	height: 2rem;
+	width: 2rem;
+	left: 0.25rem;
+	top: 0.25rem;
+	background-color: var(--fg);
+	transition-duration: 0.4s;
+}
+
+input:checked+.slider {
+	background-color: var(--bg3);
+}
+
+input:checked+.slider::before {
+	transform: translateX(2.5rem);
 }
 
 /* Nav bar */
