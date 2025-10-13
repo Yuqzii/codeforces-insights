@@ -177,6 +177,7 @@ button:hover {
 		inset 0 1px 1px var(--bg3),
 		0 1px 2px var(--bg-dark),
 		0 0 5px var(--bg-dark);
+	border-radius: 0.5em;
 	background-color: var(--bg1);
 	transition-duration: var(--bg-transition-speed);
 }
@@ -186,6 +187,7 @@ button:hover {
 		inset 0 1.25px 2px var(--bg2),
 		0 5px 4px var(--bg-shadow),
 		0 0 5px var(--bg-shadow);
+	border-radius: 0.5em;
 	background-color: var(--bg);
 	transition-duration: var(--bg-transition-speed);
 }
@@ -267,7 +269,7 @@ input.depth-interactive:focus {
 		0 2px 1px var(--bg-dark),
 		0 0 2px 1px var(--bg-dark);
 	background-color: var(--bg1);
-	transition-duration: 0.4s;
+	transition-duration: var(--bg-transition-speed);
 }
 
 .slider::before {
@@ -280,7 +282,7 @@ input.depth-interactive:focus {
 	border-radius: 0.3em;
 	background-color: var(--bg3);
 	box-shadow: 0 0 1px var(--bg);
-	transition-duration: 0.4s;
+	transition-duration: var(--bg-transition-speed);
 }
 
 input:checked+.slider {
