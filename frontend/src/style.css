@@ -438,11 +438,11 @@ div.hero h2 {
 }
 
 .animated-line {
-	stroke-dasharray: 1000;
-	stroke-dashoffset: 1000;
+	stroke-dasharray: 600;
+	stroke-dashoffset: 600;
 	stroke: var(--bg3);
 	stroke-width: 2.5;
-	animation: draw-line 2.25s var(--graph-anim-delay) linear forwards;
+	animation: draw-line 1.4s var(--graph-anim-delay) linear forwards;
 }
 
 @keyframes draw-line {
