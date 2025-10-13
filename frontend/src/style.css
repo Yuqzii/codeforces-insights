@@ -267,20 +267,26 @@ input.depth-interactive:focus {
 }
 
 /* Nav bar */
-nav {
+#nav-bar {
 	position: fixed;
 	z-index: 10;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	width: 100vw;
 	height: var(--nav-bar-height);
-	font-size: 1.2rem;
 
 	background-color: color-mix(in srgb, var(--bg), transparent 20%);
 	backdrop-filter: blur(10px);
+	transition: background-color var(--bg-transition-speed);
 }
 
-nav a {
+#nav-bar nav {
+	display: flex;
+	font-size: 1.2rem;
+}
+
+#nav-bar nav a {
 	margin: auto 4em;
 	text-decoration: none;
 	color: var(--fg);
@@ -288,7 +294,7 @@ nav a {
 	position: relative;
 }
 
-nav a::after {
+#nav-bar nav a::after {
 	content: "";
 	position: absolute;
 	left: 50%;
@@ -302,8 +308,12 @@ nav a::after {
 	transition: transform 150ms ease;
 }
 
-nav a:hover::after {
+#nav-bar nav a:hover::after {
 	transform: translateX(-50%) scaleX(1);
+}
+
+.theme-select {
+	margin: auto 1em;
 }
 
 /* Hero section */
@@ -474,15 +484,6 @@ div.hero h2 {
 	pointer-events: none;
 }
 
-div.theme-select {
-	position: fixed;
-	top: 1em;
-	right: 1em;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.5em;
-}
 
 main {
 	width: 100%;
