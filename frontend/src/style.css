@@ -69,6 +69,11 @@ html {
 	scroll-margin-top: var(--nav-bar-height);
 }
 
+::placeholder {
+	color: var(--fg);
+	opacity: 0.5;
+}
+
 body {
 	font-family: "Fira Code";
 	color: var(--fg);

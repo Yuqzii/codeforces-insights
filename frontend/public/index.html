@@ -51,7 +51,7 @@
 					</h2>
 					<form id="user-form" autocomplete="off">
 						<input type="text" id="handle-input" class="depth-1 depth-interactive"
-							placeholder="Enter Username">
+							placeholder="Enter Username" aria-label="Codeforces username input">
 						<button type="submit" class="depth-1 depth-interactive">Analyze</button>
 					</form>
 				</div>
@@ -59,6 +59,7 @@
 
 			<div class="hero-graph-container">
 				<svg viewBox="0 0 400 400" preserveAspectRatio="xMinYMax slice">
+					<title>Animated graph</title>
 					<defs>
 						<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
 							<feDropShadow dx="0" dy="3" stdDeviation="1.5" flood-color="black" flood-opacity="0.05" />
@@ -114,7 +115,8 @@
 					</header>
 					<div class="analytics-content">
 						<div class=" chart-container">
-							<canvas id="solved-ratings-chart"></canvas>
+							<canvas id="solved-ratings-chart" role="img"
+								aria-label="Chart of solved problem ratings"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
@@ -129,7 +131,8 @@
 					</header>
 					<div class="analytics-content">
 						<div class="chart-container" style="align-self: center; aspect-ratio: 1">
-							<canvas id="solved-tags-chart"></canvas>
+							<canvas id="solved-tags-chart" role="img"
+								aria-label="Chart of solved problem tags"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
@@ -146,7 +149,7 @@
 					</header>
 					<div class="analytics-content">
 						<div class="chart-container">
-							<canvas id="rating-history-chart"></canvas>
+							<canvas id="rating-history-chart" role="img" aria-label="Chart of rating history"></canvas>
 						</div>
 						<div class="loader"></div>
 					</div>
