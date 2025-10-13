@@ -61,7 +61,7 @@
 }
 
 .increased-contrast {
-	filter: contrast(1.4) saturate(1.15);
+	filter: contrast(1.2) saturate(1.5);
 }
 
 html {
