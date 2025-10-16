@@ -1,4 +1,4 @@
-var fgColor, bgColor, shadowColor, borderColor;
+var fgColor, bgColor, bg1Color, bg2Color, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 
 getColors();
@@ -302,6 +302,8 @@ export function getColors() {
 	const style = window.getComputedStyle(document.documentElement);
 	fgColor = style.getPropertyValue('--fg');
 	bgColor = style.getPropertyValue('--bg');
+	bg1Color = style.getPropertyValue('--bg1');
+	bg2Color = style.getPropertyValue('--bg2');
 	shadowColor = style.getPropertyValue('--shadow');
 	borderColor = style.getPropertyValue('--border');
 	redColor = style.getPropertyValue('--red');
@@ -314,6 +316,10 @@ export function getColors() {
 
 	Chart.defaults.color = fgColor;
 	Chart.defaults.borderColor = borderColor;
+	Chart.defaults.plugins.tooltip.backgroundColor = bg2Color;
+	Chart.defaults.plugins.tooltip.borderColor = fgColor;
+	Chart.defaults.plugins.tooltip.bodyColor = fgColor;
+	Chart.defaults.plugins.tooltip.titleColor = fgColor;
 }
 
 export function getRatingColor(rating) {
