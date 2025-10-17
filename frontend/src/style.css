@@ -813,3 +813,15 @@ div:has(> #user-title-photo) {
 #performance-loader div {
 	position: relative;
 }
+
+footer {
+	position: relative;
+	background-color: var(--bg-dark);
+	text-align: center;
+	padding: 2em 0;
+	border-top: 2px solid var(--bg1);
+}
+
+footer p {
+	margin: 0;
+}
