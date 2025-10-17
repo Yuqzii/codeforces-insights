@@ -671,6 +671,8 @@ main {
 
 	#user-details .analytics-content {
 		font-size: 1.25rem;
+		flex-direction: row-reverse;
+		justify-content: space-between;
 	}
 
 	#nav-menu {
@@ -736,6 +738,7 @@ main {
 
 div:has(> #user-title-photo) {
 	width: fit-content;
+	height: fit-content;
 	padding: 10px;
 	border-radius: 10px;
 }
