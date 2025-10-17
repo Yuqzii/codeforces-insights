@@ -820,6 +820,7 @@ footer {
 	text-align: center;
 	padding: 2em 0;
 	border-top: 2px solid var(--bg1);
+	transition: background-color var(--bg-transition-speed);
 }
 
 footer p {
