@@ -613,7 +613,7 @@ main {
 
 @media (max-aspect-ratio: 4/5) {
 	html {
-		font-size: 18px;
+		font-size: 26px;
 	}
 
 	header.hero {
@@ -671,8 +671,6 @@ main {
 
 	#user-details .analytics-content {
 		font-size: 1.25rem;
-		flex-direction: row-reverse;
-		justify-content: space-between;
 	}
 
 	#nav-menu {
@@ -729,16 +727,31 @@ main {
 	padding-left: 15px;
 }
 
+#user-details .analytics-content {
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#user-details .analytics-content>div:first-child {
+	width: 15em;
+}
+
+#user-details h3 {
+	font-size: 1.3em;
+}
+
 #user-title-photo {
 	border-radius: 0.5em;
-	width: 10em;
+	width: 100%;
 	height: auto;
 	display: block;
 }
 
 div:has(> #user-title-photo) {
 	width: fit-content;
+	min-width: 0;
 	height: fit-content;
+	flex: 1 1 0;
 	padding: 10px;
 	border-radius: 10px;
 }
