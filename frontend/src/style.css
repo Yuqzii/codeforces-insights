@@ -813,3 +813,39 @@ div:has(> #user-title-photo) {
 #performance-loader div {
 	position: relative;
 }
+
+footer {
+	position: relative;
+	background-color: var(--bg-dark);
+	text-align: center;
+	padding: 2em 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1em;
+	border-top: 2px solid var(--bg1);
+	transition: background-color var(--bg-transition-speed);
+}
+
+footer p {
+	margin: 0;
+}
+
+footer p a {
+	text-decoration: none;
+	color: var(--fg);
+}
+
+footer p a:hover {
+	text-decoration: underline;
+}
+
+.gh-button {
+	text-decoration: none;
+	color: var(--fg);
+	width: 2.5em;
+}
+
+.gh-button svg {
+	display: block;
+}
