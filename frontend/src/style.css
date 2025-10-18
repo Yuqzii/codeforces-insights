@@ -397,25 +397,21 @@ input:checked+.slider::before {
 	position: relative;
 	top: 0;
 	left: 0;
-}
-
-header.hero {
-	position: relative;
-	z-index: 0;
 	height: 100vh;
-	background-color: var(--bg-dark);
-	transition: background-color var(--bg-transition-speed);
 }
 
-header.hero::after {
+/* Bottom gradient and shadow */
+#hero-section::after {
 	content: "";
 	position: absolute;
+	z-index: 1;
 	inset: 0;
+	box-shadow: 0 2px 8px var(--bg1);
 	background: linear-gradient(to bottom, transparent 85%, var(--bg));
 	pointer-events: none;
 }
 
-div.hero {
+.hero {
 	display: flex;
 	flex-direction: column;
 	padding: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
@@ -423,18 +419,18 @@ div.hero {
 	width: 32em;
 }
 
-div.hero h1 {
+.hero h1 {
 	font-size: 6em;
 	margin: 0;
 	text-align: left;
 }
 
-div.hero p {
+.hero p {
 	font-size: 1em;
 	margin-top: 1em;
 }
 
-div.hero h2 {
+.hero h2 {
 	font-family: "Fira Code";
 	font-weight: 300;
 	font-size: 1.3em;
@@ -554,15 +550,6 @@ div.hero h2 {
 	to {
 		stroke-dashoffset: 0;
 	}
-}
-
-#hero-section::after {
-	content: "";
-	position: absolute;
-	z-index: 1;
-	inset: 0;
-	box-shadow: 0 2px 8px var(--bg1);
-	pointer-events: none;
 }
 
 
