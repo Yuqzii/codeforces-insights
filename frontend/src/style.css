@@ -757,7 +757,7 @@ main {
 }
 
 #user-title-photo {
-	border-radius: 0.5em;
+	border-radius: 3.5%;
 	width: 100%;
 	height: auto;
 	display: block;
@@ -768,8 +768,8 @@ div:has(> #user-title-photo) {
 	min-width: 0;
 	height: fit-content;
 	flex: 1 1 0;
-	padding: 10px;
-	border-radius: 10px;
+	padding: 2%;
+	border-radius: 5%;
 }
 
 
