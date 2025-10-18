@@ -722,9 +722,14 @@ main {
 	margin: 0;
 }
 
-.user-stats {
-	margin: 0;
-	padding-left: 15px;
+.analytics-content {
+	position: relative;
+	display: flex;
+	min-height: 0;
+	flex: 1;
+	flex-direction: column;
+	padding: 1em 1.5em 1.5em 1.5em;
+	margin-top: 0.25em;
 }
 
 #user-details .analytics-content {
@@ -732,12 +737,23 @@ main {
 	justify-content: space-between;
 }
 
-#user-details .analytics-content>div:first-child {
+#user-stats {
 	width: 15em;
 }
 
-#user-details h3 {
+#user-stats h3 {
 	font-size: 1.3em;
+	margin-top: 0;
+}
+
+#user-stats ul {
+	margin: 0;
+	padding-left: 0px;
+	list-style: disc inside;
+}
+
+#user-stats li {
+	margin-bottom: 0.25em;
 }
 
 #user-title-photo {
@@ -756,15 +772,6 @@ div:has(> #user-title-photo) {
 	border-radius: 10px;
 }
 
-.analytics-content {
-	position: relative;
-	display: flex;
-	min-height: 0;
-	flex: 1;
-	flex-direction: column;
-	padding: 1em 1.5em 1.5em 1.5em;
-	margin-top: 0.25em;
-}
 
 #user-rating,
 #user-peak-rating {
