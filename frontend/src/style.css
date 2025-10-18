@@ -613,7 +613,7 @@ main {
 
 @media (max-aspect-ratio: 4/5) {
 	html {
-		font-size: 18px;
+		font-size: 26px;
 	}
 
 	header.hero {
@@ -722,24 +722,6 @@ main {
 	margin: 0;
 }
 
-.user-stats {
-	margin: 0;
-	padding-left: 15px;
-}
-
-#user-title-photo {
-	border-radius: 0.5em;
-	width: 10em;
-	height: auto;
-	display: block;
-}
-
-div:has(> #user-title-photo) {
-	width: fit-content;
-	padding: 10px;
-	border-radius: 10px;
-}
-
 .analytics-content {
 	position: relative;
 	display: flex;
@@ -749,6 +731,48 @@ div:has(> #user-title-photo) {
 	padding: 1em 1.5em 1.5em 1.5em;
 	margin-top: 0.25em;
 }
+
+#user-details .analytics-content {
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#user-stats {
+	width: 15em;
+}
+
+#user-stats h3 {
+	font-size: 1.3em;
+	margin-top: 0;
+}
+
+#user-stats ul {
+	margin: 0;
+	padding-left: 0px;
+	list-style: disc inside;
+}
+
+#user-stats li {
+	margin-bottom: 0.25em;
+}
+
+#user-title-photo {
+	border-radius: 3.5%;
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Frame of the profile picture (parent div) */
+div:has(> #user-title-photo) {
+	width: fit-content;
+	min-width: 0;
+	height: fit-content;
+	flex: 1 1 0;
+	padding: 2%;
+	border-radius: 5%;
+}
+
 
 #user-rating,
 #user-peak-rating {
