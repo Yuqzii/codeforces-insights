@@ -552,7 +552,8 @@ div.hero h2 {
 	}
 }
 
-.hero-shadow {
+#hero-section::after {
+	content: "";
 	position: absolute;
 	z-index: 1;
 	inset: 0;
