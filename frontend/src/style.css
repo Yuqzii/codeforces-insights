@@ -763,6 +763,7 @@ main {
 	display: block;
 }
 
+/* Frame of the profile picture (parent div) */
 div:has(> #user-title-photo) {
 	width: fit-content;
 	min-width: 0;
