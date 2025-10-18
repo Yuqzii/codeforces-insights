@@ -49,52 +49,47 @@
 		</div>
 	</div>
 
-	<section id="hero-section" class="hero-wrapper">
+	<section id="hero-section">
 		<header class="hero">
-			<div class="grid-bg"></div>
-			<div class="hero">
-				<h1 class="glow-text fade-in" style="animation-delay: 0.1s;">Codeforces<br>Insights</h1>
-				<p class="fade-in" style="animation-delay: 0.35s;">
-					<span class="blue-text">Track</span> your rating progress,
-					<span class="blue-text">identify</span> your strengths and improvement opportunities,
-					and <span class="blue-text">discover</span> patterns that help you
-					<span class="aqua-text weight-450 glow-pulse">rank up faster</span>.
-				</p>
-				<div class="user-form-container fade-in" style="animation-delay: 0.5s;">
-					<h2 class="">
-						<span class="blue-text weight-450 glow-text">Analyze</span>
-						your Codeforces history now.
-					</h2>
-					<form id="user-form" autocomplete="off">
-						<input type="text" id="handle-input" class="depth-1 depth-interactive"
-							placeholder="Enter Username" aria-label="Codeforces username input">
-						<button type="submit" class="depth-1 depth-interactive">Analyze</button>
-					</form>
-				</div>
+			<h1 class="glow-text fade-in" style="animation-delay: 0.1s;">Codeforces<br>Insights</h1>
+			<p class="fade-in" style="animation-delay: 0.35s;">
+				<span class="blue-text">Track</span> your rating progress,
+				<span class="blue-text">identify</span> your strengths and improvement opportunities,
+				and <span class="blue-text">discover</span> patterns that help you
+				<span class="aqua-text weight-450 glow-pulse">rank up faster</span>.
+			</p>
+			<div class="user-form-container fade-in" style="animation-delay: 0.5s;">
+				<h2 class="">
+					<span class="blue-text weight-450 glow-text">Analyze</span>
+					your Codeforces history now.
+				</h2>
+				<form id="user-form" autocomplete="off">
+					<input type="text" id="handle-input" class="depth-1 depth-interactive" placeholder="Enter Username"
+						aria-label="Codeforces username input">
+					<button type="submit" class="depth-1 depth-interactive">Analyze</button>
+				</form>
 			</div>
-
-			<div class="hero-graph-container">
-				<svg viewBox="0 0 400 400" preserveAspectRatio="xMinYMax slice">
-					<title>Animated graph</title>
-					<defs>
-						<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-							<feDropShadow dx="0" dy="3" stdDeviation="1.5" flood-color="black" flood-opacity="0.05" />
-						</filter>
-					</defs>
-					<g filter="url(#glow)">
-						<polyline class="animated-line" points="0,410 100,300 140,330 240,220 280,250 380,120"
-							fill="none" />
-						<circle data-index="0" cx="100" cy="300" r="3" />
-						<circle data-index="1" cx="140" cy="330" r="3" />
-						<circle data-index="2" cx="240" cy="220" r="3" />
-						<circle data-index="3" cx="280" cy="250" r="3" />
-						<circle data-index="4" cx="380" cy="120" r="3" />
-					</g>
-				</svg>
-			</div>
-
 		</header>
-		<div class="hero-shadow"></div>
+		<div class="grid-bg"></div>
+		<div class="hero-graph-container">
+			<svg viewBox="0 0 400 400" preserveAspectRatio="xMinYMax slice">
+				<title>Animated graph</title>
+				<defs>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+						<feDropShadow dx="0" dy="3" stdDeviation="1.5" flood-color="black" flood-opacity="0.05" />
+					</filter>
+				</defs>
+				<g filter="url(#glow)">
+					<polyline class="animated-line" points="0,410 100,300 140,330 240,220 280,250 380,120"
+						fill="none" />
+					<circle data-index="0" cx="100" cy="300" r="3" />
+					<circle data-index="1" cx="140" cy="330" r="3" />
+					<circle data-index="2" cx="240" cy="220" r="3" />
+					<circle data-index="3" cx="280" cy="250" r="3" />
+					<circle data-index="4" cx="380" cy="120" r="3" />
+				</g>
+			</svg>
+		</div>
 	</section>
 
 	<main>
@@ -108,11 +103,11 @@
 					<div class="analytics-content">
 						<div id="user-stats">
 							<h3 id="username">Placeholder</h3>
-								<ul>
-									<li>Rating: <span id="user-rating" class="weight-450">0</span></li>
-									<li>Peak rating: <span id="user-peak-rating" class="weight-450">0</span></li>
-									<li>Country: <span id="user-country"></span></li>
-								</ul>
+							<ul>
+								<li>Rating: <span id="user-rating" class="weight-450">0</span></li>
+								<li>Peak rating: <span id="user-peak-rating" class="weight-450">0</span></li>
+								<li>Country: <span id="user-country"></span></li>
+							</ul>
 						</div>
 						<div class="depth-1">
 							<img id="user-title-photo" src="https://userpic.codeforces.org/no-title.jpg"
