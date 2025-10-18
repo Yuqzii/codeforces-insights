@@ -393,10 +393,14 @@ input:checked+.slider::before {
 }
 
 /* Hero section */
+#hero-section {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
 header.hero {
 	position: relative;
-	display: flex;
-	flex-direction: row;
 	z-index: 0;
 	height: 100vh;
 	background-color: var(--bg-dark);
@@ -414,7 +418,7 @@ header.hero::after {
 div.hero {
 	display: flex;
 	flex-direction: column;
-	margin: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
+	padding: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
 	font-size: clamp(20px, 1.1vw, 24px);
 	width: 32em;
 }
