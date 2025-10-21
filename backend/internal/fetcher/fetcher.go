@@ -9,6 +9,8 @@ import (
 	"github.com/yuqzii/cf-stats/internal/db"
 )
 
+var ErrNoRatingInfo = errors.New("no rating info exists for this contest")
+
 type Service struct {
 	contestProvider ContestProvider
 	contestRepo     ContestRepository
@@ -49,9 +51,18 @@ func (s *Service) FetchContest(id int) error {
 		}
 		return fmt.Errorf("getting contest %d ratings: %w", id, err)
 	}
+
+	hasRatingInfo := false
 	ratingMap := make(map[string]*codeforces.RatingChange)
 	for i := range ratings {
+		if ratings[i].OldRating != 0 {
+			hasRatingInfo = true
+		}
 		ratingMap[ratings[i].Handle] = &ratings[i]
+	}
+
+	if !hasRatingInfo {
+		return ErrNoRatingInfo
 	}
 
 	// Set ratings of contestants
