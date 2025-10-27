@@ -44,13 +44,16 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
+	getUserInfo(handle, (userInfo) => {
+		updateUserInfo(userInfo);
+	}, signal);
+
 	// Asynchronously update charts
 	updateSolvedRatings(handle, signal);
 	updateTags(handle, signal);
 	updateRatingChanges(handle, signal);
 	updateSolvedRatingsTime(handle, signal);
 	updatePerformance(handle, signal);
-	updateUserInfo(handle, signal);
 }
 
 async function updateTags(handle, signal) {
@@ -97,9 +100,7 @@ async function updatePerformance(handle, signal) {
 	}, signal);
 }
 
-async function updateUserInfo(handle, signal) {
-	const userInfo = await getUserInfo(handle, signal);
-
+async function updateUserInfo(userInfo) {
 	hideLoader(userDetails);
 	document.getElementById('user-title-photo').src = userInfo.titlePhoto;
 	document.getElementById('username').textContent = userInfo.handle;
