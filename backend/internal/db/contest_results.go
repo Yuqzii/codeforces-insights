@@ -52,9 +52,9 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 	var contest codeforces.Contest
 	var internalID int
 	err := q.QueryRow(ctx, `
-		SELECT name, start_time, duration, id FROM contests WHERE contest_id=$1`,
+		SELECT name, start_time, duration, contest_id, id FROM contests WHERE contest_id=$1`,
 		id,
-	).Scan(&contest.Name, &contest.StartTime, &contest.Duration, &internalID)
+	).Scan(&contest.Name, &contest.StartTime, &contest.Duration, &contest.ID, &internalID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil, ErrContestNotStored
