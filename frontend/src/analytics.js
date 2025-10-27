@@ -1,4 +1,5 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
+import { getUserInfo } from "./codeforces.js";
 
 const apiUrl = '/api/';
 
@@ -97,19 +98,19 @@ async function updatePerformance(handle, signal) {
 }
 
 async function updateUserInfo(handle, signal) {
-	return safeUpdate(`users/${handle}`, data => {
-		hideLoader(userDetails);
-		document.getElementById('user-title-photo').src = data.titlePhoto;
-		document.getElementById('username').textContent = data.handle;
-		document.getElementById('user-country').textContent = data.country;
+	const userInfo = await getUserInfo(handle, signal);
 
-		const rating = document.getElementById('user-rating');
-		rating.textContent = data.rating;
-		rating.style.setProperty('--text-color', getRatingColor(data.rating));
-		const peakRating = document.getElementById('user-peak-rating');
-		peakRating.textContent = data.maxRating;
-		peakRating.style.setProperty('--text-color', getRatingColor(data.maxRating));
-	}, signal);
+	hideLoader(userDetails);
+	document.getElementById('user-title-photo').src = userInfo.titlePhoto;
+	document.getElementById('username').textContent = userInfo.handle;
+	document.getElementById('user-country').textContent = userInfo.country;
+
+	const rating = document.getElementById('user-rating');
+	rating.textContent = userInfo.rating;
+	rating.style.setProperty('--text-color', getRatingColor(userInfo.rating));
+	const peakRating = document.getElementById('user-peak-rating');
+	peakRating.textContent = userInfo.maxRating;
+	peakRating.style.setProperty('--text-color', getRatingColor(userInfo.maxRating));
 }
 
 async function safeUpdate(endpoint, updater, signal) {
