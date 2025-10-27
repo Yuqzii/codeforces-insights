@@ -1,8 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./codeforces.js";
 
-const apiUrl = '/api/';
-
 const toggleOtherTags = document.getElementById('toggle-other-tags');
 const toggle800Probs = document.getElementById('toggle-800-rating');
 export const solvedTags = new SolvedTags(toggleOtherTags);
@@ -138,16 +136,4 @@ async function updateUserInfo(userInfo) {
 	const peakRating = document.getElementById('user-peak-rating');
 	peakRating.textContent = userInfo.maxRating;
 	peakRating.style.setProperty('--text-color', getRatingColor(userInfo.maxRating));
-}
-
-async function safeUpdate(endpoint, updater, signal) {
-	try {
-		const resp = await fetch(apiUrl + endpoint, { signal });
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
-		const data = await resp.json();
-		updater(data);
-	} catch (err) {
-		if (err.name === "AbortError") return;
-		console.error("Request failed:", err);
-	}
 }
