@@ -1,5 +1,5 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
-import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./codeforces.js";
+import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 
 const toggleOtherTags = document.getElementById('toggle-other-tags');
 const toggle800Probs = document.getElementById('toggle-800-rating');
@@ -45,51 +45,53 @@ export async function updateAnalytics(handle, signal) {
 	getUserInfo(handle, (userInfo) => {
 		updateUserInfo(userInfo);
 	}, signal);
+	getSubmissions(handle, handleSubmissions, signal);
+	getRatingHistory(handle, handleRatingHistory, signal);
+}
 
-	// Update everything that needs submission history
-	getSubmissions(handle, (submissions) => {
-		submissions = filterSolved(submissions);
+function handleSubmissions(submissions) {
+	submissions = filterSolved(submissions);
 
-		// Get count of each tag and rating
-		const tagCnt = {}, ratingCnt = {};
-		const solvedTime = new Array();
-		submissions.forEach(sub => {
-			sub.problem.tags.forEach(tag => {
-				tagCnt[tag] = (tagCnt[tag] || 0) + 1;
-			});
-
-			if (sub.problem.rating != undefined) {
-				ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
-				solvedTime.push({ timestamp: sub.creationTimeSeconds, rating: sub.problem.rating });
-			}
+	// Get count of each tag and rating
+	const tagCnt = {}, ratingCnt = {};
+	const solvedTime = new Array();
+	submissions.forEach(sub => {
+		sub.problem.tags.forEach(tag => {
+			tagCnt[tag] = (tagCnt[tag] || 0) + 1;
 		});
 
-		const sortedTagCnt = Object.entries(tagCnt)
-			.sort((a, b) => b[1] - a[1]);
+		if (sub.problem.rating != undefined) {
+			ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
+			solvedTime.push({ timestamp: sub.creationTimeSeconds, rating: sub.problem.rating });
+		}
+	});
 
-		updateTags(sortedTagCnt);
-		updateSolvedRatings(ratingCnt);
-		updateSolvedRatingsTime(solvedTime);
+	const sortedTagCnt = Object.entries(tagCnt)
+		.sort((a, b) => b[1] - a[1]);
+
+	updateTags(sortedTagCnt);
+	updateSolvedRatings(ratingCnt);
+	updateSolvedRatingsTime(solvedTime);
+}
+
+function handleRatingHistory(ratings) {
+	updateRatingChanges(ratings);
+
+	const perfRequestData = new Array();
+	ratings.forEach(rating => {
+		perfRequestData.push({
+			contestId: rating.contestId,
+			oldRating: rating.oldRating,
+			rank: rating.rank,
+			ratingUpdateTimeSeconds: rating.ratingUpdateTimeSeconds,
+		});
+	});
+
+	getPerformance(perfRequestData, (performance) => {
+		console.log(performance);
+		updatePerformance(performance);
 	}, signal);
 
-	getRatingHistory(handle, (ratings) => {
-		updateRatingChanges(ratings);
-
-		const perfRequestData = new Array();
-		ratings.forEach(rating => {
-			perfRequestData.push({
-				contestId: rating.contestId,
-				oldRating: rating.oldRating,
-				rank: rating.rank,
-				ratingUpdateTimeSeconds: rating.ratingUpdateTimeSeconds,
-			});
-		});
-
-		getPerformance(perfRequestData, (performance) => {
-			console.log(performance);
-			updatePerformance(performance);
-		}, signal);
-	});
 }
 
 function filterSolved(submissions) {
