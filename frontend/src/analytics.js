@@ -42,11 +42,11 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	getUserInfo(handle, (userInfo) => {
-		updateUserInfo(userInfo);
-	}, signal);
-	getSubmissions(handle, handleSubmissions, signal);
-	getRatingHistory(handle, handleRatingHistory, signal);
+	getUserInfo(handle, signal).then(updateUserInfo);
+	getSubmissions(handle, signal).then(handleSubmissions);
+	getRatingHistory(handle, signal).then(ratings => {
+		handleRatingHistory(ratings, signal);
+	});
 }
 
 function handleSubmissions(submissions) {
@@ -74,7 +74,7 @@ function handleSubmissions(submissions) {
 	updateSolvedRatingsTime(solvedTime);
 }
 
-function handleRatingHistory(ratings) {
+function handleRatingHistory(ratings, signal) {
 	updateRatingChanges(ratings);
 
 	const perfRequestData = new Array();
@@ -87,11 +87,7 @@ function handleRatingHistory(ratings) {
 		});
 	});
 
-	getPerformance(perfRequestData, (performance) => {
-		console.log(performance);
-		updatePerformance(performance);
-	}, signal);
-
+	getPerformance(perfRequestData, signal).then(updatePerformance);
 }
 
 function filterSolved(submissions) {
