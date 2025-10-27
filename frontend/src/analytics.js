@@ -54,13 +54,16 @@ export async function updateAnalytics(handle, signal) {
 
 		// Get count of each tag and rating
 		const tagCnt = {}, ratingCnt = {};
+		const solvedTime = new Array();
 		submissions.forEach(sub => {
 			sub.problem.tags.forEach(tag => {
 				tagCnt[tag] = (tagCnt[tag] || 0) + 1;
 			});
-			
-			if (sub.problem.rating != undefined)
+
+			if (sub.problem.rating != undefined) {
 				ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
+				solvedTime.push({ timestamp: sub.creationTimeSeconds, rating: sub.problem.rating });
+			}
 		});
 
 		const sortedTagCnt = Object.entries(tagCnt)
@@ -68,11 +71,11 @@ export async function updateAnalytics(handle, signal) {
 
 		updateTags(sortedTagCnt);
 		updateSolvedRatings(ratingCnt);
+		updateSolvedRatingsTime(solvedTime);
 	}, signal);
 
 	// Asynchronously update charts
 	updateRatingChanges(handle, signal);
-	updateSolvedRatingsTime(handle, signal);
 	updatePerformance(handle, signal);
 }
 
@@ -106,12 +109,10 @@ async function updateRatingChanges(handle, signal) {
 	}, signal);
 }
 
-async function updateSolvedRatingsTime(handle, signal) {
-	return safeUpdate(`users/solved-ratings-time/${handle}`, data => {
-		ratingHistory.updateSolvedData(data);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-	}, signal);
+async function updateSolvedRatingsTime(ratingsTime) {
+	ratingHistory.updateSolvedData(ratingsTime);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
 }
 
 async function updatePerformance(handle, signal) {
