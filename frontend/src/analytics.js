@@ -47,6 +47,8 @@ export async function updateAnalytics(handle, signal) {
 	getUserInfo(handle, (userInfo) => {
 		updateUserInfo(userInfo);
 	}, signal);
+
+	// Update everything that needs submission history
 	getSubmissions(handle, (submissions) => {
 		submissions = filterSolved(submissions);
 
@@ -56,17 +58,19 @@ export async function updateAnalytics(handle, signal) {
 			sub.problem.tags.forEach(tag => {
 				tagCnt[tag] = (tagCnt[tag] || 0) + 1;
 			});
-			ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
+			
+			if (sub.problem.rating != undefined)
+				ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
 		});
 
 		const sortedTagCnt = Object.entries(tagCnt)
 			.sort((a, b) => b[1] - a[1]);
 
 		updateTags(sortedTagCnt);
+		updateSolvedRatings(ratingCnt);
 	}, signal);
 
 	// Asynchronously update charts
-	updateSolvedRatings(handle, signal);
 	updateRatingChanges(handle, signal);
 	updateSolvedRatingsTime(handle, signal);
 	updatePerformance(handle, signal);
@@ -87,13 +91,11 @@ async function updateTags(tagCnts) {
 	solvedTags.updateChart();
 }
 
-async function updateSolvedRatings(handle, signal) {
-	return safeUpdate(`users/solved-ratings/${handle}`, data => {
-		solvedRatings.updateData(data);
-		solvedRatings.loading = false;
-		toggle800Probs.style.display = 'inline';
-		solvedRatings.updateChart();
-	}, signal);
+async function updateSolvedRatings(ratingCnts) {
+	solvedRatings.updateData(ratingCnts);
+	solvedRatings.loading = false;
+	toggle800Probs.style.display = 'inline';
+	solvedRatings.updateChart();
 }
 
 async function updateRatingChanges(handle, signal) {
