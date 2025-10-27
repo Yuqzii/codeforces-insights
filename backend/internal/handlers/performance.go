@@ -41,10 +41,8 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var rc struct {
-		Ratings []codeforces.RatingChange `json:"ratingChanges"`
-	}
-	if err = json.Unmarshal(body, &rc); err != nil {
+	var ratings []codeforces.RatingChange
+	if err = json.Unmarshal(body, &ratings); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -56,14 +54,14 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 		Timestamp int `json:"timestamp"`
 	}
 
-	perf := make([]performance, 0, len(rc.Ratings))
-	resChan := make(chan perfResult, len(rc.Ratings))
+	perf := make([]performance, 0, len(ratings))
+	resChan := make(chan perfResult, len(ratings))
 
-	for i := range rc.Ratings {
-		h.perf.addJob(ctx, &rc.Ratings[i], resChan)
+	for i := range ratings {
+		h.perf.addJob(ctx, &ratings[i], resChan)
 	}
 
-	for range rc.Ratings {
+	for range ratings {
 		select {
 		case perfRes := <-resChan:
 			if perfRes.err != nil {

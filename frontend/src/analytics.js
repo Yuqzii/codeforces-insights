@@ -75,8 +75,18 @@ export async function updateAnalytics(handle, signal) {
 	getRatingHistory(handle, (ratings) => {
 		updateRatingChanges(ratings);
 
-		const ratingChanges = { ratingChanges: ratings };
-		getPerformance(ratingChanges, (performance) => {
+		const perfRequestData = new Array();
+		ratings.forEach(rating => {
+			perfRequestData.push({
+				contestId: rating.contestId,
+				oldRating: rating.oldRating,
+				rank: rating.rank,
+				ratingUpdateTimeSeconds: rating.ratingUpdateTimeSeconds,
+			});
+		});
+
+		getPerformance(perfRequestData, (performance) => {
+			console.log(performance);
 			updatePerformance(performance);
 		}, signal);
 	});
