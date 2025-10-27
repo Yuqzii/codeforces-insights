@@ -102,33 +102,33 @@ function filterSolved(submissions) {
 	return solved;
 }
 
-async function updateTags(tagCnts) {
+function updateTags(tagCnts) {
 	solvedTags.updateData(tagCnts);
 	solvedTags.loading = false;
 	toggleOtherTags.style.display = 'inline';
 	solvedTags.updateChart();
 }
 
-async function updateSolvedRatings(ratingCnts) {
+function updateSolvedRatings(ratingCnts) {
 	solvedRatings.updateData(ratingCnts);
 	solvedRatings.loading = false;
 	toggle800Probs.style.display = 'inline';
 	solvedRatings.updateChart();
 }
 
-async function updateRatingChanges(ratingChanges) {
+function updateRatingChanges(ratingChanges) {
 	ratingHistory.updateRatingData(ratingChanges);
 	ratingHistory.loading = false;
 	ratingHistory.updateChart();
 }
 
-async function updateSolvedRatingsTime(ratingsTime) {
+function updateSolvedRatingsTime(ratingsTime) {
 	ratingHistory.updateSolvedData(ratingsTime);
 	ratingHistory.loading = false;
 	ratingHistory.updateChart();
 }
 
-async function updatePerformance(performance) {
+function updatePerformance(performance) {
 	performance.sort((a, b) => a.timestamp > b.timestamp);
 
 	ratingHistory.updatePerfomanceData(performance);
@@ -136,7 +136,7 @@ async function updatePerformance(performance) {
 	ratingHistory.updateChart();
 }
 
-async function updateUserInfo(userInfo) {
+function updateUserInfo(userInfo) {
 	hideLoader(userDetails);
 	document.getElementById('user-title-photo').src = userInfo.titlePhoto;
 	document.getElementById('username').textContent = userInfo.handle;
