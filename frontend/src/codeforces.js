@@ -30,3 +30,19 @@ export async function getRatingHistory(handle, callback, signal) {
 		callback(data);
 	}, signal);
 }
+
+export async function getPerformance(ratingHistory, callback, signal) {
+	try {
+		const resp = await fetch("/api/performance", {
+			method: "POST",
+			body: JSON.stringify(ratingHistory),
+			signal: signal,
+		});
+		if (!resp.ok) throw new Error(`performance response not ok: ${resp.statusText}`);
+		const data = await resp.json();
+		callback(data);
+	} catch (err) {
+		if (err.name === "AbortError") return;
+		console.error("Request failed:", err);
+	}
+}

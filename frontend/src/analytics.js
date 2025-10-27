@@ -1,5 +1,5 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
-import { getRatingHistory, getSubmissions, getUserInfo } from "./codeforces.js";
+import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./codeforces.js";
 
 const apiUrl = '/api/';
 
@@ -76,10 +76,12 @@ export async function updateAnalytics(handle, signal) {
 
 	getRatingHistory(handle, (ratings) => {
 		updateRatingChanges(ratings);
-	});
 
-	// Asynchronously update charts
-	updatePerformance(handle, signal);
+		const ratingChanges = { ratingChanges: ratings };
+		getPerformance(ratingChanges, (performance) => {
+			updatePerformance(performance);
+		}, signal);
+	});
 }
 
 function filterSolved(submissions) {
@@ -116,14 +118,12 @@ async function updateSolvedRatingsTime(ratingsTime) {
 	ratingHistory.updateChart();
 }
 
-async function updatePerformance(handle, signal) {
-	return safeUpdate(`users/performance/${handle}`, data => {
-		data.sort((a, b) => a.timestamp > b.timestamp);
+async function updatePerformance(performance) {
+	performance.sort((a, b) => a.timestamp > b.timestamp);
 
-		ratingHistory.updatePerfomanceData(data);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-	}, signal);
+	ratingHistory.updatePerfomanceData(performance);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
 }
 
 async function updateUserInfo(userInfo) {
