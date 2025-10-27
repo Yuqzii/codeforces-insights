@@ -24,3 +24,9 @@ export async function getSubmissions(handle, callback, signal) {
 		callback(data);
 	}, signal);
 }
+
+export async function getRatingHistory(handle, callback, signal) {
+	safeFetch(`user.rating?handle=${handle}`, (data) => {
+		callback(data);
+	}, signal);
+}
