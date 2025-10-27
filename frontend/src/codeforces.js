@@ -18,3 +18,9 @@ export async function getUserInfo(handle, callback, signal) {
 		callback(data[0]);
 	}, signal);
 }
+
+export async function getSubmissions(handle, callback, signal) {
+	safeFetch(`user.status?handle=${handle}`, (data) => {
+		callback(data);
+	}, signal);
+}

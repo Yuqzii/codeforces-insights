@@ -1,5 +1,5 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
-import { getUserInfo } from "./codeforces.js";
+import { getSubmissions, getUserInfo } from "./codeforces.js";
 
 const apiUrl = '/api/';
 
@@ -47,22 +47,44 @@ export async function updateAnalytics(handle, signal) {
 	getUserInfo(handle, (userInfo) => {
 		updateUserInfo(userInfo);
 	}, signal);
+	getSubmissions(handle, (submissions) => {
+		submissions = filterSolved(submissions);
+
+		// Get count of each tag and rating
+		const tagCnt = {}, ratingCnt = {};
+		submissions.forEach(sub => {
+			sub.problem.tags.forEach(tag => {
+				tagCnt[tag] = (tagCnt[tag] || 0) + 1;
+			});
+			ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
+		});
+
+		const sortedTagCnt = Object.entries(tagCnt)
+			.sort((a, b) => b[1] - a[1]);
+
+		updateTags(sortedTagCnt);
+	}, signal);
 
 	// Asynchronously update charts
 	updateSolvedRatings(handle, signal);
-	updateTags(handle, signal);
 	updateRatingChanges(handle, signal);
 	updateSolvedRatingsTime(handle, signal);
 	updatePerformance(handle, signal);
 }
 
-async function updateTags(handle, signal) {
-	return safeUpdate(`users/solved-tags/${handle}`, data => {
-		solvedTags.updateData(data);
-		solvedTags.loading = false;
-		toggleOtherTags.style.display = 'inline';
-		solvedTags.updateChart();
-	}, signal);
+function filterSolved(submissions) {
+	const solved = new Array();
+	submissions.forEach(sub => {
+		if (sub.verdict === "OK") solved.push(sub);
+	});
+	return solved;
+}
+
+async function updateTags(tagCnts) {
+	solvedTags.updateData(tagCnts);
+	solvedTags.loading = false;
+	toggleOtherTags.style.display = 'inline';
+	solvedTags.updateChart();
 }
 
 async function updateSolvedRatings(handle, signal) {

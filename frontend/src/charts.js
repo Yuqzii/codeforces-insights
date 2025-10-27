@@ -81,12 +81,11 @@ export class SolvedTags {
 	}
 
 	updateData(data) {
-		data.reverse();
 		this.#tags = [];
 		this.#counts = [];
-		for (const element of data) {
-			this.#tags.push(element.tag);
-			this.#counts.push(element.count);
+		for (const [tag, cnt] of data) {
+			this.#tags.push(tag);
+			this.#counts.push(cnt);
 		}
 	}
 
