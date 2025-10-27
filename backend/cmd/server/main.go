@@ -53,8 +53,9 @@ func main() {
 	mux.HandleFunc("GET /users/solved-ratings/{handle}", h.HandleGetRatings)
 	mux.HandleFunc("GET /users/solved-tags/{handle}", h.HandleGetTags)
 	mux.HandleFunc("GET /users/rating/{handle}", h.HandleGetRatingChanges)
-	mux.HandleFunc("GET /users/performance/{handle}", h.HandleGetPerformance)
 	mux.HandleFunc("GET /users/solved-ratings-time/{handle}", h.HandleGetRatingTime)
+
+	mux.HandleFunc("POST /performance", h.HandlePerformance)
 
 	log.Println("Server listening on port 8080")
 	log.Fatalln(http.ListenAndServe(":8080", mux))

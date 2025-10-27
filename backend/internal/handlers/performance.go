@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 
@@ -32,32 +33,37 @@ type perfResult struct {
 	err         error
 }
 
-func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithCancel(r.Context())
-	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(ctx, handle)
+func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		if !errors.Is(err, context.Canceled) {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("Error getting rating history for performance: %v\n", err)
-		}
-		cancel()
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error reading performance request: %v\n", err)
 		return
 	}
+
+	var rc struct {
+		Ratings []codeforces.RatingChange `json:"ratingChanges"`
+	}
+	if err = json.Unmarshal(body, &rc); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithCancel(r.Context())
 
 	type performance struct {
 		Rating    int `json:"rating"`
 		Timestamp int `json:"timestamp"`
 	}
 
-	perf := make([]performance, 0, len(ratings))
-	resChan := make(chan perfResult, len(ratings))
+	perf := make([]performance, 0, len(rc.Ratings))
+	resChan := make(chan perfResult, len(rc.Ratings))
 
-	for i := range ratings {
-		h.perf.addJob(ctx, &ratings[i], resChan)
+	for i := range rc.Ratings {
+		h.perf.addJob(ctx, &rc.Ratings[i], resChan)
 	}
 
-	for range ratings {
+	for range rc.Ratings {
 		select {
 		case perfRes := <-resChan:
 			if perfRes.err != nil {
