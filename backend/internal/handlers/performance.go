@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/stats"
 )
+
+const maxPerfRequestSize = 1 << 16 // 65536 bytes
 
 type perfManager struct {
 	jobs chan perfJob
@@ -32,18 +35,28 @@ type perfResult struct {
 	err         error
 }
 
-func (h *Handler) HandleGetPerformance(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithCancel(r.Context())
-	handle := r.PathValue("handle")
-	ratings, err := h.client.GetRatingChanges(ctx, handle)
+func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxPerfRequestSize)
+	body, err := io.ReadAll(r.Body)
+	defer r.Body.Close() //nolint:errcheck
 	if err != nil {
-		if !errors.Is(err, context.Canceled) {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("Error getting rating history for performance: %v\n", err)
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+			return
 		}
-		cancel()
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error reading performance request: %v\n", err)
 		return
 	}
+
+	var ratings []codeforces.RatingChange
+	if err = json.Unmarshal(body, &ratings); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithCancel(r.Context())
 
 	type performance struct {
 		Rating    int `json:"rating"`

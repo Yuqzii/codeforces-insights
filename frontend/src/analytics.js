@@ -1,25 +1,24 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
+import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 
-const apiUrl = '/api/';
-
-const toggleOtherTags = document.getElementById('toggle-other-tags');
-const toggle800Probs = document.getElementById('toggle-800-rating');
+const toggleOtherTags = document.getElementById("toggle-other-tags");
+const toggle800Probs = document.getElementById("toggle-800-rating");
 export const solvedTags = new SolvedTags(toggleOtherTags);
 export const solvedRatings = new SolvedRatings(toggle800Probs);
 export const ratingHistory = new RatingHistory();
 
-const userDetails = document.getElementById('user-details');
+const userDetails = document.getElementById("user-details");
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
 	ratingHistory.updateChart();
 
-	toggleOtherTags.addEventListener('click', () => {
+	toggleOtherTags.addEventListener("click", () => {
 		solvedTags.toggleOther();
 	});
 
-	toggle800Probs.addEventListener('click', () => {
+	toggle800Probs.addEventListener("click", () => {
 		solvedRatings.toggle800Rating();
 	});
 });
@@ -28,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 export async function updateAnalytics(handle, signal) {
 	// Set charts to loading
 	solvedTags.loading = true;
-	toggleOtherTags.style.display = 'none';
+	toggleOtherTags.style.display = "none";
 	solvedTags.updateChart();
 	solvedRatings.loading = true;
-	toggle800Probs.style.display = 'none';
+	toggle800Probs.style.display = "none";
 	solvedRatings.updateChart();
 
 	ratingHistory.loading = true;
@@ -43,83 +42,106 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	// Asynchronously update charts
-	updateSolvedRatings(handle, signal);
-	updateTags(handle, signal);
-	updateRatingChanges(handle, signal);
-	updateSolvedRatingsTime(handle, signal);
-	updatePerformance(handle, signal);
-	updateUserInfo(handle, signal);
+	getUserInfo(handle, signal).then(updateUserInfo);
+	getSubmissions(handle, signal).then(handleSubmissions);
+	getRatingHistory(handle, signal).then(ratings => {
+		handleRatingHistory(ratings, signal);
+	});
 }
 
-async function updateTags(handle, signal) {
-	return safeUpdate(`users/solved-tags/${handle}`, data => {
-		solvedTags.updateData(data);
-		solvedTags.loading = false;
-		toggleOtherTags.style.display = 'inline';
-		solvedTags.updateChart();
-	}, signal);
+function handleSubmissions(submissions) {
+	submissions = filterSolved(submissions);
+
+	// Get count of each tag and rating
+	const tagCnt = {}, ratingCnt = {};
+	const solvedTime = new Array();
+	submissions.forEach(sub => {
+		sub.problem.tags.forEach(tag => {
+			tagCnt[tag] = (tagCnt[tag] || 0) + 1;
+		});
+
+		if (sub.problem.rating != undefined) {
+			ratingCnt[sub.problem.rating] = (ratingCnt[sub.problem.rating] || 0) + 1;
+			solvedTime.push({ timestamp: sub.creationTimeSeconds, rating: sub.problem.rating });
+		}
+	});
+
+	const sortedTagCnt = Object.entries(tagCnt)
+		.sort((a, b) => b[1] - a[1]);
+
+	updateTags(sortedTagCnt);
+	updateSolvedRatings(ratingCnt);
+	updateSolvedRatingsTime(solvedTime);
 }
 
-async function updateSolvedRatings(handle, signal) {
-	return safeUpdate(`users/solved-ratings/${handle}`, data => {
-		solvedRatings.updateData(data);
-		solvedRatings.loading = false;
-		toggle800Probs.style.display = 'inline';
-		solvedRatings.updateChart();
-	}, signal);
+function handleRatingHistory(ratings, signal) {
+	updateRatingChanges(ratings);
+
+	const perfRequestData = new Array();
+	ratings.forEach(rating => {
+		perfRequestData.push({
+			contestId: rating.contestId,
+			oldRating: rating.oldRating,
+			rank: rating.rank,
+			ratingUpdateTimeSeconds: rating.ratingUpdateTimeSeconds,
+		});
+	});
+
+	getPerformance(perfRequestData, signal).then(updatePerformance);
 }
 
-async function updateRatingChanges(handle, signal) {
-	return safeUpdate(`users/rating/${handle}`, data => {
-		ratingHistory.updateRatingData(data);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-	}, signal);
+function filterSolved(submissions) {
+	const solved = new Array();
+	submissions.forEach(sub => {
+		if (sub.verdict === "OK") solved.push(sub);
+	});
+	return solved;
 }
 
-async function updateSolvedRatingsTime(handle, signal) {
-	return safeUpdate(`users/solved-ratings-time/${handle}`, data => {
-		ratingHistory.updateSolvedData(data);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-	}, signal);
+function updateTags(tagCnts) {
+	solvedTags.updateData(tagCnts);
+	solvedTags.loading = false;
+	toggleOtherTags.style.display = "inline";
+	solvedTags.updateChart();
 }
 
-async function updatePerformance(handle, signal) {
-	return safeUpdate(`users/performance/${handle}`, data => {
-		data.sort((a, b) => a.timestamp > b.timestamp);
-
-		ratingHistory.updatePerfomanceData(data);
-		ratingHistory.loading = false;
-		ratingHistory.updateChart();
-	}, signal);
+function updateSolvedRatings(ratingCnts) {
+	solvedRatings.updateData(ratingCnts);
+	solvedRatings.loading = false;
+	toggle800Probs.style.display = "inline";
+	solvedRatings.updateChart();
 }
 
-async function updateUserInfo(handle, signal) {
-	return safeUpdate(`users/${handle}`, data => {
-		hideLoader(userDetails);
-		document.getElementById('user-title-photo').src = data.titlePhoto;
-		document.getElementById('username').textContent = data.handle;
-		document.getElementById('user-country').textContent = data.country;
-
-		const rating = document.getElementById('user-rating');
-		rating.textContent = data.rating;
-		rating.style.setProperty('--text-color', getRatingColor(data.rating));
-		const peakRating = document.getElementById('user-peak-rating');
-		peakRating.textContent = data.maxRating;
-		peakRating.style.setProperty('--text-color', getRatingColor(data.maxRating));
-	}, signal);
+function updateRatingChanges(ratingChanges) {
+	ratingHistory.updateRatingData(ratingChanges);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
 }
 
-async function safeUpdate(endpoint, updater, signal) {
-	try {
-		const resp = await fetch(apiUrl + endpoint, { signal });
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
-		const data = await resp.json();
-		updater(data);
-	} catch (err) {
-		if (err.name === "AbortError") return;
-		console.error("Request failed:", err);
-	}
+function updateSolvedRatingsTime(ratingsTime) {
+	ratingHistory.updateSolvedData(ratingsTime);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
+}
+
+function updatePerformance(performance) {
+	performance.sort((a, b) => a.timestamp > b.timestamp);
+
+	ratingHistory.updatePerfomanceData(performance);
+	ratingHistory.loading = false;
+	ratingHistory.updateChart();
+}
+
+function updateUserInfo(userInfo) {
+	hideLoader(userDetails);
+	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
+	document.getElementById("username").textContent = userInfo.handle;
+	document.getElementById("user-country").textContent = userInfo.country;
+
+	const rating = document.getElementById("user-rating");
+	rating.textContent = userInfo.rating;
+	rating.style.setProperty("--text-color", getRatingColor(userInfo.rating));
+	const peakRating = document.getElementById("user-peak-rating");
+	peakRating.textContent = userInfo.maxRating;
+	peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
 }
