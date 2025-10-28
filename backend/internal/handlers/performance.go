@@ -12,6 +12,8 @@ import (
 	"github.com/yuqzii/cf-stats/internal/stats"
 )
 
+const maxPerfRequestSize = 1 << 16 // 65536 bytes
+
 type perfManager struct {
 	jobs chan perfJob
 	crp  ContestResultsProvider
@@ -34,9 +36,15 @@ type perfResult struct {
 }
 
 func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxPerfRequestSize)
 	body, err := io.ReadAll(r.Body)
 	defer r.Body.Close() //nolint:errcheck
 	if err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error reading performance request: %v\n", err)
 		return
