@@ -1,24 +1,24 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 
-const toggleOtherTags = document.getElementById('toggle-other-tags');
-const toggle800Probs = document.getElementById('toggle-800-rating');
+const toggleOtherTags = document.getElementById("toggle-other-tags");
+const toggle800Probs = document.getElementById("toggle-800-rating");
 export const solvedTags = new SolvedTags(toggleOtherTags);
 export const solvedRatings = new SolvedRatings(toggle800Probs);
 export const ratingHistory = new RatingHistory();
 
-const userDetails = document.getElementById('user-details');
+const userDetails = document.getElementById("user-details");
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 	solvedTags.updateChart();
 	solvedRatings.updateChart();
 	ratingHistory.updateChart();
 
-	toggleOtherTags.addEventListener('click', () => {
+	toggleOtherTags.addEventListener("click", () => {
 		solvedTags.toggleOther();
 	});
 
-	toggle800Probs.addEventListener('click', () => {
+	toggle800Probs.addEventListener("click", () => {
 		solvedRatings.toggle800Rating();
 	});
 });
@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 export async function updateAnalytics(handle, signal) {
 	// Set charts to loading
 	solvedTags.loading = true;
-	toggleOtherTags.style.display = 'none';
+	toggleOtherTags.style.display = "none";
 	solvedTags.updateChart();
 	solvedRatings.loading = true;
-	toggle800Probs.style.display = 'none';
+	toggle800Probs.style.display = "none";
 	solvedRatings.updateChart();
 
 	ratingHistory.loading = true;
@@ -101,14 +101,14 @@ function filterSolved(submissions) {
 function updateTags(tagCnts) {
 	solvedTags.updateData(tagCnts);
 	solvedTags.loading = false;
-	toggleOtherTags.style.display = 'inline';
+	toggleOtherTags.style.display = "inline";
 	solvedTags.updateChart();
 }
 
 function updateSolvedRatings(ratingCnts) {
 	solvedRatings.updateData(ratingCnts);
 	solvedRatings.loading = false;
-	toggle800Probs.style.display = 'inline';
+	toggle800Probs.style.display = "inline";
 	solvedRatings.updateChart();
 }
 
@@ -134,14 +134,14 @@ function updatePerformance(performance) {
 
 function updateUserInfo(userInfo) {
 	hideLoader(userDetails);
-	document.getElementById('user-title-photo').src = userInfo.titlePhoto;
-	document.getElementById('username').textContent = userInfo.handle;
-	document.getElementById('user-country').textContent = userInfo.country;
+	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
+	document.getElementById("username").textContent = userInfo.handle;
+	document.getElementById("user-country").textContent = userInfo.country;
 
-	const rating = document.getElementById('user-rating');
+	const rating = document.getElementById("user-rating");
 	rating.textContent = userInfo.rating;
-	rating.style.setProperty('--text-color', getRatingColor(userInfo.rating));
-	const peakRating = document.getElementById('user-peak-rating');
+	rating.style.setProperty("--text-color", getRatingColor(userInfo.rating));
+	const peakRating = document.getElementById("user-peak-rating");
 	peakRating.textContent = userInfo.maxRating;
-	peakRating.style.setProperty('--text-color', getRatingColor(userInfo.maxRating));
+	peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
 }

@@ -4,16 +4,16 @@ var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aqua
 getColors();
 
 const ratingRanges = [
-	{ min: 0, max: 1199, color: '#ccccccff', label: "Newbie" },
-	{ min: 1200, max: 1399, color: '#77ff77ff', label: "Pupil" },
-	{ min: 1400, max: 1599, color: '#77ddbbff', label: "Specialist" },
-	{ min: 1600, max: 1899, color: '#aaaaffff', label: "Expert" },
-	{ min: 1900, max: 2099, color: '#ff88ffff', label: "Canditate Master" },
-	{ min: 2100, max: 2299, color: '#ffcc88ff', label: "Master" },
-	{ min: 2300, max: 2399, color: '#ffbb55ff', label: "International Master" },
-	{ min: 2400, max: 2599, color: '#ff7777ff', label: "Grandmaster" },
-	{ min: 2600, max: 2999, color: '#ff3333ff', label: "International Grandmaster" },
-	{ min: 3000, max: 10000, color: '#aa0000ff', label: "Legendary Grandmaster" }
+	{ min: 0, max: 1199, color: "#ccccccff", label: "Newbie" },
+	{ min: 1200, max: 1399, color: "#77ff77ff", label: "Pupil" },
+	{ min: 1400, max: 1599, color: "#77ddbbff", label: "Specialist" },
+	{ min: 1600, max: 1899, color: "#aaaaffff", label: "Expert" },
+	{ min: 1900, max: 2099, color: "#ff88ffff", label: "Canditate Master" },
+	{ min: 2100, max: 2299, color: "#ffcc88ff", label: "Master" },
+	{ min: 2300, max: 2399, color: "#ffbb55ff", label: "International Master" },
+	{ min: 2400, max: 2599, color: "#ff7777ff", label: "Grandmaster" },
+	{ min: 2600, max: 2999, color: "#ff3333ff", label: "International Grandmaster" },
+	{ min: 3000, max: 10000, color: "#aa0000ff", label: "Legendary Grandmaster" }
 ];
 
 export class SolvedTags {
@@ -29,7 +29,7 @@ export class SolvedTags {
 	}
 
 	async updateChart() {
-		const ctx = document.getElementById('solved-tags-chart');
+		const ctx = document.getElementById("solved-tags-chart");
 
 		if (this.loading) {
 			showLoader(ctx.parentNode.parentNode);
@@ -59,7 +59,7 @@ export class SolvedTags {
 		hideLoader(ctx.parentNode.parentNode);
 
 		this.#chart = new Chart(ctx, {
-			type: 'pie',
+			type: "pie",
 			data: {
 				datasets: [{
 					data: countsToShow,
@@ -106,7 +106,7 @@ export class SolvedRatings {
 	}
 
 	updateChart() {
-		const ctx = document.getElementById('solved-ratings-chart');
+		const ctx = document.getElementById("solved-ratings-chart");
 
 		if (this.loading) {
 			showLoader(ctx.parentNode.parentNode);
@@ -124,10 +124,10 @@ export class SolvedRatings {
 		hideLoader(ctx.parentNode.parentNode);
 
 		this.#chart = new Chart(ctx, {
-			type: 'bar',
+			type: "bar",
 			data: {
 				datasets: [{
-					label: '# of Solved Problems',
+					label: "# of Solved Problems",
 					data: data,
 					backgroundColor: blueColor,
 				}]
@@ -173,7 +173,7 @@ export class RatingHistory {
 	#solvedData = new Array;
 
 	updateChart() {
-		const ctx = document.getElementById('rating-history-chart');
+		const ctx = document.getElementById("rating-history-chart");
 
 		if (this.loading) {
 			showLoader(ctx.parentNode.parentNode);
@@ -192,25 +192,25 @@ export class RatingHistory {
 		const xAxisPad = (xAxisMax - xAxisMin) * 0.01;
 
 		this.#chart = new Chart(ctx, {
-			type: 'line',
+			type: "line",
 			data: {
 				labels: this.#ratingData.labels,
 				datasets: [{
-					label: 'Rating',
+					label: "Rating",
 					data: this.#ratingData.ratings,
 					tension: 0.25,
 					borderColor: orangeColor,
 					backgroundColor: orangeColor,
 				}, {
-					label: 'Performance',
+					label: "Performance",
 					data: this.#performanceData.performance,
 					tension: 0.25,
 					borderColor: greenColor,
 					backgroundColor: greenColor,
 				},
 				{
-					label: 'Solved Problems',
-					type: 'scatter',
+					label: "Solved Problems",
+					type: "scatter",
 					data: this.#solvedData,
 					borderColor: blueColor,
 					backgroundColor: blueColor,
@@ -220,9 +220,9 @@ export class RatingHistory {
 			options: {
 				scales: {
 					x: {
-						type: 'time',
+						type: "time",
 						time: {
-							unit: 'month'
+							unit: "month"
 						},
 						min: xAxisMin - xAxisPad,
 						max: xAxisMax + xAxisPad
@@ -237,7 +237,7 @@ export class RatingHistory {
 				responsive: true
 			},
 			plugins: [{
-				id: 'rankVisualPlugin',
+				id: "rankVisualPlugin",
 				afterDraw: (chart) => {
 					const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
 					const lineWidth = 5;
@@ -299,19 +299,19 @@ export class RatingHistory {
 
 export function getColors() {
 	const style = window.getComputedStyle(document.documentElement);
-	fgColor = style.getPropertyValue('--fg');
-	bgColor = style.getPropertyValue('--bg');
-	bg1Color = style.getPropertyValue('--bg1');
-	bg2Color = style.getPropertyValue('--bg2');
-	shadowColor = style.getPropertyValue('--shadow');
-	borderColor = style.getPropertyValue('--border');
-	redColor = style.getPropertyValue('--red');
-	orangeColor = style.getPropertyValue('--orange');
-	greenColor = style.getPropertyValue('--green');
-	yellowColor = style.getPropertyValue('--yellow');
-	blueColor = style.getPropertyValue('--blue');
-	purpleColor = style.getPropertyValue('--purple');
-	aquaColor = style.getPropertyValue('--aqua');
+	fgColor = style.getPropertyValue("--fg");
+	bgColor = style.getPropertyValue("--bg");
+	bg1Color = style.getPropertyValue("--bg1");
+	bg2Color = style.getPropertyValue("--bg2");
+	shadowColor = style.getPropertyValue("--shadow");
+	borderColor = style.getPropertyValue("--border");
+	redColor = style.getPropertyValue("--red");
+	orangeColor = style.getPropertyValue("--orange");
+	greenColor = style.getPropertyValue("--green");
+	yellowColor = style.getPropertyValue("--yellow");
+	blueColor = style.getPropertyValue("--blue");
+	purpleColor = style.getPropertyValue("--purple");
+	aquaColor = style.getPropertyValue("--aqua");
 
 	Chart.defaults.color = fgColor;
 	Chart.defaults.borderColor = borderColor;
@@ -322,7 +322,7 @@ export function getColors() {
 }
 
 export function getRatingColor(rating) {
-	return ratingRanges.find(range => rating >= range.min && rating <= range.max)?.color || '#ffffff';
+	return ratingRanges.find(range => rating >= range.min && rating <= range.max)?.color || "#ffffff";
 }
 
 export function showLoader(container) {
