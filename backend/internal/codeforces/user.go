@@ -58,3 +58,37 @@ func (c *client) GetUser(ctx context.Context, handle string) (*User, error) {
 
 	return &apiResp.Result[0], nil
 }
+
+func (c *client) GetActiveUsers(ctx context.Context) ([]User, error) {
+	endpoint := "user.ratedList?"
+	params := url.Values{}
+	params.Set("activeOnly", "true")
+	params.Set("includeRetired", "false")
+
+	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("making request: %w", err)
+	}
+
+	var r requestResult
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r = <-resChan:
+	}
+
+	if r.err != nil {
+		return nil, fmt.Errorf("getting active users from Codeforces: %w", r.err)
+	}
+
+	var apiResp apiResponse[User]
+	if err := json.Unmarshal(r.body, &apiResp); err != nil {
+		return nil, err
+	}
+
+	if apiResp.Status != "OK" {
+		return nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
+	}
+
+	return apiResp.Result, nil
+}
