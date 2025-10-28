@@ -35,6 +35,7 @@ type perfResult struct {
 
 func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
+	defer r.Body.Close() //nolint:errcheck
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error reading performance request: %v\n", err)
