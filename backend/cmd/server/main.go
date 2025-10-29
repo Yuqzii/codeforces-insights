@@ -10,6 +10,7 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/handlers"
+	"github.com/yuqzii/cf-stats/internal/stats"
 	"github.com/yuqzii/cf-stats/internal/store"
 )
 
@@ -44,12 +45,21 @@ func main() {
 
 	store := store.New(cfClient, db)
 
+	log.Println("Calculating percentiles")
+	cfUsers, err := cfClient.GetActiveUsers(context.Background())
+	if err != nil {
+		log.Fatalf("Could not get active Codeforces users: %v\n", err)
+	}
+	percentile := stats.NewPercentile(cfUsers)
+
 	log.Println("Setting up API handler")
-	h := handlers.New(cfClient, store, perfJobsBuffer, perfWorkerCnt)
+
+	h := handlers.New(cfClient, store, percentile, perfJobsBuffer, perfWorkerCnt)
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /performance", h.HandlePerformance)
+	mux.HandleFunc("GET /percentile/{rating}", h.HandlePercentile)
 
 	log.Println("Server listening on port 8080")
 	log.Fatalln(http.ListenAndServe(":8080", mux))

@@ -2,6 +2,10 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
+	"log"
+	"net/http"
+	"strconv"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
@@ -19,13 +23,19 @@ type ContestResultsProvider interface {
 		[]codeforces.Contestant, *codeforces.Contest, error)
 }
 
-type Handler struct {
-	client Client
-	crp    ContestResultsProvider
-	perf   perfManager
+type PercentileProvider interface {
+	GetPercentile(rating int) float64
 }
 
-func New(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers int) *Handler {
+type Handler struct {
+	client     Client
+	crp        ContestResultsProvider
+	perf       perfManager
+	percentile PercentileProvider
+}
+
+func New(api Client, crp ContestResultsProvider, percentile PercentileProvider, perfJobsBuffer int,
+	perfWorkers int) *Handler {
 	h := &Handler{
 		client: api,
 		crp:    crp,
@@ -33,6 +43,7 @@ func New(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers
 			jobs: make(chan perfJob, perfJobsBuffer),
 			crp:  crp,
 		},
+		percentile: percentile,
 	}
 
 	for range perfWorkers {
@@ -40,4 +51,27 @@ func New(api Client, crp ContestResultsProvider, perfJobsBuffer int, perfWorkers
 	}
 
 	return h
+}
+
+func (h *Handler) HandlePercentile(w http.ResponseWriter, r *http.Request) {
+	rating, err := strconv.Atoi(r.PathValue("rating"))
+	if err != nil {
+		http.Error(w, "rating must be a number", http.StatusBadRequest)
+		return
+	}
+
+	percentile := h.percentile.GetPercentile(rating)
+
+	j, err := json.Marshal(percentile)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error marshalling percentile json: %v", err)
+		return
+	}
+
+	if _, err = w.Write(j); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error writing percentile: %v", err)
+		return
+	}
 }
