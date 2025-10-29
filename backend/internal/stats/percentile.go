@@ -16,8 +16,8 @@ func NewPercentile(users []codeforces.User) *PercentileCalc {
 	for _, user := range users {
 		p.prefix[user.Rating]++
 	}
-	for i := len(p.prefix) - 2; i >= 0; i-- {
-		p.prefix[i] += p.prefix[i+1]
+	for i := 1; i < len(p.prefix); i++ {
+		p.prefix[i] += p.prefix[i-1]
 	}
 
 	return p
