@@ -51,6 +51,9 @@ export async function updateAnalytics(handle, signal) {
 
 function handleSubmissions(submissions) {
 	submissions = filterSolved(submissions);
+	submissions.sort((a, b) => {
+		return a.creationTimeSeconds - b.creationTimeSeconds;
+	});
 
 	// Get count of each tag and rating
 	const tagCnt = {}, ratingCnt = {};

@@ -168,8 +168,8 @@ export class SolvedRatings {
 export class RatingHistory {
 	loading = true;
 	#chart;
-	#ratingData = [new Array, new Array];
-	#performanceData = [new Array, new Array];
+	#ratingData = { ratings: new Array(), labels: new Array() };
+	#performanceData = { performance: new Array(), timestamps: new Array()};
 	#solvedData = new Array;
 
 	updateChart() {
@@ -180,16 +180,22 @@ export class RatingHistory {
 			return;
 		}
 
+		let xAxisMin, xAxisMax;
+		if (this.#ratingData.labels.length == 0) {
+			if (this.#solvedData.length == 0) return;
+			xAxisMin = this.#solvedData[0].x;
+			xAxisMax = this.#solvedData[this.#solvedData.length - 1].x;
+		} else {
+			xAxisMin = this.#ratingData.labels[0];
+			xAxisMax = this.#ratingData.labels[this.#ratingData.labels.length - 1];
+			if (this.#solvedData.length > 0)
+				xAxisMax = Math.max(xAxisMax, this.#solvedData[this.#solvedData.length - 1].x);
+		}
+
+		const xAxisPad = (xAxisMax - xAxisMin) * 0.01;
+
 		if (this.#chart != null)
 			this.#chart.destroy();
-
-		hideLoader(ctx.parentNode.parentNode);
-
-		const xAxisMin = this.#ratingData.labels[0];
-		let xAxisMax = this.#ratingData.labels[this.#ratingData.labels.length - 1];
-		if (this.#solvedData.length > 0)
-			xAxisMax = Math.max(xAxisMax, this.#solvedData[this.#solvedData.length - 1].x);
-		const xAxisPad = (xAxisMax - xAxisMin) * 0.01;
 
 		this.#chart = new Chart(ctx, {
 			type: "line",
@@ -269,6 +275,8 @@ export class RatingHistory {
 				}
 			}]
 		});
+
+		hideLoader(ctx.parentNode.parentNode);
 	}
 
 	updateRatingData(data) {
