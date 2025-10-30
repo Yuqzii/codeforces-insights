@@ -1,5 +1,5 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
-import { getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
+import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -42,7 +42,7 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	getUserInfo(handle, signal).then(updateUserInfo);
+	getUserInfo(handle, signal).then(handleUserInfo);
 	getSubmissions(handle, signal).then(handleSubmissions);
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(ratings, signal);
@@ -90,6 +90,24 @@ function handleRatingHistory(ratings, signal) {
 	getPerformance(perfRequestData, signal).then(updatePerformance);
 }
 
+function handleUserInfo(userInfo, signal) {
+	getPercentile(userInfo.rating, signal).then(percentile => {
+		document.getElementById("user-percentile").textContent = `${(percentile * 100).toFixed(2)}%`;
+	});
+
+	hideLoader(userDetails);
+	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
+	document.getElementById("username").textContent = userInfo.handle;
+	document.getElementById("user-country").textContent = userInfo.country;
+
+	const rating = document.getElementById("user-rating");
+	rating.textContent = userInfo.rating;
+	rating.style.setProperty("--text-color", getRatingColor(userInfo.rating));
+	const peakRating = document.getElementById("user-peak-rating");
+	peakRating.textContent = userInfo.maxRating;
+	peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
+}
+
 function filterSolved(submissions) {
 	const solved = new Array();
 	submissions.forEach(sub => {
@@ -132,16 +150,3 @@ function updatePerformance(performance) {
 	ratingHistory.updateChart();
 }
 
-function updateUserInfo(userInfo) {
-	hideLoader(userDetails);
-	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
-	document.getElementById("username").textContent = userInfo.handle;
-	document.getElementById("user-country").textContent = userInfo.country;
-
-	const rating = document.getElementById("user-rating");
-	rating.textContent = userInfo.rating;
-	rating.style.setProperty("--text-color", getRatingColor(userInfo.rating));
-	const peakRating = document.getElementById("user-peak-rating");
-	peakRating.textContent = userInfo.maxRating;
-	peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
-}

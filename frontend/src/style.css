@@ -154,6 +154,10 @@ button:hover {
 	font-weight: 450;
 }
 
+.weight-600 {
+	font-weight: 600;
+}
+
 .glow-text {
 	text-shadow: 0 0 0.1em var(--glow);
 }
