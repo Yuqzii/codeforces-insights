@@ -95,18 +95,19 @@ function handleUserInfo(userInfo, signal) {
 		getPercentile(userInfo.rating, signal).then(percentile => {
 			document.getElementById("user-percentile").textContent = `${(percentile * 100).toFixed(2)}%`;
 		});
-	}
+	} else
+		document.getElementById("user-percentile").textContent = "-";
 
 	hideLoader(userDetails);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
-	document.getElementById("user-country").textContent = userInfo.country;
+	document.getElementById("user-country").textContent = userInfo.country || "-";
 
 	const rating = document.getElementById("user-rating");
-	rating.textContent = userInfo.rating;
+	rating.textContent = userInfo.rating || "-";
 	rating.style.setProperty("--text-color", getRatingColor(userInfo.rating));
 	const peakRating = document.getElementById("user-peak-rating");
-	peakRating.textContent = userInfo.maxRating;
+	peakRating.textContent = userInfo.maxRating || "-";
 	peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
 }
 
