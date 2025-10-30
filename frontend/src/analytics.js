@@ -91,9 +91,11 @@ function handleRatingHistory(ratings, signal) {
 }
 
 function handleUserInfo(userInfo, signal) {
-	getPercentile(userInfo.rating, signal).then(percentile => {
-		document.getElementById("user-percentile").textContent = `${(percentile * 100).toFixed(2)}%`;
-	});
+	if (userInfo.rating != undefined) {
+		getPercentile(userInfo.rating, signal).then(percentile => {
+			document.getElementById("user-percentile").textContent = `${(percentile * 100).toFixed(2)}%`;
+		});
+	}
 
 	hideLoader(userDetails);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
