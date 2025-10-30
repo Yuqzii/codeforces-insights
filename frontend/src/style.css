@@ -162,6 +162,11 @@ button:hover {
 	text-shadow: 0 0 0.1em var(--glow);
 }
 
+.glow-color {
+	color: var(--text-color);
+	text-shadow: 0 0 0.1em var(--text-color);
+}
+
 .glow-pulse {
 	animation: glow-pulse 1s infinite alternate;
 }
@@ -767,13 +772,6 @@ div:has(> #user-title-photo) {
 	flex: 1 1 0;
 	padding: 2%;
 	border-radius: 5%;
-}
-
-
-#user-rating,
-#user-peak-rating {
-	color: var(--text-color);
-	text-shadow: 0 0 1.5px var(--text-color);
 }
 
 .loader,
