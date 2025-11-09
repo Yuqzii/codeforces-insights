@@ -59,6 +59,7 @@ services:
     ]
 
   frontend:
+    profiles: [frontend]
     build: ./frontend
     volumes:
       - ./frontend/public:/app/public:ro,Z
@@ -69,6 +70,7 @@ services:
       - "3001:3001" # Browsersync UI
 
   nginx:
+    profiles: [frontend]
     build: ./nginx
     ports:
       - "443:443" # This is where you should visit the site for HTTPS and HTTP/2
