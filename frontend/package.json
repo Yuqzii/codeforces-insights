@@ -7,6 +7,6 @@
   "scripts": {
     "dev": "mkdir -p dist && node esbuild-config-dev.js",
     "serve": "node bs-config.js",
-    "build": "esbuild src/main.js src/style.css --bundle --outdir=dist --minify && cp -r public/* dist/"
+    "build": "node esbuild-config && cp -r public/* dist/"
   }
 }

@@ -28,7 +28,7 @@ export async function getRatingHistory(handle, signal) {
 
 export async function getPerformance(ratingHistory, signal) {
 	try {
-		const resp = await fetch("/api/performance", {
+		const resp = await fetch(`${process.env.API_URL}/performance`, {
 			method: "POST",
 			body: JSON.stringify(ratingHistory),
 			signal: signal,
@@ -44,7 +44,7 @@ export async function getPerformance(ratingHistory, signal) {
 
 export async function getPercentile(rating, signal) {
 	try {
-		const resp = await fetch(`/api/percentile/${rating}`, { signal });
+		const resp = await fetch(`${process.env.API_URL}/percentile/${rating}`, { signal });
 		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
 		const data = await resp.json();
 		return data;
