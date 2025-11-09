@@ -11,6 +11,10 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    networks:
+      codeforces-insights_net:
+        aliases:
+          - codeforces-insights_server
 
   fetcher:
     profiles: [fetcher]
@@ -80,3 +84,8 @@ services:
 
 volumes:
   db:
+
+networks:
+  default:
+    name: codeforces-insights_net
+    driver: bridge
