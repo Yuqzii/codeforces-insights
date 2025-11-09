@@ -12,7 +12,7 @@ services:
       migrate:
         condition: service_completed_successfully
     networks:
-      codeforces-insights_net:
+      default:
         aliases:
           - codeforces-insights_server
 
