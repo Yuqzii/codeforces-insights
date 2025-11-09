@@ -61,6 +61,8 @@ func main() {
 	mux.HandleFunc("POST /performance", h.HandlePerformance)
 	mux.HandleFunc("GET /percentile/{rating}", h.HandlePercentile)
 
+	handler := handlers.WithCORS(mux)
+
 	log.Println("Server listening on port 8080")
-	log.Fatalln(http.ListenAndServe(":8080", mux))
+	log.Fatalln(http.ListenAndServe(":8080", handler))
 }
