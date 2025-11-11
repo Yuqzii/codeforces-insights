@@ -163,7 +163,7 @@ function updateSolvedRatingsTime(ratingsTime) {
 }
 
 function updatePerformance(performance) {
-	performance.sort((a, b) => a.timestamp > b.timestamp);
+	performance.sort((a, b) => a.timestamp - b.timestamp);
 
 	ratingHistory.updatePerfomanceData(performance);
 	ratingHistory.loading = false;
