@@ -9,7 +9,10 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-var ErrContestNotStored = errors.New("did not find contest in db")
+var (
+	ErrContestNotStored    = errors.New("did not find contest in db")
+	ErrNoResultsWithHandle = errors.New("did not find contest results with provided handle")
+)
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
 	return db.InsertContestResultsTx(ctx, db.q, contestants, id)
@@ -129,6 +132,10 @@ func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, hand
 	)
 	if err != nil {
 		return nil, fmt.Errorf("querying contest_results with handle '%s': %w", handle, err)
+	}
+
+	if !rows.Next() {
+		return nil, ErrNoResultsWithHandle
 	}
 
 	contestants, err := scanToContestants(rows)
