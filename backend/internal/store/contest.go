@@ -14,7 +14,7 @@ import (
 func (s *Store) GetContestResults(ctx context.Context, id int) (
 	[]codeforces.Contestant, *codeforces.Contest, error) {
 
-	contestants, contest, err := s.db.GetContestResults(ctx, id)
+	contestants, contest, err := s.db.GetContestResults(ctx, id, false)
 	if err == nil {
 		return contestants, contest, nil
 	}

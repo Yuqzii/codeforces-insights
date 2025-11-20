@@ -39,22 +39,28 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 	return nil
 }
 
-func (db *db) GetContestResults(ctx context.Context, id int) (
+func (db *db) GetContestResults(ctx context.Context, id int, idIsInternal bool) (
 	[]codeforces.Contestant, *codeforces.Contest, error) {
 
-	return db.GetContestResultsTx(ctx, db.q, id)
+	return db.GetContestResultsTx(ctx, db.q, id, idIsInternal)
 }
 
-func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
+func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int, idIsInternal bool) (
 	[]codeforces.Contestant, *codeforces.Contest, error) {
 
 	// Get contest
 	var contest codeforces.Contest
 	var internalID int
-	err := q.QueryRow(ctx, `
-		SELECT name, start_time, duration, contest_id, id FROM contests WHERE contest_id=$1`,
-		id,
-	).Scan(&contest.Name, &contest.StartTime, &contest.Duration, &contest.ID, &internalID)
+
+	var query string
+	if idIsInternal {
+		query = "SELECT name, start_time, duration, contest_id, id FROM contests WHERE id=$1"
+	} else {
+		query = "SELECT name, start_time, duration, contest_id, id FROM contests WHERE contest_id=$1"
+	}
+
+	err := q.QueryRow(ctx, query, id).Scan(
+		&contest.Name, &contest.StartTime, &contest.Duration, &contest.ID, &internalID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil, ErrContestNotStored
@@ -70,6 +76,7 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 			cr.new_rating,
 			cr.points,
 			cr.id,
+			cr.contest_id,
 			COALESCE(ARRAY_AGG(crh.handle) FILTER (WHERE crh.handle IS NOT NULL), '{}') AS handles
 		FROM contest_results AS cr
 		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
@@ -112,6 +119,7 @@ func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, hand
 			cr.new_rating,
 			cr.points,
 			cr.id,
+			cr.contest_id,
 			ARRAY_AGG(crh.handle) AS handles
 		FROM contest_results AS cr
 		JOIN matching_results AS mr ON mr.id = cr.id
@@ -141,6 +149,7 @@ func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
 			&c.NewRating,
 			&c.Points,
 			&c.ID,
+			&c.InternalContestID,
 			&c.MemberHandles,
 		)
 

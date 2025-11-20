@@ -13,7 +13,7 @@ type API interface {
 }
 
 type DB interface {
-	GetContestResults(ctx context.Context, id int) (
+	GetContestResults(ctx context.Context, id int, idIsInternal bool) (
 		[]codeforces.Contestant, *codeforces.Contest, error)
 }
 
