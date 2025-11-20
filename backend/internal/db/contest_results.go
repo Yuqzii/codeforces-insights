@@ -89,6 +89,12 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 	return contestants, &contest, nil
 }
 
+func (db *db) GetContestResultsFromHandle(ctx context.Context, handle string) (
+	[]codeforces.Contestant, error) {
+
+	return db.GetContestResultsFromHandleTx(ctx, db.q, handle)
+}
+
 func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, handle string) (
 	[]codeforces.Contestant, error) {
 
