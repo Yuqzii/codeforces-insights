@@ -74,7 +74,7 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 		FROM contest_results AS cr
 		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
 		WHERE cr.contest_id = $1
-		GROUP BY cr.rank, cr.old_rating, cr.new_rating, cr.points, cr.id`,
+		GROUP BY cr.id`,
 		internalID,
 	)
 	if err != nil {
@@ -87,6 +87,42 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 	}
 
 	return contestants, &contest, nil
+}
+
+func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, handle string) (
+	[]codeforces.Contestant, error) {
+
+	// Get all results with the correct handle.
+	rows, err := q.Query(ctx, `
+		WITH matching_results AS (
+			SELECT cr.id
+			FROM contest_results AS cr
+			JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
+			WHERE crh.handle = $1
+		)
+		SELECT
+			cr.rank,
+			cr.old_rating,
+			cr.new_rating,
+			cr.points,
+			cr.id,
+			ARRAY_AGG(crh.handle) AS handles
+		FROM contest_results AS cr
+		JOIN matching_results AS mr ON mr.id = cr.id
+		LEFT JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
+		GROUP BY cr.id`,
+		handle,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("querying contest_results with handle '%s': %w", handle, err)
+	}
+
+	contestants, err := scanToContestants(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning into contestants: %w", err)
+	}
+
+	return contestants, nil
 }
 
 func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
