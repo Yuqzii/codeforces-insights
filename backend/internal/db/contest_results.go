@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -23,6 +24,10 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 
 	batch := &pgx.Batch{}
 	for _, c := range contestants {
+		for i := range c.MemberHandles {
+			c.MemberHandles[i] = strings.ToLower(c.MemberHandles[i])
+		}
+
 		batch.Queue(`
 			WITH new_result AS (
 				INSERT INTO contest_results (contest_id, rank, old_rating, new_rating, points)
@@ -108,6 +113,8 @@ func (db *db) GetContestResultsFromHandle(ctx context.Context, handle string) (
 
 func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, handle string) (
 	[]codeforces.Contestant, error) {
+
+	handle = strings.ToLower(handle)
 
 	// Get all results with the correct handle.
 	rows, err := q.Query(ctx, `
