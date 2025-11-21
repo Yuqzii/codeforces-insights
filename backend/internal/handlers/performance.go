@@ -83,7 +83,6 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 	for _, r := range results {
 		rating, ok := idToRat[r.ContestID]
 		if ok {
-			log.Printf("Successfully updated %d rank from %d to %d", r.ContestID, rating.Rank, r.Rank)
 			rating.Rank = r.Rank
 		}
 	}
