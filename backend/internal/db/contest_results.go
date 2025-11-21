@@ -4,12 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-var ErrContestNotStored = errors.New("did not find contest in db")
+var (
+	ErrContestNotStored    = errors.New("did not find contest in db")
+	ErrNoResultsWithHandle = errors.New("did not find contest results with provided handle")
+)
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
 	return db.InsertContestResultsTx(ctx, db.q, contestants, id)
@@ -20,6 +24,10 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 
 	batch := &pgx.Batch{}
 	for _, c := range contestants {
+		for i := range c.MemberHandles {
+			c.MemberHandles[i] = strings.ToLower(c.MemberHandles[i])
+		}
+
 		batch.Queue(`
 			WITH new_result AS (
 				INSERT INTO contest_results (contest_id, rank, old_rating, new_rating, points)
@@ -39,22 +47,28 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 	return nil
 }
 
-func (db *db) GetContestResults(ctx context.Context, id int) (
+func (db *db) GetContestResults(ctx context.Context, id int, idIsInternal bool) (
 	[]codeforces.Contestant, *codeforces.Contest, error) {
 
-	return db.GetContestResultsTx(ctx, db.q, id)
+	return db.GetContestResultsTx(ctx, db.q, id, idIsInternal)
 }
 
-func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
+func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int, idIsInternal bool) (
 	[]codeforces.Contestant, *codeforces.Contest, error) {
 
 	// Get contest
 	var contest codeforces.Contest
 	var internalID int
-	err := q.QueryRow(ctx, `
-		SELECT name, start_time, duration, contest_id, id FROM contests WHERE contest_id=$1`,
-		id,
-	).Scan(&contest.Name, &contest.StartTime, &contest.Duration, &contest.ID, &internalID)
+
+	var query string
+	if idIsInternal {
+		query = "SELECT name, start_time, duration, contest_id, id FROM contests WHERE id=$1"
+	} else {
+		query = "SELECT name, start_time, duration, contest_id, id FROM contests WHERE contest_id=$1"
+	}
+
+	err := q.QueryRow(ctx, query, id).Scan(
+		&contest.Name, &contest.StartTime, &contest.Duration, &contest.ID, &internalID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil, ErrContestNotStored
@@ -70,11 +84,13 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 			cr.new_rating,
 			cr.points,
 			cr.id,
+			c.contest_id,
 			COALESCE(ARRAY_AGG(crh.handle) FILTER (WHERE crh.handle IS NOT NULL), '{}') AS handles
 		FROM contest_results AS cr
-		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
+		JOIN contests AS c ON c.id = cr.contest_id
+		LEFT JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
 		WHERE cr.contest_id = $1
-		GROUP BY cr.rank, cr.old_rating, cr.new_rating, cr.points, cr.id`,
+		GROUP BY cr.id, c.id`,
 		internalID,
 	)
 	if err != nil {
@@ -89,6 +105,56 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int) (
 	return contestants, &contest, nil
 }
 
+func (db *db) GetContestResultsFromHandle(ctx context.Context, handle string) (
+	[]codeforces.Contestant, error) {
+
+	return db.GetContestResultsFromHandleTx(ctx, db.q, handle)
+}
+
+func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, handle string) (
+	[]codeforces.Contestant, error) {
+
+	handle = strings.ToLower(handle)
+
+	// Get all results with the correct handle.
+	rows, err := q.Query(ctx, `
+		WITH matching_results AS (
+			SELECT cr.id
+			FROM contest_results AS cr
+			JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
+			WHERE crh.handle = $1
+		)
+		SELECT
+			cr.rank,
+			cr.old_rating,
+			cr.new_rating,
+			cr.points,
+			cr.id,
+			c.contest_id,
+			ARRAY_AGG(crh.handle) AS handles
+		FROM contest_results AS cr
+		JOIN matching_results AS mr ON mr.id = cr.id
+		JOIN contests AS c ON c.id = cr.contest_id
+		LEFT JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
+		GROUP BY cr.id, c.id`,
+		handle,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("querying contest_results with handle '%s': %w", handle, err)
+	}
+
+	if !rows.Next() {
+		return nil, ErrNoResultsWithHandle
+	}
+
+	contestants, err := scanToContestants(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning into contestants: %w", err)
+	}
+
+	return contestants, nil
+}
+
 func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
 	return pgx.CollectRows(rows, func(row pgx.CollectableRow) (codeforces.Contestant, error) {
 		var c codeforces.Contestant
@@ -99,6 +165,7 @@ func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
 			&c.NewRating,
 			&c.Points,
 			&c.ID,
+			&c.ContestID,
 			&c.MemberHandles,
 		)
 

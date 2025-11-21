@@ -62,7 +62,7 @@ func (s *Service) FetchContest(id int) error {
 	}
 
 	if !hasRatingInfo {
-		return ErrNoRatingInfo
+		return fmt.Errorf("contest %d: %w", id, ErrNoRatingInfo)
 	}
 
 	// Set ratings of contestants

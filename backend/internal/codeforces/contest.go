@@ -18,6 +18,7 @@ type Contestant struct {
 	OldRating     int
 	NewRating     int
 	MemberHandles []string
+	ContestID     int
 }
 
 type Contest struct {

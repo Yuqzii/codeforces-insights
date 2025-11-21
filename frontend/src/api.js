@@ -26,11 +26,15 @@ export async function getRatingHistory(handle, signal) {
 	return await cfFetch(`user.rating?handle=${handle}`, signal);
 }
 
-export async function getPerformance(ratingHistory, signal) {
+export async function getPerformance(handle, ratingHistory, signal) {
 	try {
+		const reqData = {
+			handle: handle,
+			ratingHistory: ratingHistory
+		};
 		const resp = await fetch(`${process.env.API_URL}/performance`, {
 			method: "POST",
-			body: JSON.stringify(ratingHistory),
+			body: JSON.stringify(reqData),
 			signal: signal,
 		});
 		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);

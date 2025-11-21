@@ -21,6 +21,8 @@ type Client interface {
 type ContestResultsProvider interface {
 	GetContestResults(ctx context.Context, id int) (
 		[]codeforces.Contestant, *codeforces.Contest, error)
+	GetContestResultsFromHandle(ctx context.Context, handle string) (
+		[]codeforces.Contestant, error)
 }
 
 type PercentileProvider interface {
