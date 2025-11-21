@@ -50,8 +50,11 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ratings []codeforces.RatingChange
-	if err = json.Unmarshal(body, &ratings); err != nil {
+	var data struct {
+		Handle  string                    `json:"handle"`
+		Ratings []codeforces.RatingChange `json:"ratingHistory"`
+	}
+	if err = json.Unmarshal(body, &data); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -63,14 +66,35 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 		Timestamp int `json:"timestamp"`
 	}
 
-	perf := make([]performance, 0, len(ratings))
-	resChan := make(chan perfResult, len(ratings))
-
-	for i := range ratings {
-		h.perf.addJob(ctx, &ratings[i], resChan)
+	idToRat := make(map[int]*codeforces.RatingChange)
+	for i := range data.Ratings {
+		idToRat[data.Ratings[i].ContestID] = &data.Ratings[i]
 	}
 
-	for range ratings {
+	results, err := h.crp.GetContestResultsFromHandle(ctx, data.Handle)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting contest results from handle '%s': %v", data.Handle, err)
+		cancel()
+		return
+	}
+
+	// Update ratings with the correct rank that we store.
+	for _, r := range results {
+		rating, ok := idToRat[r.ContestID]
+		if ok {
+			log.Printf("Successfully updated %d rank from %d to %d", r.ContestID, rating.Rank, r.Rank)
+			rating.Rank = r.Rank
+		}
+	}
+
+	perf := make([]performance, 0, len(data.Ratings))
+	resChan := make(chan perfResult, len(data.Ratings))
+	for i := range data.Ratings {
+		h.perf.addJob(ctx, &data.Ratings[i], resChan)
+	}
+
+	for range data.Ratings {
 		select {
 		case perfRes := <-resChan:
 			if perfRes.err != nil {

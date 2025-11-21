@@ -79,12 +79,13 @@ func (db *db) GetContestResultsTx(ctx context.Context, q Querier, id int, idIsIn
 			cr.new_rating,
 			cr.points,
 			cr.id,
-			cr.contest_id,
+			c.contest_id,
 			COALESCE(ARRAY_AGG(crh.handle) FILTER (WHERE crh.handle IS NOT NULL), '{}') AS handles
 		FROM contest_results AS cr
-		LEFT JOIN contest_result_handles crh ON crh.contest_result_id=cr.id
+		JOIN contests AS c ON c.id = cr.contest_id
+		LEFT JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
 		WHERE cr.contest_id = $1
-		GROUP BY cr.id`,
+		GROUP BY cr.id, c.id`,
 		internalID,
 	)
 	if err != nil {
@@ -122,12 +123,13 @@ func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, hand
 			cr.new_rating,
 			cr.points,
 			cr.id,
-			cr.contest_id,
+			c.contest_id,
 			ARRAY_AGG(crh.handle) AS handles
 		FROM contest_results AS cr
 		JOIN matching_results AS mr ON mr.id = cr.id
+		JOIN contests AS c ON c.id = cr.contest_id
 		LEFT JOIN contest_result_handles crh ON crh.contest_result_id = cr.id
-		GROUP BY cr.id`,
+		GROUP BY cr.id, c.id`,
 		handle,
 	)
 	if err != nil {
@@ -156,7 +158,7 @@ func scanToContestants(rows pgx.Rows) ([]codeforces.Contestant, error) {
 			&c.NewRating,
 			&c.Points,
 			&c.ID,
-			&c.InternalContestID,
+			&c.ContestID,
 			&c.MemberHandles,
 		)
 

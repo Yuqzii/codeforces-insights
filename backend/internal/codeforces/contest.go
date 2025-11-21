@@ -11,14 +11,14 @@ import (
 )
 
 type Contestant struct {
-	Rank              int
-	Points            float64
-	Penalty           int
-	ID                uint64
-	OldRating         int
-	NewRating         int
-	MemberHandles     []string
-	InternalContestID uint64
+	Rank          int
+	Points        float64
+	Penalty       int
+	ID            uint64
+	OldRating     int
+	NewRating     int
+	MemberHandles []string
+	ContestID     int
 }
 
 type Contest struct {
