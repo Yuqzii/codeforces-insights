@@ -34,7 +34,8 @@ export async function getProblems(tags, signal) {
 		for (const tag of tags) {
 			url += tag + ";";
 		}
-		url.slice(0, -1);
+		url = url.slice(0, -1);
+		console.log(url)
 	}
 
 	return await cfFetch(url, signal);
