@@ -4,23 +4,6 @@
 	--bg-transition-speed: 150ms;
 	--cursor-x: -100px;
 	--cursor-y: -100px;
-
-	--bg: #1e1e2e;
-	--bg1: #313244;
-	--bg2: #45475a;
-	--bg3: #585b70;
-	--bg-dark: #181825;
-	--bg-shadow: #11111b;
-	--fg: #cdd6f4;
-	--glow: #7f849c55;
-	--border: #7f849c88;
-	--red: #f38ba8;
-	--orange: #fab387;
-	--green: #a6e3a1;
-	--yellow: #f9e2af;
-	--blue: #89b4fa;
-	--purple: #cba6f7;
-	--aqua: #94e2d5;
 }
 
 .increased-contrast {
