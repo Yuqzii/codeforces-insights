@@ -1,0 +1,115 @@
+@import "themes.css";
+@import "text.css";
+@import "depth.css";
+@import "switch.css";
+@import "nav-menu.css";
+@import "hero.css";
+@import "loader.css";
+@import "analytics.css";
+@import "footer.css";
+@import "fade-in.css";
+
+:root {
+	--bg-transition-speed: 150ms;
+	--cursor-x: -100px;
+	--cursor-y: -100px;
+}
+
+.increased-contrast {
+	filter: contrast(1.2) saturate(1.5);
+}
+
+html {
+	font-size: clamp(14px, 0.9vw, 2vh);
+	scroll-behavior: smooth;
+}
+
+::placeholder {
+	color: var(--fg);
+	opacity: 0.5;
+}
+
+body {
+	font-family: "Fira Code";
+	color: var(--fg);
+
+	margin: auto;
+	width: auto;
+
+	background-color: var(--bg-dark);
+	transition: background-color var(--bg-transition-speed) ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: "Inconsolata";
+}
+
+button,
+input,
+select {
+	text-align: center;
+	font-size: inherit;
+	font-family: "Fira Code";
+	color: var(--fg);
+	border-radius: 0.5em;
+	border: none;
+}
+
+button,
+input {
+	padding: 0.75em 1.5em;
+}
+
+select {
+	padding: 0.5em 1em;
+	appearance: none;
+}
+
+select:focus {
+	outline: none;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+main {
+	width: 100%;
+	background-color: var(--bg-dark);
+	position: relative;
+	z-index: 0;
+	transition-duration: var(--bg-transition-speed);
+}
+
+.main-section {
+	margin: 0 auto;
+	padding: 3rem 0;
+	width: 85%;
+}
+
+.main-section h1 {
+	text-align: center;
+	font-size: 3.5rem;
+	margin-top: 0;
+}
+
+@media (max-aspect-ratio: 6/5) {
+	html {
+		font-size: 16px;
+	}
+
+	.main-section {
+		width: 90%;
+	}
+}
+
+@media (max-aspect-ratio: 4/5) {
+	html {
+		font-size: 26px;
+	}
+}

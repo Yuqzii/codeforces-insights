@@ -1,0 +1,59 @@
+
+.red-text {
+	color: var(--red);
+}
+
+.orange-text {
+	color: var(--orange);
+}
+
+.yellow-text {
+	color: var(--yellow);
+}
+
+.green-text {
+	color: var(--green);
+}
+
+.aqua-text {
+	color: var(--aqua);
+}
+
+.blue-text {
+	color: var(--blue);
+}
+
+.purple-text {
+	color: var(--purple);
+}
+
+.weight-450 {
+	font-weight: 450;
+}
+
+.weight-600 {
+	font-weight: 600;
+}
+
+.glow-text {
+	text-shadow: 0 0 0.1em var(--glow);
+}
+
+.glow-color {
+	color: var(--text-color);
+	text-shadow: 0 0 0.1em var(--text-color);
+}
+
+.glow-pulse {
+	animation: glow-pulse 1s infinite alternate;
+}
+
+@keyframes glow-pulse {
+	0% {
+		text-shadow: 0 0 0.15em var(--glow), 0 0 0.075em var(--glow);
+	}
+
+	100% {
+		text-shadow: 0 0 0.5em var(--glow), 0 0 0.25em var(--glow), 0 0 0.15em var(--glow);
+	}
+}
