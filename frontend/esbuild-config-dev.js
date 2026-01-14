@@ -43,7 +43,7 @@ gaze("./public/*", function(err, watcher) {
 
 async function start() {
 	const ctx = await esbuild.context({
-		entryPoints: ["./src/main.js", "./src/style.css"],
+		entryPoints: ["./src/main.js", "./src/style/style.css"],
 		bundle: true,
 		platform: "node",
 		outdir: "./dist/",
