@@ -1,0 +1,99 @@
+
+#hamburger {
+	position: fixed;
+	top: 1.5rem;
+	left: 1.5rem;
+	z-index: 11;
+	background: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75em;
+	padding: 0;
+}
+
+#hamburger span {
+	width: 2.5em;
+	height: 0.25em;
+	background-color: var(--fg);
+}
+
+/* Nav bar */
+#nav-menu {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	z-index: 5;
+	left: 0;
+	/* This is changed with the active class */
+	transform: translateX(-100%);
+	width: 15em;
+	height: 100vh;
+
+	background-color: color-mix(in srgb, var(--bg), transparent 5%);
+	backdrop-filter: blur(10px);
+	box-shadow: inset -5px 0 15px color-mix(in srgb, var(--bg3), transparent 90%);
+	transition-duration: var(--bg-transition-speed);
+}
+
+#nav-menu nav {
+	display: flex;
+	flex-direction: column;
+	font-size: 1.2em;
+	margin-top: 6rem;
+	gap: 1em;
+}
+
+#nav-menu nav a {
+	margin: auto 2em;
+	text-decoration: none;
+	color: var(--fg);
+	box-sizing: border-box;
+	position: relative;
+}
+
+#nav-menu nav a::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	width: 100%;
+	height: 1px;
+	background-color: var(--fg);
+
+	transform: translateX(-50%) scaleX(0);
+	transform-origin: center;
+	transition: transform 150ms ease;
+}
+
+#nav-menu nav a:hover::after {
+	transform: translateX(-50%) scaleX(1);
+}
+
+#nav-menu.active {
+	transform: translateX(0);
+}
+
+#high-contrast-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+	margin-bottom: 2em;
+}
+
+#high-contrast-container .switch {
+	font-size: 0.9em;
+}
+
+.theme-select {
+	font-size: 1em;
+	margin: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.75em;
+	text-align: center;
+}
+
