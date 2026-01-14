@@ -4,6 +4,7 @@
 @import "switch.css";
 @import "nav-menu.css";
 @import "hero.css";
+@import "loader.css";
 
 :root {
 	--bg-transition-speed: 150ms;
@@ -302,64 +303,6 @@ div:has(> #user-title-photo) {
 	flex: 1 1 0;
 	padding: 2%;
 	border-radius: 5%;
-}
-
-.loader,
-.loader-small {
-	position: absolute;
-	bottom: 1%;
-	left: 1%;
-	width: 98%;
-	height: 98%;
-	background-color: var(--bg);
-	border-radius: var(--card-border-radius);
-	transition-duration: var(--bg-transition-speed);
-
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.loader::after,
-.loader-small::after {
-	content: "";
-	border-radius: 50%;
-	animation: spin 1s ease infinite;
-}
-
-.loader::after {
-	width: 5rem;
-	height: 5rem;
-	border: 5px solid var(--bg2);
-	border-top-color: var(--fg);
-}
-
-.loader-small::after {
-	width: 1.5rem;
-	height: 1.5rem;
-	border: 3px solid var(--bg2);
-	border-top-color: var(--fg);
-}
-
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-#performance-loader {
-	flex-direction: row;
-	align-items: center;
-	gap: 10px;
-}
-
-#performance-loader p {
-	margin: 0;
-	font-size: 14px;
-}
-
-#performance-loader div {
-	position: relative;
 }
 
 footer {
