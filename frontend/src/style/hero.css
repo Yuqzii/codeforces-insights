@@ -1,0 +1,159 @@
+#hero-section {
+	position: relative;
+	top: 0;
+	left: 0;
+	height: 100vh;
+}
+
+/* Bottom gradient and shadow */
+#hero-section::after {
+	content: "";
+	position: absolute;
+	z-index: 1;
+	inset: 0;
+	box-shadow: 0 2px 8px var(--bg1);
+	background: linear-gradient(to bottom, transparent 85%, var(--bg));
+	pointer-events: none;
+}
+
+.hero {
+	display: flex;
+	flex-direction: column;
+	padding: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
+	font-size: clamp(20px, 1.1vw, 24px);
+	width: 32em;
+}
+
+.hero h1 {
+	font-size: 6em;
+	margin: 0;
+	text-align: left;
+}
+
+.hero p {
+	font-size: 1em;
+	margin-top: 1em;
+}
+
+.hero h2 {
+	font-family: "Fira Code";
+	font-weight: 300;
+	font-size: 1.3em;
+	margin: 2em 0 1em 0;
+	position: relative;
+	width: max-content;
+}
+
+.user-form-container {
+	display: flex;
+	width: fit-content;
+	flex-direction: column;
+	align-items: center;
+}
+
+#user-form {
+	display: flex;
+	flex-direction: row;
+	font-size: 1em;
+	gap: 0.5em;
+}
+
+.grid-bg {
+	--grid-grap: 60px;
+	--dot-size: 2px;
+	--line-thickness: 1px;
+
+	position: absolute;
+	inset: 0;
+	background-size: var(--grid-grap) var(--grid-grap);
+	background-image: radial-gradient(circle, var(--bg3) var(--dot-size), transparent var(--dot-size));
+	background-attachment: fixed;
+	background-position: 0 0;
+	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
+			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
+	will-change: mask-image;
+	z-index: -1;
+}
+
+.grid-bg::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-size: var(--grid-grap) var(--grid-grap);
+	background-image:
+		linear-gradient(to right, var(--bg3) var(--line-thickness), transparent var(--line-thickness)),
+		linear-gradient(to bottom, var(--bg3) var(--line-thickness), transparent var(--line-thickness));
+	background-attachment: fixed;
+	--background-offset: calc(var(--grid-grap) / 2 - var(--line-thickness) / 2);
+	background-position: var(--background-offset) var(--background-offset);
+	mask-image: radial-gradient(circle 150px at var(--cursor-x) var(--cursor-y),
+			rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+	will-change: mask-image;
+}
+
+/* Hero graph animation */
+.hero-graph-container {
+	--graph-anim-delay: 250ms;
+
+	position: fixed;
+	pointer-events: none;
+	z-index: -1;
+	right: 0;
+	bottom: 0;
+	width: 65vw;
+	min-width: 1000px;
+}
+
+.hero-graph-container svg {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.hero-graph-container svg circle {
+	fill: var(--bg3);
+	opacity: 0;
+	animation: show-circle 200ms ease-out forwards;
+}
+
+.hero-graph-container svg circle[data-index="0"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.3s);
+}
+
+.hero-graph-container svg circle[data-index="1"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.4s);
+}
+
+.hero-graph-container svg circle[data-index="2"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.75s);
+}
+
+.hero-graph-container svg circle[data-index="3"] {
+	animation-delay: calc(var(--graph-anim-delay) + 0.85s);
+}
+
+.hero-graph-container svg circle[data-index="4"] {
+	animation-delay: calc(var(--graph-anim-delay) + 1.25s);
+}
+
+@keyframes show-circle {
+	to {
+		opacity: 1;
+	}
+}
+
+.animated-line {
+	stroke-dasharray: 600;
+	stroke-dashoffset: 600;
+	stroke: var(--bg3);
+	stroke-width: 2.5;
+	animation: draw-line 1.4s var(--graph-anim-delay) linear forwards;
+}
+
+@keyframes draw-line {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
