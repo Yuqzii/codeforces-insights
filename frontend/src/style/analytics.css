@@ -96,3 +96,29 @@ div:has(> #user-title-photo) {
 	border-radius: 5%;
 }
 
+@media (max-aspect-ratio: 6/5) {
+	.analytics-grid {
+		grid-template-columns: 1fr 1fr;
+		grid-auto-rows: 55vh;
+		grid-template-areas:
+			"user-info solved-tags"
+			"solved-ratings solved-ratings"
+			"rating-history rating-history";
+	}
+}
+
+@media (max-aspect-ratio: 4/5) {
+	.analytics-grid {
+		grid-template-columns: 1fr;
+		grid-auto-rows: 55vh;
+		grid-template-areas:
+			"user-info"
+			"solved-tags"
+			"solved-ratings"
+			"rating-history";
+	}
+
+	#user-details .analytics-content {
+		font-size: 1.25rem;
+	}
+}

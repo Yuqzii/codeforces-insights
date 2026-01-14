@@ -157,3 +157,47 @@
 	}
 }
 
+@media (max-aspect-ratio: 4/5) {
+	header.hero {
+		flex-direction: column;
+		align-items: center;
+		justify-content: start;
+		width: 100vw;
+		height: 100vh;
+	}
+
+	div.hero {
+		align-items: center;
+		margin: 5em 0 0 0;
+		width: 90vw;
+		font-size: clamp(24px, 1.5vh, 32px)
+	}
+
+	div.hero h1 {
+		font-size: 5em;
+		text-align: center;
+	}
+
+	div.hero p {
+		font-size: 1em;
+		text-align: center;
+	}
+
+	div.hero h2 {
+		font-size: 1.25em;
+		text-align: center;
+		margin: 2em 0 1.5em 0;
+	}
+
+	#user-form {
+		font-size: 1.25em;
+	}
+
+	#user-form button {
+		display: none;
+	}
+
+	.hero-graph-container {
+		display: none;
+	}
+}
