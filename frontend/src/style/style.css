@@ -7,6 +7,7 @@
 @import "loader.css";
 @import "analytics.css";
 @import "footer.css";
+@import "fade-in.css";
 
 :root {
 	--bg-transition-speed: 150ms;
@@ -75,24 +76,6 @@ select:focus {
 
 button:hover {
 	cursor: pointer;
-}
-
-.fade-in {
-	opacity: 0;
-	transform: translateY(2vh);
-	animation: fadeIn 1s ease-out forwards;
-}
-
-@keyframes fadeIn {
-	0% {
-		opacity: 0;
-		transform: translateY(2vh);
-	}
-
-	100% {
-		opacity: 100%;
-		transform: translateY(0);
-	}
 }
 
 main {
