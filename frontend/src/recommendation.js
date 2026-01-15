@@ -3,14 +3,19 @@ export function filterSubmissionsRecentContests(submissions) {
     const recentContests = [];
     
     for (let i = 0; i < submissions.length; i++){
-        if (submissions[i].author.participantType ==  "CONTESTANT") {
-            if (recentContests.includes(submissions[i].contestId)) {
-                filtered.push(submissions[i]);
-            } else if (recentContests.length < 5) {
-                filtered.push(submissions[i]);
-                recentContests.push(submissions[i].contestId);
-            }
+        if (submissions[i].author.participantType != "CONTESTANT") {
+            continue;
         }
+
+        let amountOfContests=5;
+        let ID=submissions[i].contestId;
+        if (recentContests.includes(ID)) {
+            filtered[recentContests.indexOf(ID)].push(submissions[i]);
+        } else if (recentContests.length < amountOfContests) {
+            filtered.push([submissions[i]]);
+            recentContests.push(ID);
+        }
+
     }
     
     return filtered
