@@ -30,7 +30,7 @@ html {
 }
 
 body {
-	font-family: "Fira Code";
+	font-family: "Fira Code", Courier, monospace;
 	color: var(--fg);
 
 	margin: auto;
@@ -46,7 +46,7 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: "Inconsolata";
+	font-family: "Inconsolata", Courier, monospace;
 }
 
 button,
@@ -54,7 +54,7 @@ input,
 select {
 	text-align: center;
 	font-size: inherit;
-	font-family: "Fira Code";
+	font-family: "Fira Code", Courier, monospace;
 	color: var(--fg);
 	border-radius: 0.5em;
 	border: none;

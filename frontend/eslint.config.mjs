@@ -24,6 +24,7 @@ export default defineConfig([
 		rules: {
 			"css/no-invalid-properties": "off",
 			"css/no-unknown-custom-properties": "off",
+			"css/use-baseline": "off",
 		},
 	},
 ]);
