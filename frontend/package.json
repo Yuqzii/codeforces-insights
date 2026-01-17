@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "mkdir -p dist && node esbuild-config-dev.js",
     "serve": "node bs-config.js",
-    "build": "node esbuild-config && cp -r public/* dist/"
+    "build": "node esbuild-config && cp -r public/* dist/",
+	"lint": "npx eslint src/**"
   }
 }
