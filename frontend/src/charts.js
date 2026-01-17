@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 var fgColor, bgColor, bg1Color, bg2Color, shadowColor, borderColor;
 var redColor, orangeColor, greenColor, yellowColor, blueColor, purpleColor, aquaColor;
 
