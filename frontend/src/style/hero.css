@@ -36,7 +36,7 @@
 }
 
 .hero h2 {
-	font-family: "Fira Code";
+	font-family: "Fira Code", Courier, monospace;
 	font-weight: 300;
 	font-size: 1.3em;
 	margin: 2em 0 1em 0;
