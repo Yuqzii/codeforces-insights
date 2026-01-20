@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
@@ -25,6 +26,7 @@ type ContestProvider interface {
 
 type ContestRepository interface {
 	UpsertContestTx(context.Context, db.Querier, *codeforces.Contest) (id int, err error)
+	UpsertContest(context.Context, *codeforces.Contest) (id int, err error)
 	InsertContestResultsTx(context.Context, db.Querier, []codeforces.Contestant, int) error
 	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
 }
@@ -62,6 +64,18 @@ func (s *Service) FetchContest(id int) error {
 	}
 
 	if !hasRatingInfo {
+		const minOldTime = 24 * 14 * time.Hour // Two weeks
+		isOld := contest.StartTime.Add(minOldTime).Before(time.Now())
+		if isOld {
+			// Only insert the contest, no contestants as the don't have any rating info.
+			// This is to avoid calling the Codeforces API many times for the same contest,
+			// when we could just store it to indicate that we already have all available data.
+			_, err = s.contestRepo.UpsertContest(context.TODO(), contest)
+			return errors.Join(fmt.Errorf(
+				"contest %d: %w, but is old so will store in db to avoid future fetches", id, ErrNoRatingInfo),
+				err)
+		}
+
 		return fmt.Errorf("contest %d: %w", id, ErrNoRatingInfo)
 	}
 

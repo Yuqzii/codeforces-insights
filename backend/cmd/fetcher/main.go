@@ -52,7 +52,7 @@ func main() {
 
 	log.Printf("Starting fetching for %d contests\n", len(unfetched))
 	bar := progressbar.Default(int64(len(unfetched)), "Fetching contests")
-	failCnt, noRatingCnt := 0, 0
+	failCnt := 0
 
 	results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, db)
 	for err := range results {
@@ -60,7 +60,6 @@ func main() {
 		if err != nil {
 			if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 				// Usually means contest was unrated
-				noRatingCnt++
 				continue
 			}
 			failCnt++
@@ -77,8 +76,5 @@ func main() {
 	}
 
 	outputStr := fmt.Sprintf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
-	if noRatingCnt > 0 {
-		outputStr += fmt.Sprintf(" (%d was not stored due to missing rating data)", noRatingCnt)
-	}
 	log.Println(outputStr)
 }
