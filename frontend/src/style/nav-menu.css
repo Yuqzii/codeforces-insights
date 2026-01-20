@@ -29,14 +29,13 @@
 	/* This is changed with the active class */
 	transform: translateX(-100%);
 	width: 17em;
-	height: calc(100vh - 2 * var(--nav-padding));
+	height: calc(98vh - 2 * var(--nav-padding));
+	top: 1vh;
 	padding: var(--nav-padding);
 
 	font-size: 1.2rem;
 
-	background-color: color-mix(in srgb, var(--bg), transparent 5%);
-	backdrop-filter: blur(10px);
-	box-shadow: inset -5px 0 15px color-mix(in srgb, var(--bg3), transparent 90%);
+	border-radius: 15px;
 	transition-duration: var(--bg-transition-speed);
 }
 
@@ -74,7 +73,7 @@
 }
 
 #nav-menu.active {
-	transform: translateX(0);
+	transform: translateX(1vh);
 }
 
 #high-contrast-container {
