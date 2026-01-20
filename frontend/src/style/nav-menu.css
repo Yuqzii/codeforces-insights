@@ -1,7 +1,7 @@
 #hamburger {
 	position: fixed;
-	top: 1.5rem;
-	left: 1.5rem;
+	top: 2rem;
+	left: 2rem;
 	z-index: 11;
 	background: none;
 	display: flex;
