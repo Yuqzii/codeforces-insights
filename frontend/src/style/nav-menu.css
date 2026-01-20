@@ -18,6 +18,8 @@
 
 /* Nav bar */
 #nav-menu {
+	--nav-padding: 2em;
+
 	position: fixed;
 	display: flex;
 	flex-direction: column;
@@ -26,8 +28,11 @@
 	left: 0;
 	/* This is changed with the active class */
 	transform: translateX(-100%);
-	width: 15em;
-	height: 100vh;
+	width: 17em;
+	height: calc(100vh - 2 * var(--nav-padding));
+	padding: var(--nav-padding);
+
+	font-size: 1.2rem;
 
 	background-color: color-mix(in srgb, var(--bg), transparent 5%);
 	backdrop-filter: blur(10px);
@@ -38,13 +43,12 @@
 #nav-menu nav {
 	display: flex;
 	flex-direction: column;
-	font-size: 1.2em;
-	margin-top: 6rem;
+	margin-top: 5rem;
+	font-size: 1.35em;
 	gap: 1em;
 }
 
 #nav-menu nav a {
-	margin: auto 2em;
 	text-decoration: none;
 	color: var(--fg);
 	box-sizing: border-box;
@@ -88,7 +92,6 @@
 
 .theme-select {
 	font-size: 1em;
-	margin: 1.5rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
