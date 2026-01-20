@@ -45,6 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		setTheme(theme);
 	});
 
+	window.addEventListener("click", (e) => {
+		if (!navMenu.contains(e.target) && !navMenuButton.contains(e.target)) {
+			// Something outside the nav menu was clicked.
+			navMenu.classList.remove("active");
+			navMenuActive = false;
+		}
+	});
+
 	highContrastSlider.addEventListener("change", (e) => {
 		if (e.target.checked === true)
 			root.classList.add("increased-contrast");
