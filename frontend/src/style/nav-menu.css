@@ -25,18 +25,16 @@
 	flex-direction: column;
 	justify-content: space-between;
 	z-index: 5;
-	left: 0;
+	top: 1vh;
 	/* This is changed with the active class */
 	transform: translateX(-100%);
+
 	width: 17em;
 	height: calc(98vh - 2 * var(--nav-padding));
-	top: 1vh;
 	padding: var(--nav-padding);
+	border-radius: 15px;
 
 	font-size: 1.2rem;
-
-	border-radius: 15px;
-	transition-duration: var(--bg-transition-speed);
 }
 
 #nav-menu nav {
