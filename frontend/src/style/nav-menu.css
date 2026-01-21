@@ -98,14 +98,10 @@
 
 @media (max-aspect-ratio: 4/5) {
 	#nav-menu {
-		font-size: 2rem;
-	}
-
-	#nav-menu nav {
-		margin-top: 10rem;
+		display: none;
 	}
 
 	#hamburger {
-		font-size: 2rem;
+		display: none;
 	}
 }
