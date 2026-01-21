@@ -29,12 +29,12 @@
 	/* This is changed with the active class */
 	transform: translateX(-100%);
 
-	width: 17em;
+	width: 14rem;
 	height: calc(98vh - 2 * var(--nav-padding));
 	padding: var(--nav-padding);
 	border-radius: 15px;
 
-	font-size: 1.2rem;
+	font-size: 1.1rem;
 }
 
 #nav-menu nav {
