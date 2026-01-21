@@ -1,7 +1,7 @@
 #hamburger {
 	position: fixed;
-	top: 1.5rem;
-	left: 1.5rem;
+	top: 2rem;
+	left: 2rem;
 	z-index: 11;
 	background: none;
 	display: flex;
@@ -18,33 +18,34 @@
 
 /* Nav bar */
 #nav-menu {
+	--nav-padding: 2em;
+
 	position: fixed;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	z-index: 5;
-	left: 0;
+	top: 1vh;
 	/* This is changed with the active class */
 	transform: translateX(-100%);
-	width: 15em;
-	height: 100vh;
 
-	background-color: color-mix(in srgb, var(--bg), transparent 5%);
-	backdrop-filter: blur(10px);
-	box-shadow: inset -5px 0 15px color-mix(in srgb, var(--bg3), transparent 90%);
-	transition-duration: var(--bg-transition-speed);
+	width: 14rem;
+	height: calc(98vh - 2 * var(--nav-padding));
+	padding: var(--nav-padding);
+	border-radius: 15px;
+
+	font-size: 1.1rem;
 }
 
 #nav-menu nav {
 	display: flex;
 	flex-direction: column;
-	font-size: 1.2em;
-	margin-top: 6rem;
+	margin-top: 5rem;
+	font-size: 1.35em;
 	gap: 1em;
 }
 
 #nav-menu nav a {
-	margin: auto 2em;
 	text-decoration: none;
 	color: var(--fg);
 	box-sizing: border-box;
@@ -70,7 +71,7 @@
 }
 
 #nav-menu.active {
-	transform: translateX(0);
+	transform: translateX(1vh);
 }
 
 #high-contrast-container {
@@ -88,7 +89,6 @@
 
 .theme-select {
 	font-size: 1em;
-	margin: 1.5rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -98,14 +98,10 @@
 
 @media (max-aspect-ratio: 4/5) {
 	#nav-menu {
-		font-size: 2rem;
-	}
-
-	#nav-menu nav {
-		margin-top: 10rem;
+		display: none;
 	}
 
 	#hamburger {
-		font-size: 2rem;
+		display: none;
 	}
 }
