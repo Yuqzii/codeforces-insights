@@ -3,8 +3,8 @@ package recommender
 import "github.com/yuqzii/cf-stats/internal/codeforces"
 
 type probWithScore struct {
-	score   float64
-	problem *codeforces.Problem
+	Score   float64
+	Problem *codeforces.Problem
 	index   int
 }
 
@@ -15,7 +15,7 @@ func (pq probPQ) Len() int {
 }
 
 func (pq probPQ) Less(i, j int) bool {
-	return pq[i].score < pq[j].score
+	return pq[i].Score < pq[j].Score
 }
 
 func (pq probPQ) Swap(i, j int) {
