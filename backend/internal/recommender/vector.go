@@ -1,10 +1,14 @@
 package recommender
 
-import "github.com/yuqzii/cf-stats/internal/codeforces"
+import (
+	"math"
+
+	"github.com/yuqzii/cf-stats/internal/codeforces"
+)
 
 const totalTagCnt int = 40 // Actual value is 36, but added some for safety in case new tags are added.
 
-type vec [totalTagCnt]float32
+type vec [totalTagCnt]float64
 
 // Because problem vectors are either 1 (has tag) or 0 (does not have tag),
 // it can be efficiently represented using a bitset.
@@ -30,4 +34,38 @@ func (r *recommender) tagsToVec(tags []string) vec {
 	}
 
 	return res
+}
+
+func similarity(u *vec, v probVec) float64 {
+	return dotProduct(u, v) / (u.magnitude() * v.magnitude())
+}
+
+func dotProduct(u *vec, v probVec) float64 {
+	var res float64
+
+	for i := range totalTagCnt {
+		res += u[i] * float64(v&(1<<i))
+	}
+
+	return res
+}
+
+func (v *vec) magnitude() float64 {
+	var res float64
+
+	for i := range totalTagCnt {
+		res += v[i] * v[i]
+	}
+
+	return math.Sqrt(res)
+}
+
+func (v probVec) magnitude() float64 {
+	var res int
+
+	for i := range totalTagCnt {
+		res += int(v & (1 << i))
+	}
+
+	return math.Sqrt(float64(res))
 }
