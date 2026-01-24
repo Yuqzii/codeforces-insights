@@ -33,13 +33,13 @@ func TestRecommend(t *testing.T) {
 	r := New(m)
 
 	t.Run("Filtering input problems", func(t *testing.T) {
-		input := []codeforces.Problem{{
+		input := []*codeforces.Problem{{
 			Name:  "Very cool Problem",
 			Index: "A",
 			Tags:  []string{"dp", "math"}},
 		}
 
-		expected := &probWithScore{
+		expected := &ProbWithScore{
 			Problem: &codeforces.Problem{
 				Name:  "Cool Problem",
 				Index: "B",
@@ -48,7 +48,7 @@ func TestRecommend(t *testing.T) {
 		}
 
 		mockCall := m.On("GetProblemsWithTags", []string{"dp", "math"}).Return([]codeforces.Problem{
-			input[0], *expected.Problem,
+			*input[0], *expected.Problem,
 		}, nil)
 		defer mockCall.Unset()
 
@@ -59,7 +59,7 @@ func TestRecommend(t *testing.T) {
 	})
 
 	t.Run("Finding similarity", func(t *testing.T) {
-		input := []codeforces.Problem{
+		input := []*codeforces.Problem{
 			{Index: "A", Tags: []string{"greedy", "graph"}},
 		}
 
@@ -191,4 +191,44 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
 	})
+
+	t.Run("Last is unsolved", func(t *testing.T) {
+		expected := codeforces.Problem{
+			Name:      "Kniv og Gaffel (Hard version)",
+			ContestID: 42,
+			Index:     "C2",
+			Rating:    1800,
+			Tags:      []string{"graph", "dsu"},
+		}
+
+		mockCall := m.On("GetProblemsFromContest", 42).Return([]codeforces.Problem{
+			{
+				Name:      "Kniv og Gaffel (Easy version)",
+				ContestID: 42,
+				Index:     "C1",
+				Rating:    1400,
+				Tags:      []string{"graph", "dsu"},
+			}, {
+				Name:      "You should solve this",
+				ContestID: 42,
+				Index:     "A",
+				Rating:    900,
+				Tags:      []string{"greedy", "brute force"},
+			}, {
+				Name:      "You should also solve this",
+				ContestID: 42,
+				Index:     "B",
+				Rating:    1100,
+				Tags:      []string{"greedy", "brute force"},
+			},
+			expected,
+		}, nil)
+		defer mockCall.Unset()
+
+		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"A", "B", "C1"})
+
+		assert.Nil(t, err)
+		assert.Equal(t, *p, expected)
+	})
+
 }
