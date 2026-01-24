@@ -15,7 +15,7 @@ import (
 type ProblemRepo interface {
 	GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error)
 	// Should return all problems matching at least one tag.
-	GetProblemsWithTags(ctx context.Context, tag []string) ([]codeforces.Problem, error)
+	GetProblemsWithTags(ctx context.Context, tags []string) ([]codeforces.Problem, error)
 }
 
 type recommender struct {
