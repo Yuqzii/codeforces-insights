@@ -12,20 +12,20 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-type ProblemRepo interface {
+type ProblemRepository interface {
 	GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error)
 	// Should return all problems matching at least one tag.
 	GetProblemsWithTags(ctx context.Context, tags []string) ([]codeforces.Problem, error)
 }
 
 type recommender struct {
-	probRepo ProblemRepo
+	probRepo ProblemRepository
 
 	tagToIndex map[string]int
 	mu         sync.RWMutex
 }
 
-func New(repo ProblemRepo) *recommender {
+func New(repo ProblemRepository) *recommender {
 	return &recommender{
 		probRepo:   repo,
 		tagToIndex: make(map[string]int),
