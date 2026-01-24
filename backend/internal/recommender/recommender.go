@@ -75,7 +75,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem,
 			Problem: &prob,
 		}
 
-		heap.Push(&pq, ps)
+		heap.Push(&pq, &ps)
 		// Make sure we only keep cnt best.
 		if pq.Len() > cnt {
 			heap.Pop(&pq)
