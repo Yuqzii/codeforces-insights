@@ -88,3 +88,39 @@ func (db *db) UpsertProblemTx(ctx context.Context, q Querier, p *codeforces.Prob
 
 	return err
 }
+
+func (db *db) UpsertProblemsBatch(ctx context.Context, probs []codeforces.Problem) error {
+	return db.UpsertProblemsBatchTx(ctx, db.q, probs)
+}
+
+func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []codeforces.Problem) error {
+	batch := &pgx.Batch{}
+
+	query := `
+		INSERT INTO problems (contest_id, index, name, rating, tags)
+		VALUES (
+			(SELECT id FROM contests WHERE contest_id = $1),
+			$2, $3, $4, $5
+		)
+		ON CONFLICT (contest_id, index)
+		DO UPDATE SET
+			name = EXCLUDED.name,
+			rating = EXCLUDED.rating,
+			tags = EXCLUDED.tags`
+
+	for _, p := range probs {
+		batch.Queue(query, p.ContestID, p.Index, p.Name, p.Rating, p.Tags)
+	}
+
+	res := q.SendBatch(ctx, batch)
+	defer res.Close() //nolint:errcheck
+
+	for i := range probs {
+		_, err := res.Exec()
+		if err != nil {
+			return fmt.Errorf("batch item %d: %w", i, err)
+		}
+	}
+
+	return nil
+}
