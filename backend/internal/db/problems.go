@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -34,6 +35,10 @@ func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []strin
 		return nil, fmt.Errorf("collecting rows: %w", err)
 	}
 
+	for i := range problems {
+		problems[i].Index = strings.TrimSpace(problems[i].Index)
+	}
+
 	return problems, nil
 }
 
@@ -62,6 +67,10 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[codeforces.Problem])
 	if err != nil {
 		return nil, fmt.Errorf("collecting rows: %w", err)
+	}
+
+	for i := range problems {
+		problems[i].Index = strings.TrimSpace(problems[i].Index)
 	}
 
 	return problems, nil
