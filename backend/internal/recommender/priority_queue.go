@@ -3,8 +3,8 @@ package recommender
 import "github.com/yuqzii/cf-stats/internal/codeforces"
 
 type ProbWithScore struct {
-	Score   float64
-	Problem *codeforces.Problem
+	Score   float64             `json:"score"`
+	Problem *codeforces.Problem `json:"problem"`
 	index   int
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/handlers"
+	"github.com/yuqzii/cf-stats/internal/recommender"
 	"github.com/yuqzii/cf-stats/internal/stats"
 	"github.com/yuqzii/cf-stats/internal/store"
 )
@@ -52,14 +53,18 @@ func main() {
 	}
 	percentile := stats.NewPercentile(cfUsers)
 
+	log.Println("Setting up recommender")
+	rec := recommender.New(db)
+
 	log.Println("Setting up API handler")
 
-	h := handlers.New(cfClient, store, percentile, perfJobsBuffer, perfWorkerCnt)
+	h := handlers.New(cfClient, store, percentile, rec, perfJobsBuffer, perfWorkerCnt)
 
 	log.Println("Setting up server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /performance", h.HandlePerformance)
 	mux.HandleFunc("GET /percentile/{rating}", h.HandlePercentile)
+	mux.HandleFunc("POST /recommend", h.HandleRecommend)
 
 	handler := handlers.WithCORS(mux)
 

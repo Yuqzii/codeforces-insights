@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
 type Client interface {
@@ -29,15 +30,23 @@ type PercentileProvider interface {
 	GetPercentile(rating int) float64
 }
 
+type RecommendationProvider interface {
+	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt int) (
+		[]*recommender.ProbWithScore, error)
+	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
+		*codeforces.Problem, error)
+}
+
 type Handler struct {
 	client     Client
 	crp        ContestResultsProvider
 	perf       perfManager
 	percentile PercentileProvider
+	rec        RecommendationProvider
 }
 
-func New(api Client, crp ContestResultsProvider, percentile PercentileProvider, perfJobsBuffer int,
-	perfWorkers int) *Handler {
+func New(api Client, crp ContestResultsProvider, percentile PercentileProvider, rec RecommendationProvider,
+	perfJobsBuffer int, perfWorkers int) *Handler {
 	h := &Handler{
 		client: api,
 		crp:    crp,
@@ -46,6 +55,7 @@ func New(api Client, crp ContestResultsProvider, percentile PercentileProvider, 
 			crp:  crp,
 		},
 		percentile: percentile,
+		rec:        rec,
 	}
 
 	for range perfWorkers {
