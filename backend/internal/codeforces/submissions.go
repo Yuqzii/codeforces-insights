@@ -16,11 +16,11 @@ type Submission struct {
 }
 
 type Problem struct {
-	Name      string   `json:"name"`
-	ContestID int      `json:"contestId,omitempty"`
-	Index     string   `json:"index"`
-	Rating    int      `json:"rating"`
-	Tags      []string `json:"tags"`
+	Name      string   `json:"name" db:"name"`
+	ContestID int      `json:"contestId,omitempty" db:"contest_id"`
+	Index     string   `json:"index" db:"index"`
+	Rating    int      `json:"rating" db:"rating"`
+	Tags      []string `json:"tags" db:"tags"`
 }
 
 func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submission, error) {
