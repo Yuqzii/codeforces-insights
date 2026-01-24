@@ -3,8 +3,10 @@ package recommender
 import (
 	"container/heap"
 	"context"
+	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"sync"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -29,6 +31,8 @@ func New(repo ProblemRepo) *recommender {
 		tagToIndex: make(map[string]int),
 	}
 }
+
+var ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this contest")
 
 // Converts all the problems tags into a vector, and compares the direction of this vector
 // to each vector of other problems with at least one tag in common to find the most similar problems.
@@ -79,6 +83,30 @@ func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem,
 	}
 
 	return pq, nil
+}
+
+// @param indices Slice of the indices of the solved problems for the contest.
+func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID int,
+	indices []string) (*codeforces.Problem, error) {
+
+	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)
+	if err != nil {
+		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
+	}
+
+	// Sort problems by index (A, B, C, D1, D2, ...).
+	slices.SortFunc(allProbs, func(a, b codeforces.Problem) int {
+		return strings.Compare(a.Index, b.Index)
+	})
+	slices.Sort(indices)
+
+	for i := range indices {
+		if indices[i] != allProbs[i].Index {
+			return &allProbs[i], nil
+		}
+	}
+
+	return nil, ErrNoUnsolvedProblem
 }
 
 func (r *recommender) getIdxOfTag(tag string) int {
