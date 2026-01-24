@@ -2,6 +2,7 @@ package recommender
 
 import (
 	"context"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,13 +50,51 @@ func TestRecommend(t *testing.T) {
 		mockCall := m.On("GetProblemsWithTags", []string{"dp", "math"}).Return([]codeforces.Problem{
 			input[0], *expected.Problem,
 		}, nil)
+		defer mockCall.Unset()
 
 		res, err := r.Recommend(context.Background(), input, 1)
 		assert.Nil(t, err)
 		assert.NotZero(t, len(res))
 		assert.Equal(t, expected.Problem.Name, res[0].Problem.Name, "Recommended same problem as in input.")
+	})
 
-		mockCall.Unset()
+	t.Run("Finding similarity", func(t *testing.T) {
+		input := []codeforces.Problem{
+			{Index: "A", Tags: []string{"greedy", "graph"}},
+		}
+
+		expected := []codeforces.Problem{
+			{Index: "C1", Tags: []string{"greedy", "dp"}},
+			{Index: "C2", Tags: []string{"graph", "greedy"}},
+		}
+
+		allProbs := []codeforces.Problem{
+			{Index: "B", Tags: []string{"math", "dsu"}},
+		}
+		allProbs = append(allProbs, expected...)
+		mockCall := m.On("GetProblemsWithTags", []string{"graph", "greedy"}).Return(allProbs, nil)
+		defer mockCall.Unset()
+
+		res, err := r.Recommend(context.Background(), input, 2)
+
+		assert.Nil(t, err)
+		assert.Equal(t, len(res), 2, "Did not recommend the correct amount of problems.")
+
+		resProbs := make([]*codeforces.Problem, 0, 2)
+		for _, ps := range res {
+			resProbs = append(resProbs, ps.Problem)
+		}
+
+		slices.SortFunc(resProbs, func(a, b *codeforces.Problem) int {
+			return int(a.Hash() - b.Hash())
+		})
+		slices.SortFunc(expected, func(a, b codeforces.Problem) int {
+			return int(a.Hash() - b.Hash())
+		})
+
+		for i := range len(expected) {
+			assert.Equal(t, expected[i], *resProbs[i])
+		}
 	})
 }
 
@@ -93,12 +132,12 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Tags:      []string{"dp", "brute force"},
 			}, expected,
 		}, nil)
+		defer mockCall.Unset()
 
 		p, err := r.FindFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
+
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
-
-		mockCall.Unset()
 	})
 
 	t.Run("With numbering", func(t *testing.T) {
@@ -145,11 +184,11 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Tags:      []string{"greedy", "brute force"},
 			},
 		}, nil)
+		defer mockCall.Unset()
 
 		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
+
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
-
-		mockCall.Unset()
 	})
 }
