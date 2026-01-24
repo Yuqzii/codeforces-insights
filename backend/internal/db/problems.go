@@ -66,3 +66,25 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 
 	return problems, nil
 }
+
+func (db *db) UpsertProblem(ctx context.Context, p *codeforces.Problem) error {
+	return db.UpsertProblemTx(ctx, db.q, p)
+}
+
+func (db *db) UpsertProblemTx(ctx context.Context, q Querier, p *codeforces.Problem) error {
+	_, err := q.Exec(ctx, `
+		INSERT INTO problems (contest_id, index, name, rating, tags)
+		VALUES (
+			(SELECT id FROM contests WHERE contest_id = $1),
+			$2, $3, $4, $5
+		)
+		ON CONFLICT (contest_id, index)
+		DO UPDATE SET
+			name = EXCLUDED.name,
+			rating = EXCLUDED.rating,
+			tags = EXCLUDED.tags`,
+		p.ContestID, p.Index, p.Name, p.Rating, p.Tags,
+	)
+
+	return err
+}
