@@ -27,6 +27,38 @@ func (m *mockProblemRepository) GetProblemsWithTags(ctx context.Context, tags []
 	return args.Get(0).([]codeforces.Problem), args.Error(1)
 }
 
+func TestRecommend(t *testing.T) {
+	m := new(mockProblemRepository)
+	r := New(m)
+
+	t.Run("Filtering input problems", func(t *testing.T) {
+		input := []codeforces.Problem{{
+			Name:  "Very cool Problem",
+			Index: "A",
+			Tags:  []string{"dp", "math"}},
+		}
+
+		expected := &probWithScore{
+			Problem: &codeforces.Problem{
+				Name:  "Cool Problem",
+				Index: "B",
+				Tags:  []string{"dp"},
+			},
+		}
+
+		mockCall := m.On("GetProblemsWithTags", []string{"dp", "math"}).Return([]codeforces.Problem{
+			input[0], *expected.Problem,
+		}, nil)
+
+		res, err := r.Recommend(context.Background(), input, 1)
+		assert.Nil(t, err)
+		assert.NotZero(t, len(res))
+		assert.Equal(t, expected.Problem.Name, res[0].Problem.Name, "Recommended same problem as in input.")
+
+		mockCall.Unset()
+	})
+}
+
 func TestFindFirstUnsolvedProblem(t *testing.T) {
 	m := new(mockProblemRepository)
 	r := New(m)
