@@ -57,3 +57,15 @@ func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submissio
 
 	return apiResp.Result, nil
 }
+
+func (p *Problem) Hash() int64 {
+	var res int64
+	res = int64(p.ContestID) << 32
+	res |= 1 << (p.Index[0] - 'A' + 2) // One bit for indicating the character
+
+	if len(p.Index) > 1 {
+		res |= int64(p.Index[1] - '1') // Last two bits indicating number
+	}
+
+	return res
+}
