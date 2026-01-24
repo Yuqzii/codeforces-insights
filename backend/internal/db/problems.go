@@ -48,7 +48,7 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 			p.name,
 			p.index,
 			p.rating,
-			p.tags
+			p.tags,
 			c.contest_id
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
