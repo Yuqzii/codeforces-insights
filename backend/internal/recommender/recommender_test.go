@@ -40,7 +40,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Tags:      []string{"dp", "brute force"},
 		}
 
-		m.On("GetProblemsFromContest", 1).Return([]codeforces.Problem{
+		mockCall := m.On("GetProblemsFromContest", 1).Return([]codeforces.Problem{
 			{
 				Name:      "Impossible Problem",
 				ContestID: 1,
@@ -65,5 +65,59 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		p, err := r.FindFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
+
+		mockCall.Unset()
+	})
+
+	t.Run("With numbering", func(t *testing.T) {
+		expected := codeforces.Problem{
+			Name:      "Kniv og Gaffel (Hard version)",
+			ContestID: 42,
+			Index:     "C2",
+			Rating:    1800,
+			Tags:      []string{"graph", "dsu"},
+		}
+
+		mockCall := m.On("GetProblemsFromContest", 42).Return([]codeforces.Problem{
+			{
+				Name:      "Kniv og Gaffel (Easy version)",
+				ContestID: 42,
+				Index:     "C1",
+				Rating:    1400,
+				Tags:      []string{"graph", "dsu"},
+			}, {
+				Name:      "You should solve this",
+				ContestID: 42,
+				Index:     "A",
+				Rating:    900,
+				Tags:      []string{"greedy", "brute force"},
+			}, {
+				Name:      "You should also solve this",
+				ContestID: 42,
+				Index:     "B",
+				Rating:    1100,
+				Tags:      []string{"greedy", "brute force"},
+			},
+			expected,
+			{
+				Name:      "Is this possible? (Easy)",
+				ContestID: 42,
+				Index:     "D1",
+				Rating:    2500,
+				Tags:      []string{"greedy", "brute force"},
+			}, {
+				Name:      "Is this possible? (Hard)",
+				ContestID: 42,
+				Index:     "D2",
+				Rating:    2900,
+				Tags:      []string{"greedy", "brute force"},
+			},
+		}, nil)
+
+		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
+		assert.Nil(t, err)
+		assert.Equal(t, *p, expected)
+
+		mockCall.Unset()
 	})
 }
