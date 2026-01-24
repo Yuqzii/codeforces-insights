@@ -13,6 +13,8 @@ var ErrNoRatingInfo = errors.New("no rating info exists for this contest")
 type Service struct {
 	contestProvider ContestProvider
 	contestRepo     ContestRepository
+	problemProvider ProblemProvider
+	problemRepo     ProblemRepository
 	tx              db.TxManager
 }
 
@@ -29,10 +31,22 @@ type ContestRepository interface {
 	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
 }
 
-func New(cp ContestProvider, contestRepo ContestRepository, tx db.TxManager) *Service {
+type ProblemProvider interface {
+	GetProblems(context.Context) ([]codeforces.Problem, error)
+}
+
+type ProblemRepository interface {
+	UpsertProblemsBatch(context.Context, []codeforces.Problem) error
+}
+
+func New(contestProvider ContestProvider, contestRepo ContestRepository,
+	problemProvider ProblemProvider, problemRepo ProblemRepository, tx db.TxManager) *Service {
+
 	return &Service{
-		contestProvider: cp,
+		contestProvider: contestProvider,
 		contestRepo:     contestRepo,
+		problemProvider: problemProvider,
+		problemRepo:     problemRepo,
 		tx:              tx,
 	}
 }
