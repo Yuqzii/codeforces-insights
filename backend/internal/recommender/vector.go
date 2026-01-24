@@ -2,6 +2,7 @@ package recommender
 
 import (
 	"math"
+	"math/bits"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
@@ -44,7 +45,9 @@ func dotProduct(u *vec, v probVec) float64 {
 	var res float64
 
 	for i := range totalTagCnt {
-		res += u[i] * float64(v&(1<<i))
+		if v&(1<<i) != 0 {
+			res += u[i]
+		}
 	}
 
 	return res
@@ -61,11 +64,6 @@ func (v *vec) magnitude() float64 {
 }
 
 func (v probVec) magnitude() float64 {
-	var res int
-
-	for i := range totalTagCnt {
-		res += int(v & (1 << i))
-	}
-
-	return math.Sqrt(float64(res))
+	count := bits.OnesCount64(uint64(v))
+	return math.Sqrt(float64(count))
 }
