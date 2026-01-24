@@ -106,6 +106,10 @@ func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID in
 		}
 	}
 
+	if len(indices) < len(allProbs) {
+		return &allProbs[len(indices)], nil
+	}
+
 	return nil, ErrNoUnsolvedProblem
 }
 
