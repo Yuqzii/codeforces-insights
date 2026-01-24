@@ -30,12 +30,19 @@ func New(repo ProblemRepo) *recommender {
 	}
 }
 
-// Converts all the tags into a vector, and compares the direction of this vector to each vector of
-// other problems with at least one tag in common to find the most similar problems.
-// @param tags Slice containing problem tags, higher frequency tags will be weighted higher.
+// Converts all the problems tags into a vector, and compares the direction of this vector
+// to each vector of other problems with at least one tag in common to find the most similar problems.
+// @param probs Slice containing problems that we want to find similar problems to.
 // @param cnt Amount of problems to recommend.
 // @return A slice of length cnt, the recommended problems.
-func (r *recommender) Recommend(ctx context.Context, tags []string, cnt int) ([]*probWithScore, error) {
+func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem, cnt int) ([]*probWithScore, error) {
+	tags := make([]string, 0)
+	unavailableProbs := make(map[int64]struct{})
+	for _, p := range probs {
+		tags = append(tags, p.Tags...)
+		unavailableProbs[p.Hash()] = struct{}{}
+	}
+
 	u := r.tagsToVec(tags)
 
 	// Remove duplicate tags
@@ -51,6 +58,11 @@ func (r *recommender) Recommend(ctx context.Context, tags []string, cnt int) ([]
 	heap.Init(&pq)
 
 	for _, prob := range probs {
+		_, isUnavailable := unavailableProbs[prob.Hash()]
+		if isUnavailable {
+			continue
+		}
+
 		v := r.problemToVec(&prob)
 		score := similarity(&u, v)
 
