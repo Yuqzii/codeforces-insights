@@ -61,7 +61,7 @@ func main() {
 		bar := progressbar.Default(int64(len(unfetched)), "Fetching contests")
 		failCnt := 0
 
-		results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, db)
+		results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, cfClient, db, db)
 		for err := range results {
 			bar.Add(1) //nolint:errcheck
 			if err != nil {
@@ -91,7 +91,7 @@ func main() {
 
 		err = f.FetchProblems(context.TODO())
 		if err != nil {
-			log.Printf("Failed to fetch problems: %w", err)
+			log.Printf("Failed to fetch problems: %s", err)
 		} else {
 			log.Println("Successfully fetched and updated problems")
 		}
