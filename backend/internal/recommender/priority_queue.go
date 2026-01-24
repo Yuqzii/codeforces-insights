@@ -2,13 +2,13 @@ package recommender
 
 import "github.com/yuqzii/cf-stats/internal/codeforces"
 
-type probWithScore struct {
+type ProbWithScore struct {
 	Score   float64
 	Problem *codeforces.Problem
 	index   int
 }
 
-type probPQ []*probWithScore
+type probPQ []*ProbWithScore
 
 func (pq probPQ) Len() int {
 	return len(pq)
@@ -25,7 +25,7 @@ func (pq probPQ) Swap(i, j int) {
 }
 
 func (pq *probPQ) Push(x any) {
-	p := x.(*probWithScore)
+	p := x.(*ProbWithScore)
 	p.index = len(*pq)
 	*pq = append(*pq, p)
 }

@@ -39,7 +39,7 @@ var ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this c
 // @param probs Slice containing problems that we want to find similar problems to.
 // @param cnt Amount of problems to recommend.
 // @return A slice of length cnt, the recommended problems.
-func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem, cnt int) ([]*probWithScore, error) {
+func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem, cnt int) ([]*ProbWithScore, error) {
 	tags := make([]string, 0)
 	unavailableProbs := make(map[int64]struct{})
 	for _, p := range probs {
@@ -53,7 +53,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem,
 	slices.Sort(tags)
 	tags = slices.Compact(tags)
 
-	probs, err := r.probRepo.GetProblemsWithTags(ctx, tags)
+	allProbs, err := r.probRepo.GetProblemsWithTags(ctx, tags)
 	if err != nil {
 		return nil, fmt.Errorf("getting problems with tags '%s': %w", tags, err)
 	}
@@ -61,7 +61,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem,
 	pq := make(probPQ, 0, cnt)
 	heap.Init(&pq)
 
-	for _, prob := range probs {
+	for _, prob := range allProbs {
 		_, isUnavailable := unavailableProbs[prob.Hash()]
 		if isUnavailable {
 			continue
@@ -70,7 +70,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem,
 		v := r.problemToVec(&prob)
 		score := similarity(&u, v)
 
-		ps := probWithScore{
+		ps := ProbWithScore{
 			Score:   score,
 			Problem: &prob,
 		}
