@@ -39,7 +39,7 @@ var ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this c
 // @param probs Slice containing problems that we want to find similar problems to.
 // @param cnt Amount of problems to recommend.
 // @return A slice of length cnt, the recommended problems.
-func (r *recommender) Recommend(ctx context.Context, probs []codeforces.Problem, cnt int) ([]*ProbWithScore, error) {
+func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem, cnt int) ([]*ProbWithScore, error) {
 	tags := make([]string, 0)
 	unavailableProbs := make(map[int64]struct{})
 	for _, p := range probs {
