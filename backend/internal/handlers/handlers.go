@@ -31,7 +31,7 @@ type PercentileProvider interface {
 }
 
 type RecommendationProvider interface {
-	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt int) (
+	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt, minRat, maxRat int) (
 		[]*recommender.ProbWithScore, error)
 	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
 		*codeforces.Problem, error)

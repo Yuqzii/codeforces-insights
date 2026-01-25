@@ -9,11 +9,15 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
 
-func (db *db) GetProblemsWithTags(ctx context.Context, tags []string) ([]codeforces.Problem, error) {
-	return db.GetProblemsWithTagsTx(ctx, db.q, tags)
+func (db *db) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
+	[]codeforces.Problem, error) {
+
+	return db.GetProblemsWithTagsTx(ctx, db.q, tags, minRat, maxRat)
 }
 
-func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []string) ([]codeforces.Problem, error) {
+func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []string, minRat, maxRat int) (
+	[]codeforces.Problem, error) {
+
 	rows, err := q.Query(ctx, `
 		SELECT
 			p.name,
@@ -23,8 +27,8 @@ func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []strin
 			c.contest_id
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
-		WHERE p.tags && $1`,
-		tags,
+		WHERE p.tags && $1 AND p.rating >= $2 AND p.rating <= $3`,
+		tags, minRat, maxRat,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("querying problems: %w", err)

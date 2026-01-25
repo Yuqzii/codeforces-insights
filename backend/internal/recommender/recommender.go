@@ -15,7 +15,8 @@ import (
 type ProblemRepository interface {
 	GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error)
 	// Should return all problems matching at least one tag.
-	GetProblemsWithTags(ctx context.Context, tags []string) ([]codeforces.Problem, error)
+	GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
+		[]codeforces.Problem, error)
 }
 
 type recommender struct {
@@ -38,8 +39,12 @@ var ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this c
 // to each vector of other problems with at least one tag in common to find the most similar problems.
 // @param probs Slice containing problems that we want to find similar problems to.
 // @param cnt Amount of problems to recommend.
+// @param minRat Minimum rating of recommended problems.
+// @param maxRat Maximum rating of recommended problems.
 // @return A slice of length cnt, the recommended problems.
-func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem, cnt int) ([]*ProbWithScore, error) {
+func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem,
+	cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
+
 	tags := make([]string, 0)
 	unavailableProbs := make(map[int64]struct{})
 	for _, p := range probs {
@@ -53,7 +58,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 	slices.Sort(tags)
 	tags = slices.Compact(tags)
 
-	allProbs, err := r.probRepo.GetProblemsWithTags(ctx, tags)
+	allProbs, err := r.probRepo.GetProblemsWithTags(ctx, tags, minRat, maxRat)
 	if err != nil {
 		return nil, fmt.Errorf("getting problems with tags '%s': %w", tags, err)
 	}

@@ -13,6 +13,7 @@ import (
 
 const maxRecommendRequestSize = 1 << 16 // 65536 bytes
 
+// The endpoint expects json on the format specified in the data struct.
 func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxRecommendRequestSize)
 	defer r.Body.Close() //nolint:errcheck
@@ -29,8 +30,10 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data struct {
-		Count    int `json:"count"`
-		Contests []struct {
+		Count     int `json:"count"`
+		MinRating int `json:"minRating"`
+		MaxRating int `json:"maxRating"`
+		Contests  []struct {
 			ID      int      `json:"id"`
 			Indices []string `json:"indices"`
 		} `json:"contests"`
@@ -63,7 +66,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		unsolved = append(unsolved, p)
 	}
 
-	recs, err := h.rec.Recommend(ctx, unsolved, data.Count)
+	recs, err := h.rec.Recommend(ctx, unsolved, data.Count, data.MinRating, data.MaxRating)
 	if err != nil {
 		http.Error(w, "Failure recommending problems", http.StatusInternalServerError)
 		log.Printf("Error recommending %d problems: %v\n", data.Count, err)
