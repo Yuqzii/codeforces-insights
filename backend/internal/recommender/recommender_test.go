@@ -21,7 +21,7 @@ func (m *mockProblemRepository) GetProblemsFromContest(ctx context.Context, id i
 	return args.Get(0).([]codeforces.Problem), args.Error(1)
 }
 
-func (m *mockProblemRepository) GetProblemsWithTags(ctx context.Context, tags []string) (
+func (m *mockProblemRepository) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 	[]codeforces.Problem, error) {
 
 	args := m.Called(tags)
@@ -52,7 +52,7 @@ func TestRecommend(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 1)
+		res, err := r.Recommend(context.Background(), input, 1, 0, 0)
 		assert.Nil(t, err)
 		assert.NotZero(t, len(res))
 		assert.Equal(t, expected.Problem.Name, res[0].Problem.Name, "Recommended same problem as in input.")
@@ -75,7 +75,7 @@ func TestRecommend(t *testing.T) {
 		mockCall := m.On("GetProblemsWithTags", []string{"graph", "greedy"}).Return(allProbs, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 2)
+		res, err := r.Recommend(context.Background(), input, 2, 0, 0)
 
 		assert.Nil(t, err)
 		assert.Equal(t, len(res), 2, "Did not recommend the correct amount of problems.")
@@ -116,19 +116,16 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Name:      "Impossible Problem",
 				ContestID: 1,
 				Index:     "D",
-				Rating:    3000,
 				Tags:      []string{"dp", "brute force"},
 			}, {
 				Name:      "More Possible Problem",
 				ContestID: 1,
 				Index:     "B",
-				Rating:    1200,
 				Tags:      []string{"dp", "brute force"},
 			}, {
 				Name:      "Super Easy Problem",
 				ContestID: 1,
 				Index:     "A",
-				Rating:    800,
 				Tags:      []string{"dp", "brute force"},
 			}, expected,
 		}, nil)
@@ -145,7 +142,6 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Name:      "Kniv og Gaffel (Hard version)",
 			ContestID: 42,
 			Index:     "C2",
-			Rating:    1800,
 			Tags:      []string{"graph", "dsu"},
 		}
 
@@ -154,19 +150,16 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Name:      "Kniv og Gaffel (Easy version)",
 				ContestID: 42,
 				Index:     "C1",
-				Rating:    1400,
 				Tags:      []string{"graph", "dsu"},
 			}, {
 				Name:      "You should solve this",
 				ContestID: 42,
 				Index:     "A",
-				Rating:    900,
 				Tags:      []string{"greedy", "brute force"},
 			}, {
 				Name:      "You should also solve this",
 				ContestID: 42,
 				Index:     "B",
-				Rating:    1100,
 				Tags:      []string{"greedy", "brute force"},
 			},
 			expected,
@@ -174,13 +167,11 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Name:      "Is this possible? (Easy)",
 				ContestID: 42,
 				Index:     "D1",
-				Rating:    2500,
 				Tags:      []string{"greedy", "brute force"},
 			}, {
 				Name:      "Is this possible? (Hard)",
 				ContestID: 42,
 				Index:     "D2",
-				Rating:    2900,
 				Tags:      []string{"greedy", "brute force"},
 			},
 		}, nil)
@@ -197,7 +188,6 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Name:      "Kniv og Gaffel (Hard version)",
 			ContestID: 42,
 			Index:     "C2",
-			Rating:    1800,
 			Tags:      []string{"graph", "dsu"},
 		}
 
@@ -206,19 +196,16 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 				Name:      "Kniv og Gaffel (Easy version)",
 				ContestID: 42,
 				Index:     "C1",
-				Rating:    1400,
 				Tags:      []string{"graph", "dsu"},
 			}, {
 				Name:      "You should solve this",
 				ContestID: 42,
 				Index:     "A",
-				Rating:    900,
 				Tags:      []string{"greedy", "brute force"},
 			}, {
 				Name:      "You should also solve this",
 				ContestID: 42,
 				Index:     "B",
-				Rating:    1100,
 				Tags:      []string{"greedy", "brute force"},
 			},
 			expected,
