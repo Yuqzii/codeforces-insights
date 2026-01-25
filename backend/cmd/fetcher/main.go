@@ -50,6 +50,17 @@ func main() {
 	fetchProblems := flag.Bool("problems", false, "Should we fetch problems?")
 	flag.Parse()
 
+	if *fetchProblems {
+		log.Println("Fetching problems...")
+
+		err = f.FetchProblems(context.TODO())
+		if err != nil {
+			log.Printf("Failed to fetch problems: %s", err)
+		} else {
+			log.Println("Successfully fetched and updated problems")
+		}
+	}
+
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
 		unfetched, err := f.FindUnfetchedContests()
@@ -84,16 +95,5 @@ func main() {
 
 		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
 		log.Println(outputStr)
-	}
-
-	if *fetchProblems {
-		log.Println("Fetching problems...")
-
-		err = f.FetchProblems(context.TODO())
-		if err != nil {
-			log.Printf("Failed to fetch problems: %s", err)
-		} else {
-			log.Println("Successfully fetched and updated problems")
-		}
 	}
 }
