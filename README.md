@@ -43,11 +43,22 @@ docker compose up --build
 When the Nginx container has started visit `https://localhost`.
 
 
-### Contest Fetcher
-The fetcher finds all available Codeforces contests that are not currently stored in the local database and fetches them.\
+### Fetcher
+The job of the fetcher is to fetch and store Codeforces data in a database to avoid waiting for the Codeforces API when requests are made.\
+It is mainly used as a cron job on the server, but is also useful for fetching data for local development.\
+To run this you can use the provided script with arguments depending on what you want to fetch.\
+To fetch all data run:
+```
+sh scripts/run-fetcher.sh -contests=true -problems=true
+```
+
+#### Contests
+The fetcher finds all available Codeforces contests that are not currently stored in the database and fetches them.\
+Run the script with the `-contests=true` to fetch contests.\
 This drastically speeds up performance calculations, as the server does not have to wait on the Codeforces API.\
-Running this is completely optional, and the server figures out whether to use stored contests or fetch live from Codeforces on its own.\
-To run this you can use the provided script with:
-```
-sh scripts/fetch-contests.sh
-```
+However, this is not mandatory, and the server figures out whether to use stored contests or fetch live from Codeforces on its own.
+
+#### Problems
+The fetcher finds all Codeforces problems with at least one tag and a rating and stores them in the database.\
+Run the script with `-problems=true` to fetch problems.\
+This is used for recommending problems, and is required for it to work, unlike the contests.
