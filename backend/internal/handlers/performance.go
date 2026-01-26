@@ -37,8 +37,8 @@ type perfResult struct {
 
 func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxPerfRequestSize)
-	body, err := io.ReadAll(r.Body)
 	defer r.Body.Close() //nolint:errcheck
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		var maxBytesErr *http.MaxBytesError
 		if errors.As(err, &maxBytesErr) {

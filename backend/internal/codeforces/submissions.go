@@ -15,14 +15,6 @@ type Submission struct {
 	Timestamp           int     `json:"creationTimeSeconds"`
 }
 
-type Problem struct {
-	Name      string   `json:"name"`
-	ContestID int      `json:"contestId,omitempty"`
-	Index     string   `json:"index"`
-	Rating    int      `json:"rating"`
-	Tags      []string `json:"tags"`
-}
-
 func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submission, error) {
 	endpoint := "user.status?"
 	params := url.Values{}

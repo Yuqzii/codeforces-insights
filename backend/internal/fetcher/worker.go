@@ -6,15 +6,19 @@ import (
 	"github.com/yuqzii/cf-stats/internal/db"
 )
 
-func worker(cp ContestProvider, cr ContestRepository, tx db.TxManager, jobs <-chan int, results chan<- error) {
-	f := New(cp, cr, tx)
+func worker(cp ContestProvider, cr ContestRepository, pp ProblemProvider, pr ProblemRepository,
+	tx db.TxManager, jobs <-chan int, results chan<- error) {
+
+	f := New(cp, cr, pp, pr, tx)
 	for j := range jobs {
 		err := f.FetchContest(j)
 		results <- err
 	}
 }
 
-func CreateWorkers(cnt int, ids []int, cp ContestProvider, cr ContestRepository, tx db.TxManager) <-chan error {
+func CreateWorkers(cnt int, ids []int, cp ContestProvider, cr ContestRepository,
+	pp ProblemProvider, pr ProblemRepository, tx db.TxManager) <-chan error {
+
 	jobs := make(chan int)
 	results := make(chan error)
 
@@ -24,7 +28,7 @@ func CreateWorkers(cnt int, ids []int, cp ContestProvider, cr ContestRepository,
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			worker(cp, cr, tx, jobs, results)
+			worker(cp, cr, pp, pr, tx, jobs, results)
 		}()
 	}
 
