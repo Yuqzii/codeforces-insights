@@ -36,7 +36,7 @@ type ProblemProvider interface {
 }
 
 type ProblemRepository interface {
-	UpsertProblemsBatch(context.Context, []codeforces.Problem) error
+	UpsertProblemsBatch(context.Context, []codeforces.Problem) (int64, error)
 }
 
 func New(contestProvider ContestProvider, contestRepo ContestRepository,

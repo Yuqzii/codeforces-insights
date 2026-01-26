@@ -102,19 +102,18 @@ func (db *db) UpsertProblemTx(ctx context.Context, q Querier, p *codeforces.Prob
 	return err
 }
 
-func (db *db) UpsertProblemsBatch(ctx context.Context, probs []codeforces.Problem) error {
+// @return Amount of problems inserted or updated.
+func (db *db) UpsertProblemsBatch(ctx context.Context, probs []codeforces.Problem) (int64, error) {
 	return db.UpsertProblemsBatchTx(ctx, db.q, probs)
 }
 
-func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []codeforces.Problem) error {
+func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []codeforces.Problem) (int64, error) {
 	batch := &pgx.Batch{}
 
 	query := `
 		INSERT INTO problems (contest_id, index, name, rating, tags)
-		VALUES (
-			(SELECT id FROM contests WHERE contest_id = $1),
-			$2, $3, $4, $5
-		)
+		SELECT c.id, $2, $3, $4, $5
+		FROM contests c WHERE c.contest_id = $1
 		ON CONFLICT (contest_id, index)
 		DO UPDATE SET
 			name = EXCLUDED.name,
@@ -128,12 +127,14 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 	res := q.SendBatch(ctx, batch)
 	defer res.Close() //nolint:errcheck
 
+	var affected int64
 	for i := range probs {
-		_, err := res.Exec()
+		cmd, err := res.Exec()
 		if err != nil {
-			return fmt.Errorf("batch item %d: %w", i, err)
+			return 0, fmt.Errorf("batch item %d: %w", i, err)
 		}
+		affected += cmd.RowsAffected()
 	}
 
-	return nil
+	return affected, nil
 }

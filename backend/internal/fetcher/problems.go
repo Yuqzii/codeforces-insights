@@ -5,10 +5,11 @@ import (
 	"fmt"
 )
 
-func (s *Service) FetchProblems(ctx context.Context) error {
+// @return Amount of problems inserted or updated.
+func (s *Service) FetchProblems(ctx context.Context) (int64, error) {
 	probs, err := s.problemProvider.GetProblems(ctx)
 	if err != nil {
-		return fmt.Errorf("getting problems: %w", err)
+		return 0, fmt.Errorf("getting problems: %w", err)
 	}
 
 	n := len(probs)
@@ -24,10 +25,10 @@ func (s *Service) FetchProblems(ctx context.Context) error {
 
 	probs = probs[:n] // Remove all incomplete problems.
 
-	err = s.problemRepo.UpsertProblemsBatch(ctx, probs)
+	updated, err := s.problemRepo.UpsertProblemsBatch(ctx, probs)
 	if err != nil {
-		return fmt.Errorf("upserting %d problems: %w", n, err)
+		return 0, fmt.Errorf("upserting %d problems: %w", n, err)
 	}
 
-	return nil
+	return updated, nil
 }

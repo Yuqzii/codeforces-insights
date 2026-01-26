@@ -53,11 +53,11 @@ func main() {
 	if *fetchProblems {
 		log.Println("Fetching problems...")
 
-		err = f.FetchProblems(context.TODO())
+		count, err := f.FetchProblems(context.TODO())
 		if err != nil {
 			log.Printf("Failed to fetch problems: %s", err)
 		} else {
-			log.Println("Successfully fetched and updated problems")
+			log.Printf("Successfully fetched and updated %d problems\n", count)
 		}
 	}
 
