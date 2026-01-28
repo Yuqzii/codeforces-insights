@@ -1,4 +1,26 @@
-## Flowchart of the /recommend endpoint
+# Endpoint: POST /recommend
+This endpoint is for recommending Codeforces problems similar to
+problems the user has struggled with in earlier contests.
+
+
+## Specification
+### Request
+| Property     | Type      | Description |
+|--------------|-----------|-------------|
+|`count`       |`Integer`  |Amount of problems to recommend. Must be in the range [0, 10].|
+|`minRating`   |`Integer`  |Minimum rating of recommended problems.|
+|`maxRating`   |`Integer`  |Maximum rating of recommended problems.|
+|`contests`    |`Object[]` |Array of recent contests.|
+|`contests[].id`|`Integer`  |The Codeforces contest ID.|
+|`contests[].indices`|`String[]` |The indices of all problems solved for this contest.|
+
+### Response
+| Property     | Type      | Description |
+|--------------|-----------|-------------|
+|`[].score`    |`Float`    |The similarity of the problem to the unsolved problems. Between -1 and 1.|
+|`[].problem`  |`Problem`  |The recommended problem.|
+
+## Flowchart
 ```mermaid
 flowchart TD
   A([Receive POST request to<br>/recommend])
