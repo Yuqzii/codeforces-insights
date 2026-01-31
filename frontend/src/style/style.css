@@ -98,6 +98,19 @@ main {
 	margin-top: 0;
 }
 
+.card {
+	--card-border-radius: 0.8rem;
+
+	padding: 1.25em;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--card-border-radius);
+	background-color: var(--bg);
+	opacity: 0;
+	animation-delay: 100ms;
+	animation-duration: 500ms;
+}
+
 @media (max-aspect-ratio: 6/5) {
 	html {
 		font-size: 16px;
