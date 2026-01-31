@@ -8,6 +8,7 @@
 @import "analytics.css";
 @import "footer.css";
 @import "fade-in.css";
+@import "problems.css";
 
 :root {
 	--bg-transition-speed: 150ms;

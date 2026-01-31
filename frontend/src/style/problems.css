@@ -1,0 +1,35 @@
+.problems-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	gap: 1rem;
+}
+
+.problem-header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 1.5em;
+}
+
+.problem-header h3 {
+	margin: 0;
+}
+
+.problem-header span {
+	font-size: 1.25rem;
+}
+
+.problem-tags-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: auto;
+}
+
+.problem-tag {
+	background-color: var(--bg1);
+	border: 1px solid var(--bg2);
+	border-radius: 0.4em;
+	padding: 0.4em;
+}
