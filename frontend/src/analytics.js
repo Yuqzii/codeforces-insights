@@ -124,6 +124,7 @@ function handleUserInfo(userInfo, signal) {
 	hideLoader(userDetails);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
+	document.getElementById("username").href = "https://codeforces.com/profile/"+userInfo.handle;
 	document.getElementById("user-country").textContent = userInfo.country || "-";
 
 }
