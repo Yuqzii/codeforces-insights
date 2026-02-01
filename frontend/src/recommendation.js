@@ -1,6 +1,7 @@
 export function filterSubmissionsRecentContests(submissions,amountOfContests) {
     const filtered = [];
     const recentContests = [];
+    const returnObject = [];
 
     for (let i = 0; i < submissions.length; i++){
         if (submissions[i].author.participantType != "CONTESTANT") {
@@ -16,20 +17,27 @@ export function filterSubmissionsRecentContests(submissions,amountOfContests) {
         }
     }
 
-    return  {submissions: filtered, contestId: recentContests}
-}
-
-export function findSolvedProblemsRecentContests(contestSubmissions) {
-    const solvedProblems = [];
-
-    for (const contest of contestSubmissions.submissions) {
-        const solvedProblemsInAContest = [];
-        for (const problem of contest)
-            if (problem.verdict=="OK") {
-                solvedProblemsInAContest.push(problem.problem.index);
-            }
-        solvedProblems.push({id:contestSubmissions.contestId.shift(), indices:solvedProblemsInAContest})
+    for (let i = 0; i < recentContests.length; i++) {
+        returnObject.push({id: recentContests[i], submissions: filtered[i]})
     }
 
-    return solvedProblems
+    return  returnObject
+}
+
+export function findSolvedProblemsRecentContests(contests) {
+    const solvedByContests = [];
+
+    for (const contest of contests) {
+        const solvedInContest = [];
+
+        for (const problem of contest.submissions) {
+            if (problem.verdict=="OK" && !(solvedInContest.includes(problem.index))) {
+                solvedInContest.push(problem.problem.index);
+            }
+        }
+
+        solvedByContests.push({id:contest.id, indices:solvedInContest})
+    }
+
+    return solvedByContests
 }
