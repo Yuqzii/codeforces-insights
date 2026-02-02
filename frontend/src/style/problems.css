@@ -1,7 +1,14 @@
-.problems-container {
+#problems-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 	gap: 1rem;
+}
+
+#problems-container>div:hover {
+	.problem-tag {
+		background-color: var(--bg2);
+		border-color: var(--fg);
+	}
 }
 
 .problem-header {
@@ -32,4 +39,6 @@
 	border: 1px solid var(--bg2);
 	border-radius: 0.4em;
 	padding: 0.4em;
+
+	transition-duration: var(--bg-transition-speed);
 }
