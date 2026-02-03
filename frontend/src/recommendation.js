@@ -28,6 +28,7 @@ export function updateProblemRatingColors() {
 	const elements = document.querySelectorAll(".problem-rating");
 	elements.forEach(element => {
 		const rating = parseInt(element.innerText);
-		element.style.color = getRatingColor(rating);
+		const color = getRatingColor(rating);
+		element.style.setProperty("--text-color", color);
 	});
 }
