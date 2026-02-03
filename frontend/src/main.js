@@ -1,6 +1,7 @@
 import { updateAnalytics, solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
 import { getColors } from "./charts.js";
 import { observeAndAnimate } from "./entrance-anim.js";
+import { updateProblemRatingColors } from "./recommendation.js";
 
 const root = document.documentElement;
 
@@ -17,6 +18,8 @@ let cursorX = window.innerWidth / 2;
 let cursorY = window.innerHeight / 2;
 
 let navMenuActive = false;
+
+updateProblemRatingColors();
 
 document.addEventListener("DOMContentLoaded", () => {
 	const savedTheme = localStorage.getItem("theme") || "theme-catppuccin";
