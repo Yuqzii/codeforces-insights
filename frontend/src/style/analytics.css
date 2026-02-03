@@ -64,9 +64,11 @@
 	width: 15em;
 }
 
-#user-stats h3 {
+#username {
 	font-size: 1.3em;
 	margin-top: 0;
+	font-family: "Inconsolata", Courier, monospace;
+	color: var(--fg);
 }
 
 #user-stats ul {
