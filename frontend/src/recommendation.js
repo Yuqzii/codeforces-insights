@@ -40,10 +40,15 @@ function updateRatingRange(e, rangeMin, rangeMax) {
 	rangeInputs[0].value = rangeMin;
 	rangeInputs[1].value = rangeMax;
 
+	// Update visual slider
 	rangeSlider.style.setProperty("--left-pos",
 		(rangeMin / rangeInputs[0].max) * 100 + '%');
 	rangeSlider.style.setProperty("--right-pos",
 		((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+
+	// Update number input colors
+	rangeTexts[0].style.color = getRatingColor(rangeMin + MIN_RATING);
+	rangeTexts[1].style.color = getRatingColor(rangeMax + MIN_RATING);
 }
 
 export function filterSubmissionsRecentContests(submissions, amountOfContests) {
