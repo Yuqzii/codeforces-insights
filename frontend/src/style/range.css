@@ -53,7 +53,8 @@
 }
 
 #rating-range>input {
-	width: 4em;
+	font-size: 1.2rem;
+	width: 3em;
 }
 
 #rating-range>label {
