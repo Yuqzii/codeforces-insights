@@ -1,5 +1,8 @@
 #rating-range {
 	display: flex;
+	margin: 2em 0;
+	align-items: center;
+	gap: 1rem;
 }
 
 .range-slider-container {
@@ -55,6 +58,10 @@
 	pointer-events: auto;
 }
 
-#range>input {
+#rating-range>input {
 	width: 4em;
+}
+
+#rating-range>label {
+	font-size: 1.2rem;
 }

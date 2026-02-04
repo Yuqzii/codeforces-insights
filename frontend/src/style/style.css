@@ -80,6 +80,16 @@ button:hover {
 	cursor: pointer;
 }
 
+/* Hide arrows on number input */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+input[type="number"] {
+	appearance: textfield;
+}
+
 main {
 	width: 100%;
 	background-color: var(--bg-dark);
