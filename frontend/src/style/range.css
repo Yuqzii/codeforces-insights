@@ -21,13 +21,13 @@
 	left: var(--left-pos);
 	right: var(--right-pos);
 	position: absolute;
-	border-radius: 5px;
 	background-color: var(--fg);
 }
 
 .range-input {
 	position: absolute;
-	width: 100%;
+	width: 102%;
+	left: -1%;
 	height: 100%;
 }
 
