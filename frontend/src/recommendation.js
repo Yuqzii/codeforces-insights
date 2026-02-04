@@ -7,29 +7,32 @@ const rangeTexts = document.querySelectorAll("#rating-range>input");
 
 rangeInputs.forEach(input => {
 	input.addEventListener("input", e => {
-		let rangeMin = parseInt(rangeInputs[0].value);
-		let rangeMax = parseInt(rangeInputs[1].value);
+		const rangeMin = parseInt(rangeInputs[0].value);
+		const rangeMax = parseInt(rangeInputs[1].value);
 
-		if (rangeMax < rangeMin) {
-			console.log(e.target.dataset.rangeType);
-			if (e.target.dataset.rangeType === "min")
-				rangeMin = rangeMax;
-			else
-				rangeMax = rangeMin;
-		}
-
-		rangeTexts[0].value = rangeMin + MIN_RATING;
-		rangeTexts[1].value = rangeMax + MIN_RATING;
-
-		rangeInputs[0].value = rangeMin;
-		rangeInputs[1].value = rangeMax;
-
-		rangeSlider.style.setProperty("--left-pos",
-			(rangeMin / rangeInputs[0].max) * 100 + '%');
-		rangeSlider.style.setProperty("--right-pos",
-			((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+		updateRatingRange(e, rangeMin, rangeMax);
 	});
 });
+
+function updateRatingRange(e, rangeMin, rangeMax) {
+	if (rangeMax < rangeMin) {
+		if (e.target.dataset.rangeType === "min")
+			rangeMin = rangeMax;
+		else
+			rangeMax = rangeMin;
+	}
+
+	rangeTexts[0].value = rangeMin + MIN_RATING;
+	rangeTexts[1].value = rangeMax + MIN_RATING;
+
+	rangeInputs[0].value = rangeMin;
+	rangeInputs[1].value = rangeMax;
+
+	rangeSlider.style.setProperty("--left-pos",
+		(rangeMin / rangeInputs[0].max) * 100 + '%');
+	rangeSlider.style.setProperty("--right-pos",
+		((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+}
 
 export function filterSubmissionsRecentContests(submissions, amountOfContests) {
 	const recentContestsId = [];
