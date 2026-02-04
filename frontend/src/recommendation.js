@@ -1,5 +1,28 @@
 import { getRatingColor } from "./charts";
 
+const rangeSlider = document.getElementById("range-slider");
+const rangeInputs = document.querySelectorAll(".range-input input");
+const rangeTexts = document.querySelectorAll("#range>input");
+
+rangeInputs.forEach(input => {
+	input.addEventListener("input", e => {
+		const rangeMin = parseInt(rangeInputs[0].value);
+		const rangeMax = parseInt(rangeInputs[1].value);
+
+		if (rangeMax < rangeMin) {
+			if (e.target.dataset.rangeType === "min")
+				e.target.value = rangeMax;
+			else
+				e.target.value = rangeMin;
+		} else {
+			rangeSlider.style.setProperty("--left-pos",
+				(rangeMin / rangeInputs[0].max) * 100 + '%');
+			rangeSlider.style.setProperty("--right-pos",
+				((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+		}
+	});
+});
+
 export function filterSubmissionsRecentContests(submissions, amountOfContests) {
 	const recentContestsId = [];
 	const recentContests = [];
