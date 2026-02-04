@@ -1,25 +1,33 @@
 import { getRatingColor } from "./charts";
 
+const MIN_RATING = 800;
 const rangeSlider = document.getElementById("range-slider");
 const rangeInputs = document.querySelectorAll(".range-input input");
-const rangeTexts = document.querySelectorAll("#range>input");
+const rangeTexts = document.querySelectorAll("#rating-range>input");
 
 rangeInputs.forEach(input => {
 	input.addEventListener("input", e => {
-		const rangeMin = parseInt(rangeInputs[0].value);
-		const rangeMax = parseInt(rangeInputs[1].value);
+		let rangeMin = parseInt(rangeInputs[0].value);
+		let rangeMax = parseInt(rangeInputs[1].value);
 
 		if (rangeMax < rangeMin) {
+			console.log(e.target.dataset.rangeType);
 			if (e.target.dataset.rangeType === "min")
-				e.target.value = rangeMax;
+				rangeMin = rangeMax;
 			else
-				e.target.value = rangeMin;
-		} else {
-			rangeSlider.style.setProperty("--left-pos",
-				(rangeMin / rangeInputs[0].max) * 100 + '%');
-			rangeSlider.style.setProperty("--right-pos",
-				((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+				rangeMax = rangeMin;
 		}
+
+		rangeTexts[0].value = rangeMin + MIN_RATING;
+		rangeTexts[1].value = rangeMax + MIN_RATING;
+
+		rangeInputs[0].value = rangeMin;
+		rangeInputs[1].value = rangeMax;
+
+		rangeSlider.style.setProperty("--left-pos",
+			(rangeMin / rangeInputs[0].max) * 100 + '%');
+		rangeSlider.style.setProperty("--right-pos",
+			((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
 	});
 });
 

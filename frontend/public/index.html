@@ -173,15 +173,15 @@
 			<h1 class="glow-text">Practice</h1>
 			<div id="rating-range">
 				<label for="min-rating">Min</label>
-				<input type="number" name="min-rating" value="1200" class="depth-1">
+				<input type="number" data-range-type="min" name="min-rating" value="1200" class="depth-1">
 				<div class="range-slider-container">
 					<span id="range-slider"></span>
 					<div class="range-input">
-						<input type="range" data-rangeType="min" min="0" max="2700" value="400">
-						<input type="range" data-rangeType="max" min="0" max="2700" value="600">
+						<input type="range" data-range-type="min" min="0" max="2700" value="400">
+						<input type="range" data-range-type="max" min="0" max="2700" value="600">
 					</div>
 				</div>
-				<input type="number" name="max-rating" value="1400" class="depth-1">
+				<input type="number" data-range-type="max" name="max-rating" value="1400" class="depth-1">
 				<label for="max-rating">Max</label>
 			</div>
 			<div id="problems-container">
