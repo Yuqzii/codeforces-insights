@@ -14,7 +14,19 @@ rangeInputs.forEach(input => {
 	});
 });
 
+rangeTexts.forEach(input => {
+	input.addEventListener("change", e => {
+		const rangeMin = rangeTexts[0].value - MIN_RATING;
+		const rangeMax = rangeTexts[1].value - MIN_RATING;
+
+		updateRatingRange(e, rangeMin, rangeMax);
+	});
+});
+
 function updateRatingRange(e, rangeMin, rangeMax) {
+	rangeMin = Math.max(rangeMin, 0);
+	rangeMax = Math.min(rangeMax, rangeInputs[0].max);
+
 	if (rangeMax < rangeMin) {
 		if (e.target.dataset.rangeType === "min")
 			rangeMin = rangeMax;
