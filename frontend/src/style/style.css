@@ -9,6 +9,7 @@
 @import "footer.css";
 @import "fade-in.css";
 @import "problems.css";
+@import "range.css";
 
 :root {
 	--bg-transition-speed: 150ms;
