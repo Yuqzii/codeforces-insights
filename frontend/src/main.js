@@ -63,7 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			root.classList.remove("increased-contrast");
 	});
 
-	observeAndAnimate();
+	const analyticsCards = document.querySelectorAll(".card");
+	observeAndAnimate(analyticsCards);
 });
 
 window.addEventListener("mousemove", throttle((e) => {

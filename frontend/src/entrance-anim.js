@@ -1,5 +1,4 @@
-export function observeAndAnimate() {
-	const analyticsElements = document.querySelectorAll(".card");
+export function observeAndAnimate(elements) {
 	const observer = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
 			if (!entry.isIntersecting)
@@ -16,7 +15,7 @@ export function observeAndAnimate() {
 		});
 	});
 
-	analyticsElements.forEach(element => {
+	elements.forEach(element => {
 		observer.observe(element);
 	});
 }
