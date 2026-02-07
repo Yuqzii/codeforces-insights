@@ -1,5 +1,9 @@
 import { getRatingColor } from "./charts";
+import problemHTML from "./templates/problem.html"
 
+const problemTemplate = loadProblemTemplate();
+
+// Rating slider update logic
 const MIN_RATING = 800;
 const rangeSlider = document.getElementById("range-slider");
 const rangeInputs = document.querySelectorAll(".range-input input");
@@ -102,4 +106,11 @@ export function updateProblemRatingColors() {
 		const color = getRatingColor(rating);
 		element.style.setProperty("--text-color", color);
 	});
+}
+
+function loadProblemTemplate() {
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(problemHTML, "text/html");
+	const template = doc.getElementById("problem-template");
+	return template;
 }
