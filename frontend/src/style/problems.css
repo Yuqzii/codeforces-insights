@@ -1,10 +1,10 @@
-#problems-container {
+#problem-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 	gap: 1rem;
 }
 
-#problems-container>div:hover {
+#problem-container>div:hover {
 	.problem-tag {
 		background-color: var(--bg2);
 		border-color: var(--fg);

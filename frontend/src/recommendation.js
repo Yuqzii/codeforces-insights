@@ -1,7 +1,8 @@
 import { getRatingColor } from "./charts";
-import problemHTML from "./templates/problem.html"
+import problemHTML from "./templates/problem.html";
 
 const problemTemplate = loadProblemTemplate();
+const problemContainer = document.getElementById("problem-container");
 
 // Rating slider update logic
 const MIN_RATING = 800;
@@ -106,6 +107,29 @@ export function updateProblemRatingColors() {
 		const color = getRatingColor(rating);
 		element.style.setProperty("--text-color", color);
 	});
+}
+
+// @param problemData Object with the name, id, and rating properties.
+export function displayProblem(problemData, tags) {
+	const problem = document.importNode(problemTemplate.content, true);
+
+	// Update data values.
+	Object.keys(problemData).forEach(key => {
+		const elem = problem.querySelector(`[data-field="${key}"]`);
+		if (elem)
+			elem.textContent = problemData[key];
+	});
+
+	// Add tags to the tags container.
+	const tagsContainer = problem.querySelector(`[data-container="tags"]`);
+	tags.forEach(tag => {
+		const elem = document.createElement("span");
+		elem.className = "problem-tag";
+		elem.textContent = tag;
+		tagsContainer.appendChild(elem);
+	});
+
+	problemContainer.appendChild(problem);
 }
 
 function loadProblemTemplate() {
