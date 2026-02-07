@@ -32,34 +32,6 @@ rangeTexts.forEach(input => {
 	});
 });
 
-function updateRatingRange(isMin, rangeMin, rangeMax) {
-	rangeMin = Math.max(rangeMin, 0);
-	rangeMax = Math.min(rangeMax, rangeInputs[0].max);
-
-	if (rangeMax < rangeMin) {
-		if (isMin)
-			rangeMin = rangeMax;
-		else
-			rangeMax = rangeMin;
-	}
-
-	rangeTexts[0].value = rangeMin + MIN_RATING;
-	rangeTexts[1].value = rangeMax + MIN_RATING;
-
-	rangeInputs[0].value = rangeMin;
-	rangeInputs[1].value = rangeMax;
-
-	// Update visual slider
-	rangeSlider.style.setProperty("--left-pos",
-		(rangeMin / rangeInputs[0].max) * 100 + '%');
-	rangeSlider.style.setProperty("--right-pos",
-		((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
-
-	// Update number input colors
-	rangeTexts[0].style.color = getRatingColor(rangeMin + MIN_RATING);
-	rangeTexts[1].style.color = getRatingColor(rangeMax + MIN_RATING);
-}
-
 export function filterSubmissionsRecentContests(submissions, amountOfContests) {
 	const recentContestsId = [];
 	const recentContests = [];
@@ -137,4 +109,32 @@ function loadProblemTemplate() {
 	const doc = parser.parseFromString(problemHTML, "text/html");
 	const template = doc.getElementById("problem-template");
 	return template;
+}
+
+function updateRatingRange(isMin, rangeMin, rangeMax) {
+	rangeMin = Math.max(rangeMin, 0);
+	rangeMax = Math.min(rangeMax, rangeInputs[0].max);
+
+	if (rangeMax < rangeMin) {
+		if (isMin)
+			rangeMin = rangeMax;
+		else
+			rangeMax = rangeMin;
+	}
+
+	rangeTexts[0].value = rangeMin + MIN_RATING;
+	rangeTexts[1].value = rangeMax + MIN_RATING;
+
+	rangeInputs[0].value = rangeMin;
+	rangeInputs[1].value = rangeMax;
+
+	// Update visual slider
+	rangeSlider.style.setProperty("--left-pos",
+		(rangeMin / rangeInputs[0].max) * 100 + '%');
+	rangeSlider.style.setProperty("--right-pos",
+		((rangeInputs[0].max - rangeMax) / rangeInputs[0].max) * 100 + '%');
+
+	// Update number input colors
+	rangeTexts[0].style.color = getRatingColor(rangeMin + MIN_RATING);
+	rangeTexts[1].style.color = getRatingColor(rangeMax + MIN_RATING);
 }
