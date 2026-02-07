@@ -44,6 +44,7 @@ export function recommendProblems(submissions, signal) {
 	try {
 		const ratingRange = getSelectedRatingRange();
 		getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, signal).then(problems => {
+			clearProblemContainer();
 			const elements = new Array();
 
 			problems.forEach(resp => {
@@ -173,4 +174,9 @@ function updateRatingRange(isMin, rangeMin, rangeMax) {
 	// Update number input colors
 	rangeTexts[0].style.color = getRatingColor(rangeMin + MIN_RATING);
 	rangeTexts[1].style.color = getRatingColor(rangeMax + MIN_RATING);
+}
+
+function clearProblemContainer() {
+	while (problemContainer.firstChild)
+		problemContainer.removeChild(problemContainer.lastChild);
 }
