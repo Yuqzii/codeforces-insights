@@ -1,5 +1,10 @@
+import { getRecommendedProblems } from "./api";
 import { getRatingColor } from "./charts";
+import { observeAndAnimate } from "./entrance-anim";
 import problemHTML from "./templates/problem.html";
+
+const PROBLEM_COUNT = 6;
+const CONTEST_LOOKBACK = 5;
 
 const problemTemplate = loadProblemTemplate();
 const problemContainer = document.getElementById("problem-container");
@@ -32,7 +37,34 @@ rangeTexts.forEach(input => {
 	});
 });
 
-export function filterSubmissionsRecentContests(submissions, amountOfContests) {
+export function recommendProblems(submissions, signal) {
+	submissions = filterSubmissionsRecentContests(submissions, CONTEST_LOOKBACK);
+	const solvedByContests = findSolvedProblemsRecentContests(submissions);
+
+	try {
+		const ratingRange = getSelectedRatingRange();
+		getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, signal).then(problems => {
+			const elements = new Array();
+
+			problems.forEach(resp => {
+				const problemData = {
+					name: resp.problem.name,
+					id: resp.problem.contestId + resp.problem.index,
+					rating: resp.problem.rating,
+				};
+
+				const element = displayProblem(problemData, resp.problem.tags);
+				elements.push(element);
+			});
+
+			observeAndAnimate(elements);
+		});
+	} catch (err) {
+		console.error(`Encountered problem recommending problems: ${err}`);
+	}
+}
+
+function filterSubmissionsRecentContests(submissions, amountOfContests) {
 	const recentContestsId = [];
 	const recentContests = [];
 
@@ -53,7 +85,7 @@ export function filterSubmissionsRecentContests(submissions, amountOfContests) {
 	return recentContests
 }
 
-export function findSolvedProblemsRecentContests(contests) {
+function findSolvedProblemsRecentContests(contests) {
 	const solvedByContests = [];
 
 	for (const contest of contests) {
@@ -82,8 +114,9 @@ export function updateProblemRatingColors() {
 }
 
 // @param problemData Object with the name, id, and rating properties.
-export function displayProblem(problemData, tags) {
+function displayProblem(problemData, tags) {
 	const problem = document.importNode(problemTemplate.content, true);
+	const problemElem = problem.firstElementChild;
 
 	// Update data values.
 	Object.keys(problemData).forEach(key => {
@@ -102,9 +135,10 @@ export function displayProblem(problemData, tags) {
 	});
 
 	problemContainer.appendChild(problem);
+	return problemElem;
 }
 
-export function getSelectedRatingRange() {
+function getSelectedRatingRange() {
 	return {
 		min: parseInt(rangeInputs[0].value) + MIN_RATING,
 		max: parseInt(rangeInputs[1].value) + MIN_RATING,

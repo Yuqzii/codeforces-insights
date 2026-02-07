@@ -1,5 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
+import { recommendProblems } from "./recommendation.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -43,13 +44,15 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateSolvedData([]);
 
 	getUserInfo(handle, signal).then(handleUserInfo);
-	getSubmissions(handle, signal).then(handleSubmissions);
+	getSubmissions(handle, signal).then(submissions => {
+		handleSubmissions(submissions, signal);
+	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
 	});
 }
 
-function handleSubmissions(submissions) {
+function handleSubmissions(submissions, signal) {
 	submissions = filterSolved(submissions);
 	submissions.sort((a, b) => {
 		return a.creationTimeSeconds - b.creationTimeSeconds;
@@ -75,6 +78,8 @@ function handleSubmissions(submissions) {
 	updateTags(sortedTagCnt);
 	updateSolvedRatings(ratingCnt);
 	updateSolvedRatingsTime(solvedTime);
+
+	recommendProblems(submissions, signal);
 }
 
 function handleRatingHistory(handle, ratings, signal) {
@@ -124,7 +129,7 @@ function handleUserInfo(userInfo, signal) {
 	hideLoader(userDetails);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
-	document.getElementById("username").href = "https://codeforces.com/profile/"+userInfo.handle;
+	document.getElementById("username").href = "https://codeforces.com/profile/" + userInfo.handle;
 	document.getElementById("user-country").textContent = userInfo.country || "-";
 
 }
