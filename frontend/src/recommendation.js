@@ -104,6 +104,13 @@ export function displayProblem(problemData, tags) {
 	problemContainer.appendChild(problem);
 }
 
+export function getSelectedRatingRange() {
+	return {
+		min: parseInt(rangeInputs[0].value) + MIN_RATING,
+		max: parseInt(rangeInputs[1].value) + MIN_RATING,
+	};
+}
+
 function loadProblemTemplate() {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString(problemHTML, "text/html");
