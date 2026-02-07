@@ -78,7 +78,7 @@ export async function getRecommendedProblems(count, minRating, maxRating, contes
 		count: count,
 		minRating: minRating,
 		maxRating: maxRating,
-		contestsObj: contestsObj,
+		contests: contestsObj,
 	};
 
 	try {
