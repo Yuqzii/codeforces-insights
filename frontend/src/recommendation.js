@@ -103,16 +103,6 @@ function findSolvedProblemsRecentContests(contests) {
 	return solvedByContests
 }
 
-// Sets the color of all problem rating elements to their corresponding Codeforces rank color.
-export function updateProblemRatingColors() {
-	const elements = document.querySelectorAll(".problem-rating");
-	elements.forEach(element => {
-		const rating = parseInt(element.innerText);
-		const color = getRatingColor(rating);
-		element.style.setProperty("--text-color", color);
-	});
-}
-
 // @param problemData Object with the name, id, and rating properties.
 function displayProblem(problemData, tags) {
 	const problem = document.importNode(problemTemplate.content, true);
@@ -124,6 +114,11 @@ function displayProblem(problemData, tags) {
 		if (elem)
 			elem.textContent = problemData[key];
 	});
+
+	// Update rating color.
+	const ratingElem = problem.querySelector(`[data-field="rating"`);
+	const ratingColor = getRatingColor(problemData.rating)
+	ratingElem.style.setProperty("--text-color", ratingColor);
 
 	// Add tags to the tags container.
 	const tagsContainer = problem.querySelector(`[data-container="tags"]`);
