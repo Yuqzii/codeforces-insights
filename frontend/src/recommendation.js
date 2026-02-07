@@ -5,12 +5,15 @@ const rangeSlider = document.getElementById("range-slider");
 const rangeInputs = document.querySelectorAll(".range-input input");
 const rangeTexts = document.querySelectorAll("#rating-range>input");
 
+updateRatingRange(false, rangeInputs[0].value, rangeInputs[1].value);
+
 rangeInputs.forEach(input => {
 	input.addEventListener("input", e => {
-		const rangeMin = parseInt(rangeInputs[0].value);
-		const rangeMax = parseInt(rangeInputs[1].value);
+		const rangeMin = rangeInputs[0].value;
+		const rangeMax = rangeInputs[1].value;
+		const isMin = e.target.dataset.rangeType === "min";
 
-		updateRatingRange(e, rangeMin, rangeMax);
+		updateRatingRange(isMin, rangeMin, rangeMax);
 	});
 });
 
@@ -18,17 +21,18 @@ rangeTexts.forEach(input => {
 	input.addEventListener("change", e => {
 		const rangeMin = rangeTexts[0].value - MIN_RATING;
 		const rangeMax = rangeTexts[1].value - MIN_RATING;
+		const isMin = e.target.dataset.rangeType === "min";
 
-		updateRatingRange(e, rangeMin, rangeMax);
+		updateRatingRange(isMin, rangeMin, rangeMax);
 	});
 });
 
-function updateRatingRange(e, rangeMin, rangeMax) {
+function updateRatingRange(isMin, rangeMin, rangeMax) {
 	rangeMin = Math.max(rangeMin, 0);
 	rangeMax = Math.min(rangeMax, rangeInputs[0].max);
 
 	if (rangeMax < rangeMin) {
-		if (e.target.dataset.rangeType === "min")
+		if (isMin)
 			rangeMin = rangeMax;
 		else
 			rangeMax = rangeMin;
