@@ -1,6 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
-import { recommendProblems } from "./recommendation.js";
+import { recommendProblems, setRatingRange } from "./recommendation.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -43,16 +43,22 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	getUserInfo(handle, signal).then(handleUserInfo);
-	getSubmissions(handle, signal).then(submissions => {
-		handleSubmissions(submissions, signal);
+	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
+	const submissionTask = getSubmissions(handle, signal).then(submissions => {
+		handleSubmissions(submissions);
+		return submissions;
 	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
 	});
+
+	// Recommend problems after we have user's rating and submissions.
+	Promise.all([userInfoTask, submissionTask]).then(([, submissions]) => {
+		recommendProblems(submissions, signal);
+	});
 }
 
-function handleSubmissions(submissions, signal) {
+function handleSubmissions(submissions) {
 	submissions = filterSolved(submissions);
 	submissions.sort((a, b) => {
 		return a.creationTimeSeconds - b.creationTimeSeconds;
@@ -78,8 +84,6 @@ function handleSubmissions(submissions, signal) {
 	updateTags(sortedTagCnt);
 	updateSolvedRatings(ratingCnt);
 	updateSolvedRatingsTime(solvedTime);
-
-	recommendProblems(submissions, signal);
 }
 
 function handleRatingHistory(handle, ratings, signal) {
@@ -115,6 +119,11 @@ function handleUserInfo(userInfo, signal) {
 		peakRating.textContent = userInfo.maxRating;
 		peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
 		peakRating.classList.add("glow-color", "weight-450");
+
+		// Update rating range for recommended problems
+		const maxRatingDiff = 150;
+		const maxRating = Math.max(1100, userInfo.rating + maxRatingDiff); // Recommend at least [800, 1100]
+		setRatingRange(userInfo.rating - maxRatingDiff, maxRating);
 	} else {
 		percentileElem.textContent = "-";
 		percentileElem.classList.remove("glow-text", "weight-600");
@@ -124,6 +133,8 @@ function handleUserInfo(userInfo, signal) {
 
 		peakRating.textContent = "-";
 		peakRating.classList.remove("glow-color", "weight-450");
+
+		setRatingRange(800, 1100); // Recommend low rated problems for user without rating.
 	}
 
 	hideLoader(userDetails);
