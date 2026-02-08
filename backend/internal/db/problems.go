@@ -2,12 +2,15 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
+
+var ErrNoProblemsForContest = errors.New("there are no stored problems for this contest")
 
 func (db *db) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 	[]codeforces.Problem, error) {
@@ -75,6 +78,10 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 
 	for i := range problems {
 		problems[i].Index = strings.TrimSpace(problems[i].Index)
+	}
+
+	if len(problems) == 0 {
+		return nil, ErrNoProblemsForContest
 	}
 
 	return problems, nil

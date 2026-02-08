@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
@@ -56,7 +57,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	for _, c := range data.Contests {
 		p, err := h.rec.FindFirstUnsolvedProblem(ctx, c.ID, c.Indices)
 		if err != nil {
-			if errors.Is(err, recommender.ErrNoUnsolvedProblem) {
+			if errors.Is(err, recommender.ErrNoUnsolvedProblem) || errors.Is(err, db.ErrNoProblemsForContest) {
 				continue
 			}
 			http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
