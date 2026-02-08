@@ -60,6 +60,12 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 			if errors.Is(err, recommender.ErrNoUnsolvedProblem) || errors.Is(err, db.ErrNoProblemsForContest) {
 				continue
 			}
+
+			if errors.Is(err, recommender.ErrInvalidIndices) {
+				http.Error(w, "Invalid problem indices", http.StatusBadRequest)
+				return
+			}
+
 			http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
 			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v",
 				c.ID, c.Indices, err)
@@ -71,6 +77,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failure recommending problems", http.StatusInternalServerError)
 		log.Printf("Error recommending %d problems: %v\n", data.Count, err)
+		return
 	}
 
 	j, err := json.Marshal(recs)
