@@ -25,7 +25,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
 			return
 		}
-		http.Error(w, "Failure reading request", http.StatusInternalServerError)
+		http.Error(w, "Couldn't read request", http.StatusBadRequest)
 		log.Printf("Error reading recommend request: %v\n", err)
 		return
 	}
@@ -40,7 +40,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		} `json:"contests"`
 	}
 	if err = json.Unmarshal(body, &data); err != nil {
-		http.Error(w, "Failure reading request", http.StatusInternalServerError)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("Error unmarshalling json in recommend request: %v\n", err)
 		return
 	}
