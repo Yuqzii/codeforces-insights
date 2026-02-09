@@ -1,6 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
-import { recommendProblems, setRatingRange } from "./recommendation.js";
+import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -46,15 +46,15 @@ export async function updateAnalytics(handle, signal) {
 	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		handleSubmissions(submissions);
-		return submissions;
+		updateSubmissions(submissions);
 	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
 	});
 
 	// Recommend problems after we have user's rating and submissions.
-	Promise.all([userInfoTask, submissionTask]).then(([, submissions]) => {
-		recommendProblems(submissions, signal);
+	Promise.all([userInfoTask, submissionTask]).then(() => {
+		recommendProblems(signal);
 	});
 }
 

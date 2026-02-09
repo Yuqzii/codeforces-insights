@@ -5,6 +5,7 @@ import problemHTML from "./templates/problem.html";
 
 const PROBLEM_COUNT = 6;
 const CONTEST_LOOKBACK = 5;
+let solvedByContests;
 
 const problemTemplate = loadProblemTemplate();
 const problemContainer = document.getElementById("problem-container");
@@ -37,9 +38,9 @@ rangeTexts.forEach(input => {
 	});
 });
 
-export function recommendProblems(submissions, signal) {
-	submissions = filterSubmissionsRecentContests(submissions, CONTEST_LOOKBACK);
-	const solvedByContests = findSolvedProblemsRecentContests(submissions);
+export function recommendProblems(signal) {
+	if (solvedByContests === undefined)
+		return
 
 	try {
 		const ratingRange = getSelectedRatingRange();
@@ -63,6 +64,11 @@ export function recommendProblems(submissions, signal) {
 	} catch (err) {
 		console.error(`Encountered problem recommending problems: ${err}`);
 	}
+}
+
+export function updateSubmissions(submissions) {
+	submissions = filterSubmissionsRecentContests(submissions, CONTEST_LOOKBACK);
+	solvedByContests = findSolvedProblemsRecentContests(submissions);
 }
 
 export function setRatingRange(min, max) {
