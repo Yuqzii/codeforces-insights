@@ -83,8 +83,8 @@ export function setRatingRange(min, max) {
 }
 
 function updateRatingRange(isMin, rangeMin, rangeMax) {
-	rangeMin = Math.max(rangeMin, 0);
-	rangeMax = Math.min(rangeMax, rangeInputs[0].max);
+	rangeMin = clampRating(rangeMin);
+	rangeMax = clampRating(rangeMax);
 
 	if (rangeMax < rangeMin) {
 		if (isMin)
@@ -108,6 +108,12 @@ function updateRatingRange(isMin, rangeMin, rangeMax) {
 	// Update number input colors
 	rangeTexts[0].style.color = getRatingColor(rangeMin + MIN_RATING);
 	rangeTexts[1].style.color = getRatingColor(rangeMax + MIN_RATING);
+}
+
+function clampRating(rating) {
+	rating = Math.max(rating, 0);
+	rating = Math.min(rating, rangeInputs[0].max);
+	return rating;
 }
 
 function filterSubmissionsRecentContests(submissions, amountOfContests) {
