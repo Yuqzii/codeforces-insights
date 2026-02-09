@@ -62,13 +62,7 @@ export function recommendProblems() {
 			const elements = new Array();
 
 			problems.forEach(resp => {
-				const problemData = {
-					name: resp.problem.name,
-					id: resp.problem.contestId + resp.problem.index,
-					rating: resp.problem.rating,
-				};
-
-				const element = displayProblem(problemData, resp.problem.tags);
+				const element = displayProblem(resp.problem);
 				elements.push(element);
 			});
 
@@ -155,33 +149,40 @@ function findSolvedProblemsRecentContests(contests) {
 	return solvedByContests
 }
 
-// @param problemData Object with the name, id, and rating properties.
-function displayProblem(problemData, tags) {
-	const problem = document.importNode(problemTemplate.content, true);
-	const problemElem = problem.firstElementChild;
+// @param problemData Object with the name, constestId, index, rating, and tags properties.
+function displayProblem(problem) {
+	const problemClone = document.importNode(problemTemplate.content, true);
+	const problemElem = problemClone.firstElementChild;
+
+	problem.id = problem.contestId + problem.index;
 
 	// Update data values.
-	Object.keys(problemData).forEach(key => {
-		const elem = problem.querySelector(`[data-field="${key}"]`);
+	Object.keys(problem).forEach(key => {
+		const elem = problemClone.querySelector(`[data-field="${key}"]`);
 		if (elem)
-			elem.textContent = problemData[key];
+			elem.textContent = problem[key];
 	});
 
 	// Update rating color.
-	const ratingElem = problem.querySelector(`[data-field="rating"`);
-	const ratingColor = getRatingColor(problemData.rating)
+	const ratingElem = problemClone.querySelector(`[data-field="rating"`);
+	const ratingColor = getRatingColor(problem.rating)
 	ratingElem.style.setProperty("--text-color", ratingColor);
 
 	// Add tags to the tags container.
-	const tagsContainer = problem.querySelector(`[data-container="tags"]`);
-	tags.forEach(tag => {
+	const tagsContainer = problemClone.querySelector(`[data-container="tags"]`);
+	problem.tags.forEach(tag => {
 		const elem = document.createElement("span");
 		elem.className = "problem-tag";
 		elem.textContent = tag;
 		tagsContainer.appendChild(elem);
 	});
 
-	problemContainer.appendChild(problem);
+	// Set anchor URL.
+	const cfProblemsetURL = "https://codeforces.com/problemset/problem/";
+	const anchorElem = problemClone.querySelector(`[data-link="problem-link"]`);
+	anchorElem.href = cfProblemsetURL + problem.contestId + "/" + problem.index;
+
+	problemContainer.appendChild(problemClone);
 	return problemElem;
 }
 

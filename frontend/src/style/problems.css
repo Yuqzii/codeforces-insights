@@ -4,7 +4,15 @@
 	gap: 1rem;
 }
 
-#problem-container>div:hover {
+#problem-container>a,
+#problem-container>a:visited,
+#problem-container>a:hover,
+#problem-container>a:active {
+	text-decoration: none;
+	color: inherit;
+}
+
+#problem-container>a:hover {
 	.problem-tag {
 		background-color: var(--bg2);
 		border-color: var(--fg);
