@@ -68,13 +68,14 @@ func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) (id int,
 
 func (db *db) UpsertContestTx(ctx context.Context, q Querier, c *codeforces.Contest) (id int, err error) {
 	err = q.QueryRow(ctx, `
-		INSERT INTO contests (contest_id, name, start_time, duration) VALUES ($1, $2, $3, $4)
+		INSERT INTO contests (contest_id, name, start_time, duration, div) VALUES ($1, $2, $3, $4, $5)
 		ON CONFLICT (contest_id) DO UPDATE SET
 			name = EXCLUDED.name,
 			start_time = EXCLUDED.start_time,
-			duration = EXCLUDED.duration
+			duration = EXCLUDED.duration,
+			div = EXCLUDED.div
 		RETURNING id`,
-		c.ID, c.Name, c.StartTime, c.Duration,
+		c.ID, c.Name, c.StartTime, c.Duration, c.Div,
 	).Scan(&id)
 	return id, err
 }
