@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 )
 
 type Contestant struct {
@@ -27,6 +29,7 @@ type Contest struct {
 	StartTime time.Time `json:"startTime"`
 	Duration  int       `json:"durationSeconds"`
 	Phase     string    `json:"phase"`
+	Div       int       `db:"div"` // -1 indicates unknown.
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -155,6 +158,20 @@ func (c *Contest) UnmarshalJSON(data []byte) error {
 	c.StartTime = time.Unix(raw.StartTime, 0)
 	c.Duration = raw.Duration
 	c.Phase = raw.Phase
+
+	// Try to find what division contest belongs to.
+	divIdx := strings.Index(c.Name, "Div")
+	if divIdx != -1 {
+		divStr := c.Name[divIdx:]
+		numIdx := strings.IndexFunc(divStr, unicode.IsDigit)
+		if numIdx != -1 {
+			c.Div = int(divStr[numIdx] - '0')
+		} else {
+			c.Div = -1
+		}
+	} else {
+		c.Div = -1
+	}
 
 	return nil
 }
