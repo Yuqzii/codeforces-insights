@@ -54,7 +54,7 @@ export async function updateAnalytics(handle, signal) {
 
 	// Recommend problems after we have user's rating and submissions.
 	Promise.all([userInfoTask, submissionTask]).then(() => {
-		recommendProblems(signal);
+		recommendProblems();
 	});
 }
 

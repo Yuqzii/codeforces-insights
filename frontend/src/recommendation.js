@@ -16,6 +16,10 @@ const rangeSlider = document.getElementById("range-slider");
 const rangeInputs = document.querySelectorAll(".range-input input");
 const rangeTexts = document.querySelectorAll("#rating-range>input");
 
+const INPUT_WAIT = 500; // Time in ms.
+let inputTimer;
+let controller = new AbortController();
+
 updateRatingRange(false, rangeInputs[0].value, rangeInputs[1].value);
 
 rangeInputs.forEach(input => {
@@ -25,6 +29,9 @@ rangeInputs.forEach(input => {
 		const isMin = e.target.dataset.rangeType === "min";
 
 		updateRatingRange(isMin, rangeMin, rangeMax);
+
+		clearTimeout(inputTimer);
+		inputTimer = setTimeout(recommendProblems, INPUT_WAIT);
 	});
 });
 
@@ -35,16 +42,22 @@ rangeTexts.forEach(input => {
 		const isMin = e.target.dataset.rangeType === "min";
 
 		updateRatingRange(isMin, rangeMin, rangeMax);
+
+		recommendProblems();
 	});
 });
 
-export function recommendProblems(signal) {
+export function recommendProblems() {
 	if (solvedByContests === undefined)
 		return
 
+	// Cancel previous requests.
+	controller.abort();
+	controller = new AbortController();
+
 	try {
 		const ratingRange = getSelectedRatingRange();
-		getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, signal).then(problems => {
+		getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, controller.signal).then(problems => {
 			clearProblemContainer();
 			const elements = new Array();
 
