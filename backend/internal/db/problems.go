@@ -2,12 +2,15 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
+
+var ErrTooManyProblems = errors.New("amount of problems exceeds alphabet")
 
 func (db *db) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 	[]codeforces.Problem, error) {
@@ -53,31 +56,63 @@ func (db *db) GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.
 
 func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) ([]codeforces.Problem, error) {
 	rows, err := q.Query(ctx, `
+		WITH reference_contest AS (
+			SELECT div, start_time, contest_id
+			FROM contests
+			WHERE contest_id = $1
+		)
 		SELECT
 			p.name,
 			p.index,
 			p.rating,
 			p.tags,
-			c.contest_id
+			c.contest_id,
+			c.div
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
-		WHERE c.contest_id = $1`,
+		CROSS JOIN reference_contest rc
+		WHERE c.start_time = rc.start_time AND c.div < rc.div
+		ORDER BY c.div DESC`,
 		id,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("querying problems: %w", err)
 	}
 
-	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[codeforces.Problem])
+	type contestProblem struct {
+		codeforces.Problem
+		Div int `db:"div"`
+	}
+
+	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[contestProblem])
 	if err != nil {
 		return nil, fmt.Errorf("collecting rows: %w", err)
 	}
 
-	for i := range problems {
-		problems[i].Index = strings.TrimSpace(problems[i].Index)
+	// Convert problem indices to the correct ones in case of contests sharing problems.
+	res := make([]codeforces.Problem, 0, len(problems))
+	var increment byte = 0
+	for i, p := range problems {
+
+		newProb := p.Problem
+		newProb.Index = strings.TrimSpace(newProb.Index)
+
+		if err = updateIndex(&newProb, increment); err != nil {
+			return nil, err
+		}
+
+		if i < len(problems)-1 && problems[i+1].Div < p.Div {
+			// Next problem is from a new contest, update increment.
+			increment = newProb.Index[0] - 'A'
+			if increment > 26 {
+				return nil, ErrTooManyProblems
+			}
+		}
+
+		res = append(res, newProb)
 	}
 
-	return problems, nil
+	return res, nil
 }
 
 func (db *db) UpsertProblem(ctx context.Context, p *codeforces.Problem) error {
@@ -137,4 +172,21 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 	}
 
 	return affected, nil
+}
+
+func updateIndex(p *codeforces.Problem, increment byte) error {
+	// Early check for large increment to avoid possible overflow when adding later.
+	if increment > 26 {
+		return ErrTooManyProblems
+	}
+
+	b := []byte(p.Index)
+	b[0] += increment
+	if b[0] > 'Z' {
+		return ErrTooManyProblems
+	}
+
+	p.Index = string(b)
+
+	return nil
 }
