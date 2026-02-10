@@ -48,11 +48,13 @@ func main() {
 
 	fetchContests := flag.Bool("contests", false, "Should we fetch contests?")
 	fetchProblems := flag.Bool("problems", false, "Should we fetch problems?")
+	maxContestsAge := flag.Duration("maxContestAge", time.Since(time.Time{}),
+		"Past what age should contests be re-fetched? Default is no maximum.")
 	flag.Parse()
 
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
-		unfetched, err := f.FindUnfetchedContests()
+		unfetched, err := f.FindContestsToUpdate(*maxContestsAge)
 		if err != nil {
 			log.Fatalf("Failed to find unfetched contests: %v\n", err)
 		}
