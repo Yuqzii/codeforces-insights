@@ -54,16 +54,16 @@ func main() {
 
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
-		unfetched, err := f.FindContestsToUpdate(*maxContestsAge)
+		contestIDs, err := f.FindContestsToUpdate(*maxContestsAge)
 		if err != nil {
-			log.Fatalf("Failed to find unfetched contests: %v\n", err)
+			log.Fatalf("Failed to find contests to update: %v\n", err)
 		}
 
-		log.Printf("Starting fetching for %d contests\n", len(unfetched))
-		bar := progressbar.Default(int64(len(unfetched)), "Fetching contests")
+		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
+		bar := progressbar.Default(int64(len(contestIDs)), "Fetching contests")
 		failCnt := 0
 
-		results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, cfClient, db, db)
+		results := fetcher.CreateWorkers(workerCnt, contestIDs, cfClient, db, cfClient, db, db)
 		for err := range results {
 			bar.Add(1) //nolint:errcheck
 			if err != nil {
@@ -84,7 +84,7 @@ func main() {
 			}
 		}
 
-		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
+		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(contestIDs)-failCnt, len(contestIDs))
 		log.Println(outputStr)
 	}
 
