@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
@@ -36,6 +38,28 @@ func (db *db) ContestsExists(ctx context.Context, ids []int) (existingIDs map[in
 	}
 
 	return existingIDs, nil
+}
+
+func (db *db) FindStaleContests(ctx context.Context, age time.Duration) (ids []int, err error) {
+	limit := time.Now().Add(-age)
+
+	rows, err := db.q.Query(ctx, `
+		SELECT contest_id FROM contests WHERE updated_at < $1`,
+		limit,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("finding contests updated before %v: %w", limit, err)
+	}
+
+	for rows.Next() {
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }
 
 func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) (id int, err error) {
