@@ -3,6 +3,7 @@ package fetcher
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
@@ -29,6 +30,7 @@ type ContestRepository interface {
 	UpsertContest(context.Context, *codeforces.Contest) (id int, err error)
 	InsertContestResultsTx(context.Context, db.Querier, []codeforces.Contestant, int) error
 	ContestsExists(context.Context, []int) (existingIDs map[int]struct{}, err error)
+	FindStaleContests(context.Context, time.Duration) (ids []int, err error)
 }
 
 type ProblemProvider interface {

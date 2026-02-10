@@ -66,8 +66,9 @@ func (s *Service) FetchContest(id int) error {
 	return s.insertContestDB(context.TODO(), contest, contestants)
 }
 
-// @return Slice of the IDs of all unfetched contests.
-func (s *Service) FindUnfetchedContests() ([]int, error) {
+// @param maxAge The maximum age allowed before the data is considered stale.
+// @return Slice of the IDs of all contests needing to be updated. (Either stale or not previously fetched).
+func (s *Service) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 	c, err := s.contestProvider.GetContests(context.TODO())
 	if err != nil {
 		return nil, fmt.Errorf("getting contests: %w", err)
@@ -92,6 +93,12 @@ func (s *Service) FindUnfetchedContests() ([]int, error) {
 			result = append(result, id)
 		}
 	}
+
+	stale, err := s.contestRepo.FindStaleContests(context.TODO(), maxAge)
+	if err != nil {
+		return nil, fmt.Errorf("finding stale contests: %w", err)
+	}
+	result = append(result, stale...)
 
 	return result, nil
 }
