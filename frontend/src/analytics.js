@@ -133,16 +133,15 @@ function filterSolved(submissions) {
 	const solved = new Array();
 	submissions.forEach(sub => {
 		if (sub.verdict === "OK") {
-			sub.problemId = sub.problem.id + sub.problem.index; 
+			sub.problemId = sub.contestId + sub.problem.index; 
 			solved.push(sub);
 		}
 	});
 
-	solved.sort((a, b) => a.problemId - b.problemId);
+	solved.sort((a, b) => a.problemId.localeCompare(b.problemId));
 	const uniqueSolved = new Array();
-	uniqueSolved.push(solved[0])
 	solved.forEach(sub => {
-		if (sub.problemId != uniqueSolved.at(-1).problemId) {
+		if ((uniqueSolved.length == 0) || (sub.problemId != uniqueSolved.at(-1).problemId)) {
 			uniqueSolved.push(sub)
 		}
 	});
