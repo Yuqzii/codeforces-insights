@@ -77,9 +77,7 @@ func main() {
 				// Sleep before reprinting bar (doesn't want to work without this)
 				go func() {
 					time.Sleep(100 * time.Millisecond)
-					if err = bar.RenderBlank(); err != nil {
-						log.Printf("Failed rendering progress bar: %v", err)
-					}
+					bar.RenderBlank() //nolint:errcheck
 				}()
 			}
 		}
