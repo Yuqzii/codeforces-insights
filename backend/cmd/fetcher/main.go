@@ -50,6 +50,8 @@ func main() {
 	fetchProblems := flag.Bool("problems", false, "Should we fetch problems?")
 	maxContestsAge := flag.Duration("maxContestAge", time.Since(time.Time{}),
 		"Past what age should contests be re-fetched? Default is no maximum.")
+	maxContestUpdates := flag.Int("maxContestUpdates", -1,
+		"Maximum allowed contests to update. Default is no maximum")
 	flag.Parse()
 
 	if *fetchContests {
@@ -57,6 +59,11 @@ func main() {
 		contestIDs, err := f.FindContestsToUpdate(*maxContestsAge)
 		if err != nil {
 			log.Fatalf("Failed to find contests to update: %v\n", err)
+		}
+
+		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
+			// Limit updates to maxContestUpdates
+			contestIDs = contestIDs[:*maxContestUpdates]
 		}
 
 		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
