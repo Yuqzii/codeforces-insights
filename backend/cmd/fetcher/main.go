@@ -48,20 +48,29 @@ func main() {
 
 	fetchContests := flag.Bool("contests", false, "Should we fetch contests?")
 	fetchProblems := flag.Bool("problems", false, "Should we fetch problems?")
+	maxContestsAge := flag.Duration("maxContestAge", time.Since(time.Time{}),
+		"Past what age should contests be re-fetched? Default is no maximum.")
+	maxContestUpdates := flag.Int("maxContestUpdates", -1,
+		"Maximum allowed contests to update. Default is no maximum")
 	flag.Parse()
 
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
-		unfetched, err := f.FindUnfetchedContests()
+		contestIDs, err := f.FindContestsToUpdate(*maxContestsAge)
 		if err != nil {
-			log.Fatalf("Failed to find unfetched contests: %v\n", err)
+			log.Fatalf("Failed to find contests to update: %v\n", err)
 		}
 
-		log.Printf("Starting fetching for %d contests\n", len(unfetched))
-		bar := progressbar.Default(int64(len(unfetched)), "Fetching contests")
+		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
+			// Limit updates to maxContestUpdates
+			contestIDs = contestIDs[:*maxContestUpdates]
+		}
+
+		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
+		bar := progressbar.Default(int64(len(contestIDs)), "Fetching contests")
 		failCnt := 0
 
-		results := fetcher.CreateWorkers(workerCnt, unfetched, cfClient, db, cfClient, db, db)
+		results := fetcher.CreateWorkers(workerCnt, contestIDs, cfClient, db, cfClient, db, db)
 		for err := range results {
 			bar.Add(1) //nolint:errcheck
 			if err != nil {
@@ -75,14 +84,12 @@ func main() {
 				// Sleep before reprinting bar (doesn't want to work without this)
 				go func() {
 					time.Sleep(100 * time.Millisecond)
-					if err = bar.RenderBlank(); err != nil {
-						log.Printf("Failed rendering progress bar: %v", err)
-					}
+					bar.RenderBlank() //nolint:errcheck
 				}()
 			}
 		}
 
-		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(unfetched)-failCnt, len(unfetched))
+		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(contestIDs)-failCnt, len(contestIDs))
 		log.Println(outputStr)
 	}
 
