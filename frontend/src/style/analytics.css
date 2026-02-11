@@ -65,7 +65,7 @@
 }
 
 #username {
-	font-size: 1.3em;
+	font-size: 1.4em;
 	margin-top: 0;
 	font-family: "Inconsolata", Courier, monospace;
 	color: var(--fg);
@@ -73,6 +73,7 @@
 
 #user-stats ul {
 	margin: 0;
+	margin-top: 20px;
 	padding-left: 0px;
 	list-style: disc inside;
 }
