@@ -73,6 +73,7 @@
 
 #user-stats ul {
 	margin: 0;
+	margin-top: 10%;
 	padding-left: 0px;
 	list-style: disc inside;
 }
