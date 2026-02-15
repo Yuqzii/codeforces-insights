@@ -48,6 +48,8 @@ func main() {
 		"Past what age should contests be re-fetched? Default is no maximum.")
 	maxContestUpdates := flag.Int("maxContestUpdates", -1,
 		"Maximum allowed contests to update. Default is no maximum")
+	retryCount := flag.Int("retryCount", 5,
+		"How many times should we retry fetching a contest if it gives an error?")
 	flag.Parse()
 
 	if *fetchContests {
@@ -69,6 +71,7 @@ func main() {
 		f := fetcher.New(cfClient, db, cfClient, db, db)
 
 		i := 0
+		curFail := 0
 		for i < len(contestIDs) {
 			err := f.FetchContest(contestIDs[i])
 			shouldContinue := true
@@ -76,8 +79,11 @@ func main() {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 					// Usually means contest was unrated, we can ignore this.
 				} else if errors.Is(err, codeforces.ErrCFServerProblem) {
-					// Try fetching current contest again.
-					shouldContinue = false
+					curFail++
+					if curFail <= *retryCount {
+						// Try fetching current contest again.
+						shouldContinue = false
+					}
 				} else {
 					failCnt++
 					fmt.Print("\r\033[K") // Clear progress bar line.
@@ -92,6 +98,7 @@ func main() {
 
 			if shouldContinue {
 				i++
+				curFail = 0
 				bar.Add(1) //nolint:errcheck
 			}
 		}
