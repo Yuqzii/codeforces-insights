@@ -155,9 +155,10 @@ func (c *client) sendRequest(endpoint string) error {
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
-	if resp.StatusCode == http.StatusMethodNotAllowed || resp.StatusCode == http.StatusTooManyRequests {
+	if resp.StatusCode == http.StatusGatewayTimeout ||
+		resp.StatusCode == http.StatusTooManyRequests {
 		// Likely being rate limited by Codeforces.
-		// They usually return a 405 instead of the arguable more correct 429 for rate limiting.
+		// They usually return a 504 instead of the arguable more correct 429 for rate limiting.
 		err = fmt.Errorf("%w: %s", ErrRateLimited, resp.Status)
 		c.sendErrToReceivers(err, endpoint)
 		return err
