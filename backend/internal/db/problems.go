@@ -168,7 +168,7 @@ func correctProblemIndices(probs []probWithDiv) ([]codeforces.Problem, error) {
 
 		if i < len(probs)-1 && probs[i+1].Div < p.Div {
 			// Next problem is from a new contest, update increment.
-			increment = newProb.Index[0] - 'A'
+			increment = newProb.Index[0] - 'A' + 1
 			if increment >= 26 {
 				return nil, ErrTooManyProblems
 			}
