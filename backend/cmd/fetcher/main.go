@@ -37,7 +37,7 @@ func main() {
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
-		codeforces.WithIntervals(2*time.Second, 20*time.Second),
+		codeforces.WithIntervals(2*time.Second, 1*time.Minute),
 	)
 
 	f := fetcher.New(cfClient, db, cfClient, db, db)
@@ -58,7 +58,7 @@ func main() {
 		}
 
 		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
-			// Limit updates to maxContestUpdates
+			// Limit updates to maxContestUpdates.
 			contestIDs = contestIDs[:*maxContestUpdates]
 		}
 
@@ -68,22 +68,31 @@ func main() {
 
 		f := fetcher.New(cfClient, db, cfClient, db, db)
 
-		for i := range contestIDs {
+		i := 0
+		for i < len(contestIDs) {
 			err := f.FetchContest(contestIDs[i])
-			bar.Add(1) //nolint:errcheck
+			shouldContinue := true
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
-					// Usually means contest was unrated
-					continue
+					// Usually means contest was unrated, we can ignore this.
+				} else if errors.Is(err, codeforces.ErrRateLimited) {
+					// Try fetching current contest again.
+					shouldContinue = false
+				} else {
+					failCnt++
+					fmt.Print("\r\033[K") // Clear progress bar line.
+					log.Printf("Failed to fetch contest: %v\n", err)
+					// Sleep before reprinting bar (doesn't want to work without this).
+					go func() {
+						time.Sleep(100 * time.Millisecond)
+						bar.RenderBlank() //nolint:errcheck
+					}()
 				}
-				failCnt++
-				fmt.Print("\r\033[K") // Clear progress bar line
-				log.Printf("Failed to fetch contest: %v\n", err)
-				// Sleep before reprinting bar (doesn't want to work without this)
-				go func() {
-					time.Sleep(100 * time.Millisecond)
-					bar.RenderBlank() //nolint:errcheck
-				}()
+			}
+
+			if shouldContinue {
+				i++
+				bar.Add(1) //nolint:errcheck
 			}
 		}
 
