@@ -42,9 +42,7 @@ func (s *Service) FetchContest(id int) error {
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
 			_, err = s.contestRepo.UpsertContest(context.TODO(), contest)
-			return errors.Join(fmt.Errorf(
-				"contest %d: %w, but is old so will store in db to avoid future fetches", id, ErrNoRatingInfo),
-				err)
+			return err
 		}
 
 		return fmt.Errorf("contest %d: %w", id, ErrNoRatingInfo)
