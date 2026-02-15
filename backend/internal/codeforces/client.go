@@ -14,14 +14,19 @@ import (
 var (
 	ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
 	ErrAllReceiversCancelled  = errors.New("all receivers to request cancelled")
+	ErrRateLimited            = errors.New("encountered Codeforces rate limit")
 )
 
 const requestBufferSize int = 1000
 
 type client struct {
-	client          *http.Client
-	url             string
-	timeBetweenReqs time.Duration
+	client *http.Client
+	url    string
+
+	baseInterval time.Duration
+	curInterval  time.Duration
+	maxInterval  time.Duration
+	muThrottling sync.RWMutex
 
 	requests  chan string
 	mu        sync.Mutex
@@ -30,11 +35,11 @@ type client struct {
 
 func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
 	c := &client{
-		client:          httpClient,
-		url:             url,
-		timeBetweenReqs: timeBetweenReqs,
-		requests:        make(chan string, requestBufferSize),
-		receivers:       make(map[string][]receiver),
+		client:       httpClient,
+		url:          url,
+		baseInterval: timeBetweenReqs,
+		requests:     make(chan string, requestBufferSize),
+		receivers:    make(map[string][]receiver),
 	}
 	go c.listenForRequests()
 	return c
@@ -101,12 +106,16 @@ func (c *client) listenForRequests() {
 			continue
 		}
 
-		t := time.Now()
 		err := c.sendRequest(endpoint)
 		if err != nil {
 			log.Printf("Error sending request: %v\n", err)
 		}
-		time.Sleep(c.timeBetweenReqs - time.Since(t))
+
+		c.muThrottling.RLock()
+		interval := c.curInterval
+		c.muThrottling.RUnlock()
+
+		time.Sleep(interval)
 	}
 }
 
@@ -145,6 +154,18 @@ func (c *client) sendRequest(endpoint string) error {
 	delete(c.receivers, endpoint)
 
 	return nil
+}
+
+func (c *client) adjustThrottle(factor float64) {
+	c.muThrottling.Lock()
+
+	newInterval := time.Duration(float64(c.curInterval) * factor)
+
+	// Clamp interval.
+	c.curInterval = min(newInterval, c.maxInterval)
+	c.curInterval = max(c.curInterval, c.baseInterval)
+
+	c.muThrottling.Unlock()
 }
 
 // Returns true if all receivers to endpoint has cancelled their context.
