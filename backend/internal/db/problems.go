@@ -91,9 +91,8 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 
 	// Convert problem indices to the correct ones in case of contests sharing problems.
 	res := make([]codeforces.Problem, 0, len(problems))
-	var increment byte = 0
+	var increment uint8 = 0
 	for i, p := range problems {
-
 		newProb := p.Problem
 		newProb.Index = strings.TrimSpace(newProb.Index)
 
@@ -104,7 +103,7 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 		if i < len(problems)-1 && problems[i+1].Div < p.Div {
 			// Next problem is from a new contest, update increment.
 			increment = newProb.Index[0] - 'A'
-			if increment > 26 {
+			if increment >= 26 {
 				return nil, ErrTooManyProblems
 			}
 		}
@@ -174,9 +173,9 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 	return affected, nil
 }
 
-func updateIndex(p *codeforces.Problem, increment byte) error {
+func updateIndex(p *codeforces.Problem, increment uint8) error {
 	// Early check for large increment to avoid possible overflow when adding later.
-	if increment > 26 {
+	if increment >= 26 {
 		return ErrTooManyProblems
 	}
 
