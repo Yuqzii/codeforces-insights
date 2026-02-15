@@ -136,17 +136,17 @@ func TestUpsertContestsTx(t *testing.T) {
 	t.Run("Successful upsert", func(t *testing.T) {
 		rows := pgxmock.NewRows([]string{"id"}).AddRow(42)
 		mock.ExpectQuery(`INSERT INTO contests`).
-			WithArgs(c.ID, c.Name, c.StartTime, c.Duration).
+			WithArgs(c.ID, c.Name, c.StartTime, c.Duration, c.Div).
 			WillReturnRows(rows)
 
 		id, err := db.UpsertContestTx(ctx, mock, c)
-		assert.Nil(t, err, err)
+		assert.Nil(t, err)
 		assert.Equalf(t, id, 42, "expected id 42, got %d", id)
 	})
 
 	t.Run("Query error", func(t *testing.T) {
 		mock.ExpectQuery(`INSERT INTO contests`).
-			WithArgs(c.ID, c.Name, c.StartTime, c.Duration).
+			WithArgs(c.ID, c.Name, c.StartTime, c.Duration, c.Div).
 			WillReturnError(errors.New("insert failed"))
 
 		_, err := db.UpsertContestTx(ctx, mock, c)
