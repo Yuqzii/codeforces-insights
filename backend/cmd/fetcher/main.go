@@ -20,10 +20,6 @@ import (
 const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
-
-	cfTimeBetweenReqs time.Duration = 2100 * time.Millisecond // 2.1 seconds to be nice with CF server
-
-	workerCnt int = 2
 )
 
 func main() {
@@ -41,7 +37,7 @@ func main() {
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
-		cfTimeBetweenReqs,
+		codeforces.WithIntervals(2*time.Second, 1*time.Minute),
 	)
 
 	f := fetcher.New(cfClient, db, cfClient, db, db)
@@ -52,6 +48,8 @@ func main() {
 		"Past what age should contests be re-fetched? Default is no maximum.")
 	maxContestUpdates := flag.Int("maxContestUpdates", -1,
 		"Maximum allowed contests to update. Default is no maximum")
+	retryCount := flag.Int("retryCount", 5,
+		"How many times should we retry fetching a contest if it gives an error?")
 	flag.Parse()
 
 	if *fetchContests {
@@ -62,7 +60,7 @@ func main() {
 		}
 
 		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
-			// Limit updates to maxContestUpdates
+			// Limit updates to maxContestUpdates.
 			contestIDs = contestIDs[:*maxContestUpdates]
 		}
 
@@ -70,22 +68,38 @@ func main() {
 		bar := progressbar.Default(int64(len(contestIDs)), "Fetching contests")
 		failCnt := 0
 
-		results := fetcher.CreateWorkers(workerCnt, contestIDs, cfClient, db, cfClient, db, db)
-		for err := range results {
-			bar.Add(1) //nolint:errcheck
+		f := fetcher.New(cfClient, db, cfClient, db, db)
+
+		i := 0
+		curFail := 0
+		for i < len(contestIDs) {
+			err := f.FetchContest(contestIDs[i])
+			shouldContinue := true
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
-					// Usually means contest was unrated
-					continue
+					// Usually means contest was unrated, we can ignore this.
+				} else if errors.Is(err, codeforces.ErrCFServerProblem) {
+					curFail++
+					if curFail <= *retryCount {
+						// Try fetching current contest again.
+						shouldContinue = false
+					}
+				} else {
+					failCnt++
+					fmt.Print("\r\033[K") // Clear progress bar line.
+					log.Printf("Failed to fetch contest %d: %v\n", contestIDs[i], err)
+					// Sleep before reprinting bar (doesn't want to work without this).
+					go func() {
+						time.Sleep(100 * time.Millisecond)
+						bar.RenderBlank() //nolint:errcheck
+					}()
 				}
-				failCnt++
-				fmt.Print("\r\033[K") // Clear progress bar line
-				log.Printf("Failed to fetch contest: %v\n", err)
-				// Sleep before reprinting bar (doesn't want to work without this)
-				go func() {
-					time.Sleep(100 * time.Millisecond)
-					bar.RenderBlank() //nolint:errcheck
-				}()
+			}
+
+			if shouldContinue {
+				i++
+				curFail = 0
+				bar.Add(1) //nolint:errcheck
 			}
 		}
 

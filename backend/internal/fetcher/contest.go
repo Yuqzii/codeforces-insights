@@ -13,7 +13,7 @@ import (
 func (s *Service) FetchContest(id int) error {
 	contestants, contest, err := s.contestProvider.GetContestStandings(context.TODO(), id)
 	if err != nil {
-		return fmt.Errorf("getting contest %d standings: %w", id, err)
+		return fmt.Errorf("getting contest standings: %w", err)
 	}
 
 	ratings, err := s.contestProvider.GetContestRatingChanges(context.TODO(), id)
@@ -22,7 +22,7 @@ func (s *Service) FetchContest(id int) error {
 			err = errors.Join(err, s.insertContestDB(context.Background(), contest, nil))
 			return err
 		}
-		return fmt.Errorf("getting contest %d ratings: %w", id, err)
+		return fmt.Errorf("getting contest ratings: %w", err)
 	}
 
 	hasRatingInfo := false
@@ -38,13 +38,11 @@ func (s *Service) FetchContest(id int) error {
 		const minOldTime = 24 * 14 * time.Hour // Two weeks
 		isOld := contest.StartTime.Add(minOldTime).Before(time.Now())
 		if isOld {
-			// Only insert the contest, no contestants as the don't have any rating info.
+			// Only insert the contest, no contestants as they don't have any rating info.
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
 			_, err = s.contestRepo.UpsertContest(context.TODO(), contest)
-			return errors.Join(fmt.Errorf(
-				"contest %d: %w, but is old so will store in db to avoid future fetches", id, ErrNoRatingInfo),
-				err)
+			return err
 		}
 
 		return fmt.Errorf("contest %d: %w", id, ErrNoRatingInfo)
