@@ -79,39 +79,12 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 		return nil, fmt.Errorf("querying problems: %w", err)
 	}
 
-	type contestProblem struct {
-		codeforces.Problem
-		Div int `db:"div"`
-	}
-
-	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[contestProblem])
+	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[probWithDiv])
 	if err != nil {
 		return nil, fmt.Errorf("collecting rows: %w", err)
 	}
 
-	// Convert problem indices to the correct ones in case of contests sharing problems.
-	res := make([]codeforces.Problem, 0, len(problems))
-	var increment uint8 = 0
-	for i, p := range problems {
-		newProb := p.Problem
-		newProb.Index = strings.TrimSpace(newProb.Index)
-
-		if err = updateIndex(&newProb, increment); err != nil {
-			return nil, err
-		}
-
-		if i < len(problems)-1 && problems[i+1].Div < p.Div {
-			// Next problem is from a new contest, update increment.
-			increment = newProb.Index[0] - 'A'
-			if increment >= 26 {
-				return nil, ErrTooManyProblems
-			}
-		}
-
-		res = append(res, newProb)
-	}
-
-	return res, nil
+	return correctProblemIndices(problems)
 }
 
 func (db *db) UpsertProblem(ctx context.Context, p *codeforces.Problem) error {
@@ -171,6 +144,40 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 	}
 
 	return affected, nil
+}
+
+type probWithDiv struct {
+	codeforces.Problem
+	Div int `db:"div"`
+}
+
+// Converts []probWithDiv to []codeforces.Problem and updates their indices,
+// in case of multiple contests sharing problems.
+// @param probs Slice of probWithDiv, must be sorted by div in descending order.
+func correctProblemIndices(probs []probWithDiv) ([]codeforces.Problem, error) {
+	res := make([]codeforces.Problem, 0, len(probs))
+	var increment uint8 = 0
+
+	for i, p := range probs {
+		newProb := p.Problem
+		newProb.Index = strings.TrimSpace(newProb.Index)
+
+		if err := updateIndex(&newProb, increment); err != nil {
+			return nil, err
+		}
+
+		if i < len(probs)-1 && probs[i+1].Div < p.Div {
+			// Next problem is from a new contest, update increment.
+			increment = newProb.Index[0] - 'A'
+			if increment >= 26 {
+				return nil, ErrTooManyProblems
+			}
+		}
+
+		res = append(res, newProb)
+	}
+
+	return res, nil
 }
 
 func updateIndex(p *codeforces.Problem, increment uint8) error {
