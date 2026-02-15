@@ -224,4 +224,6 @@ func (c *client) sendErrToReceivers(err error, endpoint string) {
 		}
 		close(recvr.chn)
 	}
+
+	delete(c.receivers, endpoint)
 }
