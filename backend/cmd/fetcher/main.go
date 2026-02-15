@@ -81,7 +81,7 @@ func main() {
 				} else {
 					failCnt++
 					fmt.Print("\r\033[K") // Clear progress bar line.
-					log.Printf("Failed to fetch contest: %v\n", err)
+					log.Printf("Failed to fetch contest %d: %v\n", contestIDs[i], err)
 					// Sleep before reprinting bar (doesn't want to work without this).
 					go func() {
 						time.Sleep(100 * time.Millisecond)
