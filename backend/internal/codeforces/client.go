@@ -26,7 +26,6 @@ type client struct {
 	baseInterval time.Duration
 	curInterval  time.Duration
 	maxInterval  time.Duration
-	muThrottling sync.RWMutex
 
 	requests  chan string
 	mu        sync.Mutex
@@ -139,11 +138,7 @@ func (c *client) listenForRequests() {
 			c.adjustThrottle(0.8)
 		}
 
-		c.muThrottling.RLock()
-		interval := c.curInterval
-		c.muThrottling.RUnlock()
-
-		time.Sleep(interval)
+		time.Sleep(c.curInterval)
 	}
 }
 
@@ -191,15 +186,11 @@ func (c *client) sendRequest(endpoint string) error {
 }
 
 func (c *client) adjustThrottle(factor float64) {
-	c.muThrottling.Lock()
-
 	newInterval := time.Duration(float64(c.curInterval) * factor)
 
 	// Clamp interval.
 	c.curInterval = min(newInterval, c.maxInterval)
 	c.curInterval = max(c.curInterval, c.baseInterval)
-
-	c.muThrottling.Unlock()
 }
 
 // Returns true if all receivers to endpoint has cancelled their context.
