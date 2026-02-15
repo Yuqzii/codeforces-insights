@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/url"
+	"regexp"
 	"strconv"
-	"strings"
 	"time"
-	"unicode"
 )
 
 type Contestant struct {
@@ -139,6 +139,8 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+var divRegex *regexp.Regexp = regexp.MustCompile(`Div\.?\s*(\d+)`)
+
 func (c *Contest) UnmarshalJSON(data []byte) error {
 	type rawContest struct {
 		ID        int    `json:"id"`
@@ -158,20 +160,27 @@ func (c *Contest) UnmarshalJSON(data []byte) error {
 	c.StartTime = time.Unix(raw.StartTime, 0)
 	c.Duration = raw.Duration
 	c.Phase = raw.Phase
-
-	// Try to find what division contest belongs to.
-	divIdx := strings.Index(c.Name, "Div")
-	if divIdx != -1 {
-		divStr := c.Name[divIdx:]
-		numIdx := strings.IndexFunc(divStr, unicode.IsDigit)
-		if numIdx != -1 {
-			c.Div = int(divStr[numIdx] - '0')
-		} else {
-			c.Div = -1
-		}
-	} else {
-		c.Div = -1
-	}
+	c.Div = getDiv(c.Name)
 
 	return nil
+}
+
+func getDiv(name string) (res int) {
+	matches := divRegex.FindAllStringSubmatchIndex(name, -1)
+	if matches == nil {
+		return -1
+	}
+
+	res = -1
+	for _, m := range matches {
+		divSubstr := name[m[2]:m[3]]
+		div, err := strconv.Atoi(divSubstr)
+		if err != nil {
+			log.Printf("Failed parsing %s to number for contest div in name %s: %v\n",
+				divSubstr, name, err)
+		}
+		res = max(res, div)
+	}
+
+	return res
 }
