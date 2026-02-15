@@ -33,16 +33,38 @@ type client struct {
 	receivers map[string][]receiver
 }
 
-func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
+type clientOption func(*client)
+
+func NewClient(httpClient *http.Client, url string, opts ...clientOption) *client {
+	const (
+		defaultBaseInterval = 2 * time.Second
+		defaultMaxInterval  = 10 * time.Second
+	)
+
 	c := &client{
 		client:       httpClient,
 		url:          url,
-		baseInterval: timeBetweenReqs,
+		baseInterval: defaultBaseInterval,
+		maxInterval:  defaultMaxInterval,
 		requests:     make(chan string, requestBufferSize),
 		receivers:    make(map[string][]receiver),
 	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	c.curInterval = c.baseInterval
+
 	go c.listenForRequests()
 	return c
+}
+
+func WithIntervals(baseInterval, maxInterval time.Duration) clientOption {
+	return func(c *client) {
+		c.baseInterval = baseInterval
+		c.maxInterval = maxInterval
+	}
 }
 
 type receiver struct {

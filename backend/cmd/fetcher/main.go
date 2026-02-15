@@ -21,8 +21,6 @@ const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
 
-	cfTimeBetweenReqs time.Duration = 2100 * time.Millisecond // 2.1 seconds to be nice with CF server
-
 	workerCnt int = 2
 )
 
@@ -41,7 +39,7 @@ func main() {
 	cfClient := codeforces.NewClient(
 		http.DefaultClient,
 		"https://codeforces.com/api/",
-		cfTimeBetweenReqs,
+		codeforces.WithIntervals(2*time.Second, 20*time.Second),
 	)
 
 	f := fetcher.New(cfClient, db, cfClient, db, db)
