@@ -20,8 +20,6 @@ import (
 const (
 	dbHost string = "postgres"
 	dbPort uint16 = 5432
-
-	workerCnt int = 2
 )
 
 func main() {
@@ -68,8 +66,10 @@ func main() {
 		bar := progressbar.Default(int64(len(contestIDs)), "Fetching contests")
 		failCnt := 0
 
-		results := fetcher.CreateWorkers(workerCnt, contestIDs, cfClient, db, cfClient, db, db)
-		for err := range results {
+		f := fetcher.New(cfClient, db, cfClient, db, db)
+
+		for i := range contestIDs {
+			err := f.FetchContest(contestIDs[i])
 			bar.Add(1) //nolint:errcheck
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
