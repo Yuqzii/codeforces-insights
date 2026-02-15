@@ -14,7 +14,7 @@ import (
 var (
 	ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
 	ErrAllReceiversCancelled  = errors.New("all receivers to request cancelled")
-	ErrRateLimited            = errors.New("encountered Codeforces rate limit")
+	ErrCFServerProblem        = errors.New("a problem occured on Codeforces' servers")
 )
 
 const requestBufferSize int = 1000
@@ -132,7 +132,7 @@ func (c *client) listenForRequests() {
 		if err != nil {
 			log.Printf("Error making request: %v\n", err)
 
-			if errors.Is(err, ErrRateLimited) {
+			if errors.Is(err, ErrCFServerProblem) {
 				c.adjustThrottle(2) // Double interval.
 			}
 		} else {
@@ -155,11 +155,8 @@ func (c *client) sendRequest(endpoint string) error {
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
-	if resp.StatusCode == http.StatusGatewayTimeout ||
-		resp.StatusCode == http.StatusTooManyRequests {
-		// Likely being rate limited by Codeforces.
-		// They usually return a 504 instead of the arguable more correct 429 for rate limiting.
-		err = fmt.Errorf("%w: %s", ErrRateLimited, resp.Status)
+	if resp.StatusCode >= 500 && resp.StatusCode < 600 {
+		err = fmt.Errorf("%w: %s", ErrCFServerProblem, resp.Status)
 		c.sendErrToReceivers(err, endpoint)
 		return err
 	}

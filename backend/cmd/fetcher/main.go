@@ -75,7 +75,7 @@ func main() {
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 					// Usually means contest was unrated, we can ignore this.
-				} else if errors.Is(err, codeforces.ErrRateLimited) {
+				} else if errors.Is(err, codeforces.ErrCFServerProblem) {
 					// Try fetching current contest again.
 					shouldContinue = false
 				} else {
