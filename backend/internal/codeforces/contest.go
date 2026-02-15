@@ -29,7 +29,7 @@ type Contest struct {
 	StartTime time.Time `json:"startTime"`
 	Duration  int       `json:"durationSeconds"`
 	Phase     string    `json:"phase"`
-	Div       int       `db:"div"` // -1 indicates unknown.
+	Div       int       `db:"div"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -168,10 +168,9 @@ func (c *Contest) UnmarshalJSON(data []byte) error {
 func getDiv(name string) (res int) {
 	matches := divRegex.FindAllStringSubmatchIndex(name, -1)
 	if matches == nil {
-		return -1
+		return 0
 	}
 
-	res = -1
 	for _, m := range matches {
 		divSubstr := name[m[2]:m[3]]
 		div, err := strconv.Atoi(divSubstr)
