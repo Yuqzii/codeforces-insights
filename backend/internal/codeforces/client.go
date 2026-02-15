@@ -130,7 +130,13 @@ func (c *client) listenForRequests() {
 
 		err := c.sendRequest(endpoint)
 		if err != nil {
-			log.Printf("Error sending request: %v\n", err)
+			log.Printf("Error making request: %v\n", err)
+
+			if errors.Is(err, ErrRateLimited) {
+				c.adjustThrottle(2) // Double interval.
+			}
+		} else {
+			c.adjustThrottle(0.8)
 		}
 
 		c.muThrottling.RLock()
@@ -149,12 +155,20 @@ func (c *client) sendRequest(endpoint string) error {
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
+	if resp.StatusCode == http.StatusMethodNotAllowed || resp.StatusCode == http.StatusTooManyRequests {
+		// Likely being rate limited by Codeforces.
+		// They usually return a 405 instead of the arguable more correct 429 for rate limiting.
+		err = fmt.Errorf("%w: %s", ErrRateLimited, resp.Status)
+		c.sendErrToReceivers(err, endpoint)
+		return err
+	}
+
 	body, err := io.ReadAll(resp.Body)
+	resp.Body.Close() // nolint:errcheck
 	if err != nil {
 		c.sendErrToReceivers(err, endpoint)
 		return fmt.Errorf("reading '%s' response body: %w", endpoint, err)
 	}
-	resp.Body.Close() // nolint:errcheck
 
 	result := requestResult{
 		body: body,
