@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 )
@@ -38,19 +40,43 @@ func (db *db) ContestsExists(ctx context.Context, ids []int) (existingIDs map[in
 	return existingIDs, nil
 }
 
+func (db *db) FindStaleContests(ctx context.Context, age time.Duration) (ids []int, err error) {
+	limit := time.Now().Add(-age)
+
+	rows, err := db.q.Query(ctx, `
+		SELECT contest_id FROM contests WHERE updated_at < $1`,
+		limit,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("finding contests updated before %v: %w", limit, err)
+	}
+
+	for rows.Next() {
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
 func (db *db) UpsertContest(ctx context.Context, c *codeforces.Contest) (id int, err error) {
 	return db.UpsertContestTx(ctx, db.q, c)
 }
 
 func (db *db) UpsertContestTx(ctx context.Context, q Querier, c *codeforces.Contest) (id int, err error) {
 	err = q.QueryRow(ctx, `
-		INSERT INTO contests (contest_id, name, start_time, duration) VALUES ($1, $2, $3, $4)
+		INSERT INTO contests (contest_id, name, start_time, duration, div)
+		VALUES ($1, $2, $3, $4, NULLIF($5, 0))
 		ON CONFLICT (contest_id) DO UPDATE SET
 			name = EXCLUDED.name,
 			start_time = EXCLUDED.start_time,
-			duration = EXCLUDED.duration
+			duration = EXCLUDED.duration,
+			div = EXCLUDED.div
 		RETURNING id`,
-		c.ID, c.Name, c.StartTime, c.Duration,
+		c.ID, c.Name, c.StartTime, c.Duration, c.Div,
 	).Scan(&id)
 	return id, err
 }

@@ -14,30 +14,56 @@ import (
 var (
 	ErrCodeforcesReturnedFail = errors.New("Codeforces returned status FAILED") // nolint:staticcheck
 	ErrAllReceiversCancelled  = errors.New("all receivers to request cancelled")
+	ErrCFServerProblem        = errors.New("a problem occured on Codeforces' servers")
 )
 
 const requestBufferSize int = 1000
 
 type client struct {
-	client          *http.Client
-	url             string
-	timeBetweenReqs time.Duration
+	client *http.Client
+	url    string
+
+	baseInterval time.Duration
+	curInterval  time.Duration
+	maxInterval  time.Duration
 
 	requests  chan string
 	mu        sync.Mutex
 	receivers map[string][]receiver
 }
 
-func NewClient(httpClient *http.Client, url string, timeBetweenReqs time.Duration) *client {
+type clientOption func(*client)
+
+func NewClient(httpClient *http.Client, url string, opts ...clientOption) *client {
+	const (
+		defaultBaseInterval = 2 * time.Second
+		defaultMaxInterval  = 10 * time.Second
+	)
+
 	c := &client{
-		client:          httpClient,
-		url:             url,
-		timeBetweenReqs: timeBetweenReqs,
-		requests:        make(chan string, requestBufferSize),
-		receivers:       make(map[string][]receiver),
+		client:       httpClient,
+		url:          url,
+		baseInterval: defaultBaseInterval,
+		maxInterval:  defaultMaxInterval,
+		requests:     make(chan string, requestBufferSize),
+		receivers:    make(map[string][]receiver),
 	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	c.curInterval = c.baseInterval
+
 	go c.listenForRequests()
 	return c
+}
+
+func WithIntervals(baseInterval, maxInterval time.Duration) clientOption {
+	return func(c *client) {
+		c.baseInterval = baseInterval
+		c.maxInterval = maxInterval
+	}
 }
 
 type receiver struct {
@@ -101,12 +127,18 @@ func (c *client) listenForRequests() {
 			continue
 		}
 
-		t := time.Now()
 		err := c.sendRequest(endpoint)
 		if err != nil {
-			log.Printf("Error sending request: %v\n", err)
+			log.Printf("Error making request: %v\n", err)
+
+			if errors.Is(err, ErrCFServerProblem) {
+				c.adjustThrottle(2) // Double interval.
+			}
+		} else {
+			c.adjustThrottle(0.8)
 		}
-		time.Sleep(c.timeBetweenReqs - time.Since(t))
+
+		time.Sleep(c.curInterval)
 	}
 }
 
@@ -118,12 +150,18 @@ func (c *client) sendRequest(endpoint string) error {
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
 
+	if resp.StatusCode >= 500 && resp.StatusCode < 600 {
+		err = fmt.Errorf("%w: %s", ErrCFServerProblem, resp.Status)
+		c.sendErrToReceivers(err, endpoint)
+		return err
+	}
+
 	body, err := io.ReadAll(resp.Body)
+	resp.Body.Close() // nolint:errcheck
 	if err != nil {
 		c.sendErrToReceivers(err, endpoint)
 		return fmt.Errorf("reading '%s' response body: %w", endpoint, err)
 	}
-	resp.Body.Close() // nolint:errcheck
 
 	result := requestResult{
 		body: body,
@@ -145,6 +183,14 @@ func (c *client) sendRequest(endpoint string) error {
 	delete(c.receivers, endpoint)
 
 	return nil
+}
+
+func (c *client) adjustThrottle(factor float64) {
+	newInterval := time.Duration(float64(c.curInterval) * factor)
+
+	// Clamp interval.
+	c.curInterval = min(newInterval, c.maxInterval)
+	c.curInterval = max(c.curInterval, c.baseInterval)
 }
 
 // Returns true if all receivers to endpoint has cancelled their context.
@@ -178,4 +224,6 @@ func (c *client) sendErrToReceivers(err error, endpoint string) {
 		}
 		close(recvr.chn)
 	}
+
+	delete(c.receivers, endpoint)
 }

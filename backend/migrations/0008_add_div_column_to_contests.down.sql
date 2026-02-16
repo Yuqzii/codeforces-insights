@@ -1,0 +1,2 @@
+ALTER TABLE contests
+DROP COLUMN div;

@@ -11,6 +11,7 @@ import (
 )
 
 var ErrNoProblemsForContest = errors.New("there are no stored problems for this contest")
+var ErrTooManyProblems = errors.New("amount of problems exceeds alphabet")
 
 func (db *db) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 	[]codeforces.Problem, error) {
@@ -56,35 +57,39 @@ func (db *db) GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.
 
 func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) ([]codeforces.Problem, error) {
 	rows, err := q.Query(ctx, `
+		WITH reference_contest AS (
+			SELECT div, start_time, contest_id
+			FROM contests
+			WHERE contest_id = $1
+		)
 		SELECT
 			p.name,
 			p.index,
 			p.rating,
 			p.tags,
-			c.contest_id
+			c.contest_id,
+			c.div
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
-		WHERE c.contest_id = $1`,
+		CROSS JOIN reference_contest rc
+		WHERE c.start_time = rc.start_time AND c.div < rc.div
+		ORDER BY c.div DESC`,
 		id,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("querying problems: %w", err)
 	}
 
-	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[codeforces.Problem])
+	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[probWithDiv])
 	if err != nil {
 		return nil, fmt.Errorf("collecting rows: %w", err)
-	}
-
-	for i := range problems {
-		problems[i].Index = strings.TrimSpace(problems[i].Index)
 	}
 
 	if len(problems) == 0 {
 		return nil, ErrNoProblemsForContest
 	}
 
-	return problems, nil
+	return correctProblemIndices(problems)
 }
 
 func (db *db) UpsertProblem(ctx context.Context, p *codeforces.Problem) error {
@@ -144,4 +149,55 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 	}
 
 	return affected, nil
+}
+
+type probWithDiv struct {
+	codeforces.Problem
+	Div int `db:"div"`
+}
+
+// Converts []probWithDiv to []codeforces.Problem and updates their indices,
+// in case of multiple contests sharing problems.
+// @param probs Slice of probWithDiv, must be sorted by div in descending order.
+func correctProblemIndices(probs []probWithDiv) ([]codeforces.Problem, error) {
+	res := make([]codeforces.Problem, 0, len(probs))
+	var increment uint8 = 0
+
+	for i, p := range probs {
+		newProb := p.Problem
+		newProb.Index = strings.TrimSpace(newProb.Index)
+
+		if err := updateIndex(&newProb, increment); err != nil {
+			return nil, err
+		}
+
+		if i < len(probs)-1 && probs[i+1].Div < p.Div {
+			// Next problem is from a new contest, update increment.
+			increment = newProb.Index[0] - 'A' + 1
+			if increment >= 26 {
+				return nil, ErrTooManyProblems
+			}
+		}
+
+		res = append(res, newProb)
+	}
+
+	return res, nil
+}
+
+func updateIndex(p *codeforces.Problem, increment uint8) error {
+	// Early check for large increment to avoid possible overflow when adding later.
+	if increment >= 26 {
+		return ErrTooManyProblems
+	}
+
+	b := []byte(p.Index)
+	b[0] += increment
+	if b[0] > 'Z' {
+		return ErrTooManyProblems
+	}
+
+	p.Index = string(b)
+
+	return nil
 }

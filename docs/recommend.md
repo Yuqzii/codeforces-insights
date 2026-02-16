@@ -45,8 +45,9 @@ flowchart TD
     N --> O["similarity := dotProduct(target, v) / (target.magnitude() * v.magnitude())"]
     O --> P["Push probs[i] to pq with score as similarity"]
     P --> Q{"len(pq) > req.cnt"}
-    Q -- true --> R["pq.pop()"] --> M
-    Q -- false --> M
+    Q -- true --> R["pq.pop()"] --> V
+    Q -- false --> V[i++]
+    V --> M
   end
   M -- false --> S[Marshal pq to json]
   S --> T[/Write json to response/]

@@ -148,9 +148,20 @@ function handleUserInfo(userInfo, signal) {
 function filterSolved(submissions) {
 	const solved = new Array();
 	submissions.forEach(sub => {
-		if (sub.verdict === "OK") solved.push(sub);
+		if (sub.verdict === "OK") {
+			sub.problemId = sub.contestId + sub.problem.index; 
+			solved.push(sub);
+		}
 	});
-	return solved;
+
+	solved.sort((a, b) => a.problemId.localeCompare(b.problemId));
+	const uniqueSolved = new Array();
+	solved.forEach(sub => {
+		if ((uniqueSolved.length == 0) || (sub.problemId != uniqueSolved.at(-1).problemId)) {
+			uniqueSolved.push(sub)
+		}
+	});
+	return uniqueSolved;
 }
 
 function updateTags(tagCnts) {
