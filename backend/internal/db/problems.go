@@ -72,7 +72,7 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
 		CROSS JOIN reference_contest rc
-		WHERE c.start_time = rc.start_time AND c.div < rc.div
+		WHERE c.start_time = rc.start_time AND c.div <= rc.div
 		ORDER BY c.div DESC`,
 		id,
 	)
