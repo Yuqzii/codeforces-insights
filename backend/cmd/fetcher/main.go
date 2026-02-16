@@ -10,8 +10,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/schollz/progressbar/v3"
-
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/fetcher"
@@ -65,7 +63,6 @@ func main() {
 		}
 
 		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
-		bar := progressbar.Default(int64(len(contestIDs)), "Fetching contests")
 		failCnt := 0
 
 		f := fetcher.New(cfClient, db, cfClient, db, db)
@@ -83,23 +80,23 @@ func main() {
 					if curFail <= *retryCount {
 						// Try fetching current contest again.
 						shouldContinue = false
+						log.Printf("Fetching contest %d failed, retrying: %v\n", contestIDs[i], err)
+					} else {
+						failCnt++
+						log.Printf("Fetching contest %d exceeded retry limit (%d): %v\n",
+							contestIDs[i], *retryCount, err)
 					}
 				} else {
 					failCnt++
-					fmt.Print("\r\033[K") // Clear progress bar line.
 					log.Printf("Failed to fetch contest %d: %v\n", contestIDs[i], err)
-					// Sleep before reprinting bar (doesn't want to work without this).
-					go func() {
-						time.Sleep(100 * time.Millisecond)
-						bar.RenderBlank() //nolint:errcheck
-					}()
 				}
+			} else {
+				log.Printf("Successfully fetched contest %d (%d/%d)\n", contestIDs[i], i+1, len(contestIDs))
 			}
 
 			if shouldContinue {
 				i++
 				curFail = 0
-				bar.Add(1) //nolint:errcheck
 			}
 		}
 

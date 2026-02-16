@@ -126,6 +126,8 @@ func (s *Service) insertContestDB(ctx context.Context, contest *codeforces.Conte
 
 		if err != nil {
 			log.Printf("Error when updating db during contest fetch (id %d): %v\n", contest.ID, err)
+		} else {
+			log.Printf("Successfully updated contest %d\n", contest.ID)
 		}
 	}()
 }
