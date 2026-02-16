@@ -177,6 +177,7 @@ func getDiv(name string) (res int) {
 		if err != nil {
 			log.Printf("Failed parsing %s to number for contest div in name %s: %v\n",
 				divSubstr, name, err)
+			continue
 		}
 		res = max(res, div)
 	}
