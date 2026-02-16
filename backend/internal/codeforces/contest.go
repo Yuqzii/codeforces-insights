@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/url"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -27,6 +29,7 @@ type Contest struct {
 	StartTime time.Time `json:"startTime"`
 	Duration  int       `json:"durationSeconds"`
 	Phase     string    `json:"phase"`
+	Div       int       `db:"div"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -136,6 +139,8 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+var divRegex *regexp.Regexp = regexp.MustCompile(`Div\.?\s*(\d+)`)
+
 func (c *Contest) UnmarshalJSON(data []byte) error {
 	type rawContest struct {
 		ID        int    `json:"id"`
@@ -155,6 +160,27 @@ func (c *Contest) UnmarshalJSON(data []byte) error {
 	c.StartTime = time.Unix(raw.StartTime, 0)
 	c.Duration = raw.Duration
 	c.Phase = raw.Phase
+	c.Div = getDiv(c.Name)
 
 	return nil
+}
+
+func getDiv(name string) (res int) {
+	matches := divRegex.FindAllStringSubmatchIndex(name, -1)
+	if matches == nil {
+		return 0
+	}
+
+	for _, m := range matches {
+		divSubstr := name[m[2]:m[3]]
+		div, err := strconv.Atoi(divSubstr)
+		if err != nil {
+			log.Printf("Failed parsing %s to number for contest div in name %s: %v\n",
+				divSubstr, name, err)
+			continue
+		}
+		res = max(res, div)
+	}
+
+	return res
 }

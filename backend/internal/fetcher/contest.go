@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
@@ -19,7 +20,8 @@ func (s *Service) FetchContest(id int) error {
 	ratings, err := s.contestProvider.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
-			err = errors.Join(err, s.insertContestDB(context.Background(), contest, nil))
+			// Insert to avoid refetch.
+			s.insertContestDB(context.Background(), contest, nil)
 			return err
 		}
 		return fmt.Errorf("getting contest ratings: %w", err)
@@ -60,8 +62,9 @@ func (s *Service) FetchContest(id int) error {
 		}
 	}
 
-	// Insert to DB in a transaction
-	return s.insertContestDB(context.TODO(), contest, contestants)
+	s.insertContestDB(context.TODO(), contest, contestants)
+
+	return nil
 }
 
 // @param maxAge The maximum age allowed before the data is considered stale.
@@ -101,20 +104,30 @@ func (s *Service) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 	return result, nil
 }
 
+// Upserts the provided contest and contestants.
+// Uses a gouroutine to avoid blocking while waiting for the DB update.
 func (s *Service) insertContestDB(ctx context.Context, contest *codeforces.Contest,
-	contestants []codeforces.Contestant) error {
+	contestants []codeforces.Contestant) {
 
-	return s.tx.WithTx(ctx, func(q db.Querier) error {
-		id, err := s.contestRepo.UpsertContestTx(ctx, q, contest)
+	go func() {
+		err := s.tx.WithTx(ctx, func(q db.Querier) error {
+			id, err := s.contestRepo.UpsertContestTx(ctx, q, contest)
+			if err != nil {
+				return fmt.Errorf("upserting contest %d: %w", id, err)
+			}
+
+			err = s.contestRepo.InsertContestResultsTx(ctx, q, contestants, id)
+			if err != nil {
+				return fmt.Errorf("inserting contest %d results: %w", id, err)
+			}
+
+			return nil
+		})
+
 		if err != nil {
-			return fmt.Errorf("upserting contest %d: %w", id, err)
+			log.Printf("Error when updating db during contest fetch (id %d): %v\n", contest.ID, err)
+		} else {
+			log.Printf("Successfully updated contest %d\n", contest.ID)
 		}
-
-		err = s.contestRepo.InsertContestResultsTx(ctx, q, contestants, id)
-		if err != nil {
-			return fmt.Errorf("inserting contest %d results: %w", id, err)
-		}
-
-		return nil
-	})
+	}()
 }
