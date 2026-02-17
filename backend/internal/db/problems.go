@@ -58,7 +58,7 @@ func (db *db) GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.
 func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) ([]codeforces.Problem, error) {
 	rows, err := q.Query(ctx, `
 		WITH reference_contest AS (
-			SELECT div, start_time, contest_id
+			SELECT COALESCE(div, 0) AS div, start_time, contest_id
 			FROM contests
 			WHERE contest_id = $1
 		)
@@ -68,12 +68,13 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 			p.rating,
 			p.tags,
 			c.contest_id,
-			c.div
+			COALESCE(c.div, 0) AS div
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
 		CROSS JOIN reference_contest rc
-		WHERE c.start_time = rc.start_time AND c.div <= rc.div
-		ORDER BY c.div DESC`,
+		WHERE c.start_time = rc.start_time
+			AND COALESCE(c.div, 0) <= rc.div
+		ORDER BY COALESCE(c.div, 0) DESC`,
 		id,
 	)
 	if err != nil {
