@@ -31,7 +31,12 @@
 }
 
 .problem-header h3 {
+	font-size: 1.75rem;
+}
+
+.problem-header h4 {
 	margin: 0;
+	font-size: 1.25rem;
 }
 
 .problem-rating {
