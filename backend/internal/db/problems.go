@@ -31,7 +31,9 @@ func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []strin
 			c.contest_id
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
-		WHERE p.tags && $1 AND p.rating >= $2 AND p.rating <= $3`,
+		WHERE 
+			p.tags && $1 AND
+			p.rating >= $2 AND p.rating <= $3`,
 		tags, minRat, maxRat,
 	)
 	if err != nil {
@@ -65,15 +67,16 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 		SELECT
 			p.name,
 			p.index,
-			p.rating,
+			COALESCE(p.rating, 0) AS rating,
 			p.tags,
 			c.contest_id,
 			COALESCE(c.div, 0) AS div
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
 		CROSS JOIN reference_contest rc
-		WHERE c.start_time = rc.start_time
-			AND COALESCE(c.div, 0) <= rc.div
+		WHERE
+			c.start_time = rc.start_time AND
+			COALESCE(c.div, 0) <= rc.div
 		ORDER BY COALESCE(c.div, 0) DESC`,
 		id,
 	)
@@ -102,7 +105,7 @@ func (db *db) UpsertProblemTx(ctx context.Context, q Querier, p *codeforces.Prob
 		INSERT INTO problems (contest_id, index, name, rating, tags)
 		VALUES (
 			(SELECT id FROM contests WHERE contest_id = $1),
-			$2, $3, $4, $5
+			$2, $3, NULLIF($4, 0), $5
 		)
 		ON CONFLICT (contest_id, index)
 		DO UPDATE SET
@@ -125,7 +128,7 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 
 	query := `
 		INSERT INTO problems (contest_id, index, name, rating, tags)
-		SELECT c.id, $2, $3, $4, $5
+		SELECT c.id, $2, $3, NULLIF($4, 0), $5
 		FROM contests c WHERE c.contest_id = $1
 		ON CONFLICT (contest_id, index)
 		DO UPDATE SET
