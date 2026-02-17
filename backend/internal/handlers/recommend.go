@@ -57,7 +57,12 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	for _, c := range data.Contests {
 		p, err := h.rec.FindFirstUnsolvedProblem(ctx, c.ID, c.Indices)
 		if err != nil {
-			if errors.Is(err, recommender.ErrNoUnsolvedProblem) || errors.Is(err, db.ErrNoProblemsForContest) {
+			if errors.Is(err, recommender.ErrNoUnsolvedProblem) {
+				continue
+			}
+
+			if errors.Is(err, db.ErrNoProblemsForContest) {
+				log.Printf("Couldn't find problems from contest %d: %v\n", c.ID, err)
 				continue
 			}
 
@@ -66,11 +71,16 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
-			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v",
+			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
 				c.ID, c.Indices, err)
 		}
 		unsolved = append(unsolved, p)
+	}
+
+	if len(unsolved) == 0 {
+		http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
+		log.Println("Recommend request failed due to inability to find unsolved problems")
+		return
 	}
 
 	recs, err := h.rec.Recommend(ctx, unsolved, data.Count, data.MinRating, data.MaxRating)
