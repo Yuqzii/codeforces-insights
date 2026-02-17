@@ -2,6 +2,7 @@
 	display: flex;
 	margin: 2em 0;
 	align-items: center;
+	justify-content: center;
 	gap: 1rem;
 }
 
@@ -59,4 +60,10 @@
 
 #rating-range>label {
 	font-size: 1.2rem;
+}
+
+@media (max-aspect-ratio: 4/5) {
+	.range-slider-container {
+		display: none;
+	}
 }
