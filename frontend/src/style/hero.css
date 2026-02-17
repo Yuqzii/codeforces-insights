@@ -41,7 +41,6 @@
 	font-size: 1.3em;
 	margin: 2em 0 1em 0;
 	position: relative;
-	width: max-content;
 }
 
 .user-form-container {
@@ -168,7 +167,6 @@
 
 	.hero {
 		align-items: center;
-		margin: 5em 0 0 0;
 		width: 90vw;
 		font-size: clamp(24px, 1.5vh, 32px)
 	}
