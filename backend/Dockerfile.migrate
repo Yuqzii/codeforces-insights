@@ -1,0 +1,7 @@
+FROM migrate/migrate:4
+
+WORKDIR /migrations
+
+COPY ./migrations .
+
+ENTRYPOINT ["migrate", "-path=/migrations/"]
