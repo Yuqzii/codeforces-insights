@@ -42,6 +42,8 @@ jobs:
         service: [server, fetcher, migrate]
 
     steps:
+      uses: actions/checkout@v5
+
       - name: Lowercase repo name
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
@@ -59,7 +61,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: "{{defaultContext}}:backend"
-          file: Dockerfile.${{ matrix.service }}
+          context: ./backend
+          file: ./backend/Dockerfile.${{ matrix.service }}
           push: true
           tags: ghcr.io/${{ env.REPO_NAME }}/${{ matrix.service }}:latest
