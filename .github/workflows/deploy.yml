@@ -60,6 +60,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:backend"
-          file: backend/Dockerfile.${{ matrix.service }}
+          file: Dockerfile.${{ matrix.service }}
           push: true
           tags: ghcr.io/${{ env.REPO_NAME }}/${{ matrix.service }}:latest
