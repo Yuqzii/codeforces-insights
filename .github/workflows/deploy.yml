@@ -42,7 +42,7 @@ jobs:
         service: [server, fetcher, migrate]
 
     steps:
-      uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
       - name: Lowercase repo name
         run: |
