@@ -13,3 +13,10 @@ stop:
 
 fetch: 
 	docker compose run --build --rm fetcher $(ARGS)
+
+lint:
+	cd backend && golangci-lint run
+	cd frontend && npm run lint
+
+format:
+	cd backend && gofmt -d -s -l
