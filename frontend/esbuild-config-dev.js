@@ -45,10 +45,13 @@ async function start() {
 	const ctx = await esbuild.context({
 		entryPoints: ["./src/main.js", "./src/style/style.css"],
 		bundle: true,
-		platform: "node",
+		platform: "browser",
 		outdir: "./dist/",
 		sourcemap: true,
 		minify: false,
+		loader: {
+			".html": "text",
+		},
 		define: {
 			"process.env.API_URL": JSON.stringify(process.env.API_URL || "/api")
 		},

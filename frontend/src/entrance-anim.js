@@ -1,14 +1,21 @@
-export function observeAndAnimate() {
-	const analyticsElements = document.querySelectorAll(".analytics-container");
+export function observeAndAnimate(elements) {
 	const observer = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				entry.target.classList.toggle("fade-in", true);
-			}
+			if (!entry.isIntersecting)
+				return;
+
+			entry.target.classList.add("fade-in");
+
+			entry.target.addEventListener("animationend", () => {
+				entry.target.classList.remove("fade-in");
+				entry.target.style.opacity = 1;
+			}, { once: true });
+
+			observer.unobserve(entry.target);
 		});
 	});
 
-	analyticsElements.forEach(element => {
+	elements.forEach(element => {
 		observer.observe(element);
 	});
 }

@@ -1,11 +1,13 @@
 
 .loader,
 .loader-small {
+	--size-increase: 2%;
+
 	position: absolute;
-	bottom: 1%;
-	left: 1%;
-	width: 98%;
-	height: 98%;
+	width: calc(100% + var(--size-increase));
+	height: calc(100% + var(--size-increase));
+	top: calc(var(--size-increase) / -2);
+	left: calc(var(--size-increase) / -2);
 	background-color: var(--bg);
 	border-radius: var(--card-border-radius);
 	transition-duration: var(--bg-transition-speed);

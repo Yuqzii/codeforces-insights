@@ -8,6 +8,8 @@
 @import "analytics.css";
 @import "footer.css";
 @import "fade-in.css";
+@import "problems.css";
+@import "range.css";
 
 :root {
 	--bg-transition-speed: 150ms;
@@ -78,6 +80,16 @@ button:hover {
 	cursor: pointer;
 }
 
+/* Hide arrows on number input */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+input[type="number"] {
+	appearance: textfield;
+}
+
 main {
 	width: 100%;
 	background-color: var(--bg-dark);
@@ -92,10 +104,23 @@ main {
 	width: 85%;
 }
 
-.main-section h1 {
+.main-section h2 {
 	text-align: center;
 	font-size: 3.5rem;
 	margin-top: 0;
+}
+
+.card {
+	--card-border-radius: 0.8rem;
+
+	padding: 1.25em;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--card-border-radius);
+	background-color: var(--bg);
+	opacity: 0;
+	animation-delay: 100ms;
+	animation-duration: 500ms;
 }
 
 @media (max-aspect-ratio: 6/5) {

@@ -1,0 +1,79 @@
+#rating-range {
+	display: flex;
+	margin: 2em 0;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.range-slider-container {
+	height: 10px;
+	width: 100%;
+	position: relative;
+	background-color: var(--bg1);
+	border-radius: 2px;
+}
+
+#range-slider {
+	--left-pos: calc((400 / 2700) * 100 * 1%);
+	--right-pos: calc(((2700 - 600) / 2700) * 100 * 1%);
+
+	height: 100%;
+	left: var(--left-pos);
+	right: var(--right-pos);
+	position: absolute;
+	background-color: var(--fg);
+}
+
+.range-input {
+	position: absolute;
+	width: 102%;
+	left: -1%;
+	height: 100%;
+}
+
+.range-input input {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: none;
+	pointer-events: none;
+	appearance: none;
+	margin: 0;
+	padding: 0;
+}
+
+.range-input input::-moz-range-thumb {
+	height: 20px;
+	width: 20px;
+	border-radius: 50%;
+	border: 2.5px solid var(--fg);
+	background-color: var(--bg2);
+	pointer-events: auto;
+}
+
+/* Needs separate rule for webkit */
+.range-input input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 20px;
+	width: 20px;
+	border-radius: 50%;
+	border: 2.5px solid var(--fg);
+	background-color: var(--bg2);
+	pointer-events: auto;
+}
+
+#rating-range>input {
+	font-size: 1.2rem;
+	width: 3em;
+}
+
+#rating-range>label {
+	font-size: 1.2rem;
+}
+
+@media (max-aspect-ratio: 4/5) {
+	.range-slider-container {
+		display: none;
+	}
+}

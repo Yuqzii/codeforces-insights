@@ -33,7 +33,10 @@ func New(repo ProblemRepository) *recommender {
 	}
 }
 
-var ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this contest")
+var (
+	ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this contest")
+	ErrInvalidIndices    = errors.New("given problem indices are invalid")
+)
 
 // Converts all the problems tags into a vector, and compares the direction of this vector
 // to each vector of other problems with at least one tag in common to find the most similar problems.
@@ -99,6 +102,10 @@ func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID in
 		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
 	}
 
+	if len(indices) > len(allProbs) {
+		return nil, ErrInvalidIndices
+	}
+
 	// Sort problems by index (A, B, C, D1, D2, ...).
 	slices.SortFunc(allProbs, func(a, b codeforces.Problem) int {
 		return strings.Compare(a.Index, b.Index)
@@ -111,11 +118,11 @@ func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID in
 		}
 	}
 
-	if len(indices) < len(allProbs) {
-		return &allProbs[len(indices)], nil
+	if len(indices) == len(allProbs) {
+		return nil, ErrNoUnsolvedProblem
 	}
 
-	return nil, ErrNoUnsolvedProblem
+	return &allProbs[len(indices)], nil
 }
 
 func (r *recommender) getIdxOfTag(tag string) int {

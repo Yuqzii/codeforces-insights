@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
@@ -24,7 +25,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
 			return
 		}
-		http.Error(w, "Failure reading request", http.StatusInternalServerError)
+		http.Error(w, "Couldn't read request", http.StatusBadRequest)
 		log.Printf("Error reading recommend request: %v\n", err)
 		return
 	}
@@ -39,7 +40,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		} `json:"contests"`
 	}
 	if err = json.Unmarshal(body, &data); err != nil {
-		http.Error(w, "Failure reading request", http.StatusInternalServerError)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("Error unmarshalling json in recommend request: %v\n", err)
 		return
 	}
@@ -59,17 +60,34 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 			if errors.Is(err, recommender.ErrNoUnsolvedProblem) {
 				continue
 			}
-			http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
-			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v",
+
+			if errors.Is(err, db.ErrNoProblemsForContest) {
+				log.Printf("Couldn't find problems from contest %d: %v\n", c.ID, err)
+				continue
+			}
+
+			if errors.Is(err, recommender.ErrInvalidIndices) {
+				http.Error(w, "Invalid problem indices", http.StatusBadRequest)
+				return
+			}
+
+			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
 				c.ID, c.Indices, err)
 		}
 		unsolved = append(unsolved, p)
+	}
+
+	if len(unsolved) == 0 {
+		http.Error(w, "Failure finding unsolved problems", http.StatusInternalServerError)
+		log.Println("Recommend request failed due to inability to find unsolved problems")
+		return
 	}
 
 	recs, err := h.rec.Recommend(ctx, unsolved, data.Count, data.MinRating, data.MaxRating)
 	if err != nil {
 		http.Error(w, "Failure recommending problems", http.StatusInternalServerError)
 		log.Printf("Error recommending %d problems: %v\n", data.Count, err)
+		return
 	}
 
 	j, err := json.Marshal(recs)

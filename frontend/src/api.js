@@ -72,3 +72,29 @@ export async function getPercentile(rating, signal) {
 		console.error("Percentile request failed:", err);
 	}
 }
+
+export async function getRecommendedProblems(count, ratingRange, contestsObj, signal) {
+	const reqData = {
+		count: count,
+		minRating: ratingRange.min,
+		maxRating: ratingRange.max,
+		contests: contestsObj,
+	};
+
+	try {
+		const resp = await fetch(`${process.env.API_URL}/recommend`, {
+			method: "POST",
+			body: JSON.stringify(reqData),
+			signal: signal,
+		});
+
+		if (!resp.ok)
+			throw new Error(`recommend response not ok: ${resp.statusText}`);
+
+		const data = await resp.json();
+		return data;
+	} catch (err) {
+		if (err.name === "AbortError") return;
+		throw err;
+	}
+}

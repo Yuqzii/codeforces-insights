@@ -1,5 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
+import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -42,10 +43,18 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	getUserInfo(handle, signal).then(handleUserInfo);
-	getSubmissions(handle, signal).then(handleSubmissions);
+	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
+	const submissionTask = getSubmissions(handle, signal).then(submissions => {
+		handleSubmissions(submissions);
+		updateSubmissions(submissions);
+	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
+	});
+
+	// Recommend problems after we have user's rating and submissions.
+	Promise.all([userInfoTask, submissionTask]).then(() => {
+		recommendProblems();
 	});
 }
 
@@ -110,6 +119,11 @@ function handleUserInfo(userInfo, signal) {
 		peakRating.textContent = userInfo.maxRating;
 		peakRating.style.setProperty("--text-color", getRatingColor(userInfo.maxRating));
 		peakRating.classList.add("glow-color", "weight-450");
+
+		// Update rating range for recommended problems
+		const maxRatingDiff = 150;
+		const maxRating = Math.max(1100, userInfo.rating + maxRatingDiff); // Recommend at least [800, 1100]
+		setRatingRange(userInfo.rating - maxRatingDiff, maxRating);
 	} else {
 		percentileElem.textContent = "-";
 		percentileElem.classList.remove("glow-text", "weight-600");
@@ -119,12 +133,14 @@ function handleUserInfo(userInfo, signal) {
 
 		peakRating.textContent = "-";
 		peakRating.classList.remove("glow-color", "weight-450");
+
+		setRatingRange(800, 1100); // Recommend low rated problems for user without rating.
 	}
 
 	hideLoader(userDetails);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
-	document.getElementById("username").href = "https://codeforces.com/profile/"+userInfo.handle;
+	document.getElementById("username").href = "https://codeforces.com/profile/" + userInfo.handle;
 	document.getElementById("user-country").textContent = userInfo.country || "-";
 
 }

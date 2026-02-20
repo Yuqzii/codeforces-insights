@@ -41,7 +41,7 @@
 			</div>
 			<div class="theme-select">
 				<label for="theme-select">Select Theme</label>
-				<select id="theme-select" class="depth-1 depth-interactive">
+				<select id="theme-select" class="depth-1 depth1-interactive">
 					<option value="theme-catppuccin">Catppuccin Mocha</option>
 					<option value="theme-gruvbox">Gruvbox</option>
 				</select>
@@ -64,9 +64,9 @@
 					your Codeforces history now.
 				</h2>
 				<form id="user-form" autocomplete="off">
-					<input type="text" id="handle-input" class="depth-1 depth-interactive" placeholder="Enter Username"
+					<input type="text" id="handle-input" class="depth-1 depth1-interactive" placeholder="Enter Username"
 						aria-label="Codeforces username input">
-					<button type="submit" class="depth-1 depth-interactive">Analyze</button>
+					<button type="submit" class="depth-1 depth1-interactive">Analyze</button>
 				</form>
 			</div>
 		</header>
@@ -94,11 +94,11 @@
 
 	<main>
 		<section id="analytics-section" class="main-section">
-			<h1 class="glow-text">Analytics</h1>
+			<h2 class="glow-text">Analytics</h2>
 			<div class="analytics-grid">
-				<div id="user-details" class="analytics-container depth-2" style="grid-area: user-info">
+				<div id="user-details" class="card depth-2" style="grid-area: user-info">
 					<header class="analytics-header">
-						<h2>User Info</h2>
+						<h3>User Info</h3>
 					</header>
 					<div class="analytics-content">
 						<div id="user-stats">
@@ -117,10 +117,10 @@
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-ratings" class="analytics-container depth-2" style="grid-area: solved-ratings">
+				<div id="solved-ratings" class="card depth-2" style="grid-area: solved-ratings">
 					<header class="analytics-header">
-						<h2>Rating distribution of solved problems</h2>
-						<button id="toggle-800-rating" class="depth-1 depth-interactive" type="button"
+						<h3>Rating distribution of solved problems</h3>
+						<button id="toggle-800-rating" class="depth-1 depth1-interactive" type="button"
 							style="display: none;">
 							Hide 800 Rating
 						</button>
@@ -133,10 +133,10 @@
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="solved-tags" class="analytics-container depth-2" style="grid-area: solved-tags">
+				<div id="solved-tags" class="card depth-2" style="grid-area: solved-tags">
 					<header class="analytics-header">
-						<h2>Solved Tags</h2>
-						<button id="toggle-other-tags" class="depth-1 depth-interactive" type="button"
+						<h3>Solved Tags</h3>
+						<button id="toggle-other-tags" class="depth-1 depth1-interactive" type="button"
 							style="display: none;">
 							Toggle Other
 						</button>
@@ -149,9 +149,9 @@
 						<div class="loader"></div>
 					</div>
 				</div>
-				<div id="rating-history" class="analytics-container depth-2" style="grid-area: rating-history">
+				<div id="rating-history" class="card depth-2" style="grid-area: rating-history">
 					<header class="analytics-header">
-						<h2>Rating History</h2>
+						<h3>Rating History</h3>
 						<div id="performance-loader" style="display: none;">
 							<p>Calculating performance</p>
 							<div>
@@ -170,8 +170,25 @@
 		</section>
 
 		<section id="practice-section" class="main-section">
-			<h1 class="glow-text">Practice</h1>
-			<h2>Coming Soon™!</h2>
+			<h2 class="glow-text">Practice</h2>
+			<div id="rating-range">
+				<label for="min-rating">Min</label>
+				<input type="number" data-range-type="min" name="min-rating" value="1200"
+					class="depth-1 depth1-interactive glow-text">
+				<div class="range-slider-container">
+					<span id="range-slider"></span>
+					<div class="range-input">
+						<input type="range" data-range-type="min" min="0" max="2700" value="400">
+						<input type="range" data-range-type="max" min="0" max="2700" value="600">
+					</div>
+				</div>
+				<input type="number" data-range-type="max" name="max-rating" value="1400"
+					class="depth-1 depth1-interactive">
+				<label for="max-rating">Max</label>
+			</div>
+
+			<div id="problem-container">
+			</div>
 		</section>
 	</main>
 

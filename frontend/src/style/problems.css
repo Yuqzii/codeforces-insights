@@ -1,0 +1,65 @@
+#problem-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	gap: 1rem;
+}
+
+#problem-container>a,
+#problem-container>a:visited,
+#problem-container>a:hover,
+#problem-container>a:active {
+	text-decoration: none;
+	color: inherit;
+}
+
+#problem-container>a:hover {
+	.problem-tag {
+		background-color: var(--bg2);
+		border-color: var(--fg);
+	}
+
+	.problem-rating {
+		text-shadow: 0 0 0.5em color-mix(in srgb, var(--text-color) 70%, transparent)
+	}
+}
+
+.problem-header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 1.5em;
+}
+
+.problem-header h3 {
+	font-size: 1.75rem;
+}
+
+.problem-header h4 {
+	margin: 0;
+	font-size: 1.25rem;
+}
+
+.problem-rating {
+	--text-color: var(--fg);
+
+	color: var(--text-color);
+	font-size: 1.3em;
+	transition-duration: var(--bg-transition-speed);
+}
+
+.problem-tags-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: auto;
+}
+
+.problem-tag {
+	background-color: var(--bg1);
+	border: 1px solid var(--bg2);
+	border-radius: 0.4em;
+	padding: 0.4em;
+
+	transition-duration: var(--bg-transition-speed);
+}

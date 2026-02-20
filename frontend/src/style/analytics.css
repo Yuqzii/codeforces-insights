@@ -9,18 +9,6 @@
 	margin-bottom: 3rem;
 }
 
-.analytics-container {
-	--card-border-radius: 0.8rem;
-
-	display: flex;
-	flex-direction: column;
-	border-radius: var(--card-border-radius);
-	background-color: var(--bg);
-	opacity: 0;
-	animation-delay: 100ms;
-	animation-duration: 500ms;
-}
-
 .chart-container {
 	position: relative;
 	flex: 1;
@@ -38,11 +26,11 @@
 .analytics-header {
 	display: flex;
 	justify-content: space-between;
-	margin: 1.25em 1.25em 0 1.25em;
 }
 
-.analytics-header h2 {
+.analytics-header h3 {
 	margin: 0;
+	font-size: 1.5rem;
 }
 
 .analytics-content {
@@ -51,8 +39,7 @@
 	min-height: 0;
 	flex: 1;
 	flex-direction: column;
-	padding: 1em 1.5em 1.5em 1.5em;
-	margin-top: 0.25em;
+	margin-top: 1em;
 }
 
 #user-details .analytics-content {
