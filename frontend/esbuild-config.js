@@ -5,6 +5,9 @@ esbuild.build({
 	bundle: true,
 	minify: true,
 	outdir: "dist",
+	loader: {
+		".html": "text",
+	},
 	define: {
 		"process.env.API_URL": JSON.stringify(process.env.API_URL || "https://api.cf-insights.org")
 	},
