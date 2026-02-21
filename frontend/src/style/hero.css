@@ -92,7 +92,7 @@
 
 /* Hero graph animation */
 .hero-graph-container {
-	--graph-anim-delay: 250ms;
+	--graph-anim-delay: 800ms;
 
 	position: fixed;
 	pointer-events: none;
