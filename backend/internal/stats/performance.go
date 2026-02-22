@@ -90,7 +90,7 @@ func CalculateSeed(contestants []codeforces.Contestant, contest *codeforces.Cont
 // Uses binary search to find what rating gives rank targetRank.
 // @param rating Rating to exclude from expected rank calculation, rating of contestant we are calculating for.
 func (s *ContestSeed) rankToRating(targetRank float64, rating int) int {
-	l, r := 2, maxRating
+	l, r := minRating+1, maxRating
 	for l < r {
 		mid := (l + r) / 2
 		expectedRank := s.get(mid, rating)
