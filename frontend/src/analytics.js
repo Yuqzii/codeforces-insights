@@ -45,8 +45,10 @@ export async function updateAnalytics(handle, signal) {
 
 	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
-		handleSubmissions(submissions);
+		const solved = filterSolved(submissions);
+		handleSolved(solved);
 		updateSubmissions(submissions);
+		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
 	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
@@ -58,16 +60,15 @@ export async function updateAnalytics(handle, signal) {
 	});
 }
 
-function handleSubmissions(submissions) {
-	submissions = filterSolved(submissions);
-	submissions.sort((a, b) => {
+function handleSolved(solved) {
+	solved.sort((a, b) => {
 		return a.creationTimeSeconds - b.creationTimeSeconds;
 	});
 
 	// Get count of each tag and rating
 	const tagCnt = {}, ratingCnt = {};
 	const solvedTime = new Array();
-	submissions.forEach(sub => {
+	solved.forEach(sub => {
 		sub.problem.tags.forEach(tag => {
 			tagCnt[tag] = (tagCnt[tag] || 0) + 1;
 		});
@@ -149,7 +150,7 @@ function filterSolved(submissions) {
 	const solved = new Array();
 	submissions.forEach(sub => {
 		if (sub.verdict === "OK") {
-			sub.problemId = sub.contestId + sub.problem.index; 
+			sub.problemId = sub.contestId + sub.problem.index;
 			solved.push(sub);
 		}
 	});
@@ -197,4 +198,3 @@ function updatePerformance(performance) {
 	ratingHistory.loading = false;
 	ratingHistory.updateChart();
 }
-
