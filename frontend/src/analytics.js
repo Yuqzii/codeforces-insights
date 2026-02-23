@@ -43,7 +43,10 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
+	const userInfoTask = getUserInfo(handle, signal).then(info => {
+		handleUserInfo(info);
+		sessionStorage.setItem("userInfo", JSON.stringify(info));
+	});
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
@@ -62,10 +65,16 @@ export async function updateAnalytics(handle, signal) {
 
 window.addEventListener("load", () => {
 	const savedSolved = sessionStorage.getItem("solvedProblems");
-	if (!savedSolved) return;
+	if (savedSolved) {
+		const solved = JSON.parse(savedSolved);
+		handleSolved(solved);
+	}
 
-	const solved = JSON.parse(savedSolved);
-	handleSolved(solved);
+	const savedInfo = sessionStorage.getItem("userInfo");
+	if (savedInfo) {
+		const info = JSON.parse(savedInfo);
+		handleUserInfo(info);
+	}
 });
 
 function handleSolved(solved) {
