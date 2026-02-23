@@ -55,6 +55,7 @@ export async function updateAnalytics(handle, signal) {
 	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
+		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	});
 
 	// Recommend problems after we have user's rating and submissions.
@@ -74,6 +75,18 @@ window.addEventListener("load", () => {
 	if (savedInfo) {
 		const info = JSON.parse(savedInfo);
 		handleUserInfo(info);
+	}
+
+	const savedRatings = sessionStorage.getItem("ratingHistory");
+	if (savedRatings) {
+		const ratings = JSON.parse(savedRatings);
+		updateRatingChanges(ratings);
+	}
+
+	const savedPerformance = sessionStorage.getItem("performance");
+	if (savedPerformance) {
+		const perf = JSON.parse(savedPerformance);
+		updatePerformance(perf);
 	}
 });
 
@@ -117,7 +130,10 @@ function handleRatingHistory(handle, ratings, signal) {
 		});
 	});
 
-	getPerformance(handle, perfRequestData, signal).then(updatePerformance);
+	getPerformance(handle, perfRequestData, signal).then(perf => {
+		updatePerformance(perf)
+		sessionStorage.setItem("performance", JSON.stringify(perf));
+	});
 }
 
 function handleUserInfo(userInfo, signal) {
