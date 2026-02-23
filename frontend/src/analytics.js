@@ -64,31 +64,7 @@ export async function updateAnalytics(handle, signal) {
 	});
 }
 
-window.addEventListener("load", () => {
-	const savedSolved = sessionStorage.getItem("solvedProblems");
-	if (savedSolved) {
-		const solved = JSON.parse(savedSolved);
-		handleSolved(solved);
-	}
-
-	const savedInfo = sessionStorage.getItem("userInfo");
-	if (savedInfo) {
-		const info = JSON.parse(savedInfo);
-		handleUserInfo(info);
-	}
-
-	const savedRatings = sessionStorage.getItem("ratingHistory");
-	if (savedRatings) {
-		const ratings = JSON.parse(savedRatings);
-		updateRatingChanges(ratings);
-	}
-
-	const savedPerformance = sessionStorage.getItem("performance");
-	if (savedPerformance) {
-		const perf = JSON.parse(savedPerformance);
-		updatePerformance(perf);
-	}
-});
+window.addEventListener("load", loadData);
 
 function handleSolved(solved) {
 	solved.sort((a, b) => {
@@ -230,4 +206,30 @@ function updatePerformance(performance) {
 	ratingHistory.updatePerfomanceData(performance);
 	ratingHistory.loading = false;
 	ratingHistory.updateChart();
+}
+
+function loadData() {
+	const savedSolved = sessionStorage.getItem("solvedProblems");
+	if (savedSolved) {
+		const solved = JSON.parse(savedSolved);
+		handleSolved(solved);
+	}
+
+	const savedInfo = sessionStorage.getItem("userInfo");
+	if (savedInfo) {
+		const info = JSON.parse(savedInfo);
+		handleUserInfo(info);
+	}
+
+	const savedRatings = sessionStorage.getItem("ratingHistory");
+	if (savedRatings) {
+		const ratings = JSON.parse(savedRatings);
+		updateRatingChanges(ratings);
+	}
+
+	const savedPerformance = sessionStorage.getItem("performance");
+	if (savedPerformance) {
+		const perf = JSON.parse(savedPerformance);
+		updatePerformance(perf);
+	}
 }
