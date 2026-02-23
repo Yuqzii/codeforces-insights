@@ -60,6 +60,14 @@ export async function updateAnalytics(handle, signal) {
 	});
 }
 
+window.addEventListener("load", () => {
+	const savedSolved = sessionStorage.getItem("solvedProblems");
+	if (!savedSolved) return;
+
+	const solved = JSON.parse(savedSolved);
+	handleSolved(solved);
+});
+
 function handleSolved(solved) {
 	solved.sort((a, b) => {
 		return a.creationTimeSeconds - b.creationTimeSeconds;
