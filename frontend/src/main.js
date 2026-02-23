@@ -76,19 +76,23 @@ window.addEventListener("scroll", throttle(() => {
 	updateCursorCSS();
 }, 50));
 
+window.addEventListener("load", () => {
+	const hasAnalysed = sessionStorage.getItem("hasAnalysed");
+	if (hasAnalysed)
+		showMain();
+});
+
 async function analyzeUser(handle) {
 	controller.abort();
 	controller = new AbortController();
 
-	// Make the main and footer appear and give them their CSS defined style.
-	main.removeAttribute("style");
-	footer.removeAttribute("style");
-
+	showMain();
 	main.scrollIntoView({
 		behavior: "smooth"
 	});
 
 	updateAnalytics(handle, controller.signal);
+	sessionStorage.setItem("hasAnalysed", "true");
 }
 
 function setTheme(theme) {
@@ -115,4 +119,10 @@ function throttle(fn, delay) {
 			t = now;
 		}
 	}
+}
+
+function showMain() {
+	// Make the main and footer appear and give them their CSS defined style.
+	main.removeAttribute("style");
+	footer.removeAttribute("style");
 }
