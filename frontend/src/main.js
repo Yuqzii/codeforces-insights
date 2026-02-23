@@ -3,6 +3,8 @@ import { getColors } from "./charts.js";
 import { observeAndAnimate } from "./entrance-anim.js";
 
 const root = document.documentElement;
+const main = document.querySelector("main");
+const footer = document.querySelector("footer");
 
 const form = document.getElementById("user-form");
 const input = document.getElementById("handle-input");
@@ -78,7 +80,11 @@ async function analyzeUser(handle) {
 	controller.abort();
 	controller = new AbortController();
 
-	document.querySelector("main").scrollIntoView({
+	// Make the main and footer appear and give them their CSS defined style.
+	main.removeAttribute("style");
+	footer.removeAttribute("style");
+
+	main.scrollIntoView({
 		behavior: "smooth"
 	});
 
