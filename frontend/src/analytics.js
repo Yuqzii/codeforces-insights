@@ -214,6 +214,8 @@ function loadData() {
 		const solved = JSON.parse(savedSolved);
 		handleSolved(solved);
 	}
+	solvedTags.dataLoaded = true;
+	solvedRatings.dataLoaded = true;
 
 	const savedInfo = sessionStorage.getItem("userInfo");
 	if (savedInfo) {
@@ -232,4 +234,6 @@ function loadData() {
 		const perf = JSON.parse(savedPerformance);
 		updatePerformance(perf);
 	}
+
+	ratingHistory.dataLoaded = true;
 }
