@@ -10,7 +10,7 @@
 	height: 4em;
 	padding: 0 5% 0.75em 5%;
 	box-sizing: border-box;
-	font-size: 1.1rem;
+	font-size: 1.05rem;
 
 	background-color: color-mix(in srgb, var(--bg1), transparent var(--transparency));
 
@@ -37,7 +37,7 @@
 
 	backdrop-filter: blur(10px);
 	outline: 1px solid var(--bg2);
-	height: 3em;
+	height: 3.5em;
 	padding-bottom: 0;
 
 	>div {
@@ -62,9 +62,8 @@
 #nav-bar nav {
 	display: flex;
 	flex-direction: row;
-	font-size: 1.2em;
-	gap: 1em;
-	flex: 1;
+	align-items: center;
+	gap: 2.5em;
 }
 
 #nav-bar nav a {
