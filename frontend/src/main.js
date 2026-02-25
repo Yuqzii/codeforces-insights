@@ -10,15 +10,11 @@ const form = document.getElementById("user-form");
 const input = document.getElementById("handle-input");
 const themeSelect = document.getElementById("theme-select");
 const highContrastSlider = document.getElementById("high-contrast-slider");
-const navMenuButton = document.getElementById("hamburger");
-const navMenu = document.getElementById("nav-menu");
 
 let controller = new AbortController();
 
 let cursorX = window.innerWidth / 2;
 let cursorY = window.innerHeight / 2;
-
-let navMenuActive = false;
 
 document.addEventListener("DOMContentLoaded", () => {
 	const savedTheme = localStorage.getItem("theme") || "theme-catppuccin";
@@ -34,25 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		analyzeUser(handle);
 	});
 
-	navMenuButton.addEventListener("click", () => {
-		navMenuActive = !navMenuActive;
-		if (navMenuActive)
-			navMenu.classList.add("active");
-		else
-			navMenu.classList.remove("active");
-	});
-
 	themeSelect.addEventListener("change", (e) => {
 		const theme = e.target.value;
 		setTheme(theme);
-	});
-
-	window.addEventListener("click", (e) => {
-		if (!navMenu.contains(e.target) && !navMenuButton.contains(e.target)) {
-			// Something outside the nav menu was clicked.
-			navMenu.classList.remove("active");
-			navMenuActive = false;
-		}
 	});
 
 	highContrastSlider.addEventListener("change", (e) => {
