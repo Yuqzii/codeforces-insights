@@ -45,14 +45,14 @@ window.addEventListener("mousemove", throttle((e) => {
 	updateCursorCSS();
 }, 50));
 
-window.addEventListener("scroll", throttle(() => {
-	updateCursorCSS();
-
+window.addEventListener("scroll", () => {
 	if (window.scrollY > 50)
 		navbar.classList.add("scrolled");
 	else
 		navbar.classList.remove("scrolled");
-}, 50));
+});
+
+window.addEventListener("scroll", throttle(updateCursorCSS, 50));
 
 window.addEventListener("load", () => {
 	const hasAnalysed = sessionStorage.getItem("hasAnalysed");
