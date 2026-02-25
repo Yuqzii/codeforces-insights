@@ -7,8 +7,9 @@
 	z-index: 5;
 
 	width: 100vw;
-	height: 1.5em;
-	padding: 1em;
+	height: 3em;
+	padding: 0.5em 5%;
+	box-sizing: border-box;
 
 	font-size: 1.1rem;
 }
@@ -16,8 +17,9 @@
 #nav-bar nav {
 	display: flex;
 	flex-direction: row;
-	font-size: 1.35em;
+	font-size: 1.2em;
 	gap: 1em;
+	flex: 1;
 }
 
 #nav-bar nav a {
@@ -45,26 +47,19 @@
 	transform: translateX(-50%) scaleX(1);
 }
 
-#high-contrast-container {
+.theme-select {
 	display: flex;
 	flex-direction: row;
+	justify-content: center;
 	align-items: center;
-	justify-content: center;
-	gap: 1em;
-	margin-bottom: 2em;
-}
-
-#high-contrast-container .switch {
-	font-size: 0.9em;
-}
-
-.theme-select {
-	font-size: 1em;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 	gap: 0.75em;
 	text-align: center;
+	height: 30px;
+}
+
+.theme-select select {
+	box-sizing: border-box;
+	padding: 0.4em 0.8em;
 }
 
 @media (max-aspect-ratio: 4/5) {

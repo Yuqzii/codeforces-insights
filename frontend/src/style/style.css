@@ -17,10 +17,6 @@
 	--cursor-y: -100px;
 }
 
-.increased-contrast {
-	filter: contrast(1.2) saturate(1.5);
-}
-
 html {
 	font-size: clamp(14px, 0.9vw, 2vh);
 	scroll-behavior: smooth;
