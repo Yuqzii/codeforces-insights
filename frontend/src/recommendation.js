@@ -76,11 +76,20 @@ export function recommendProblems() {
 export function updateSubmissions(submissions) {
 	submissions = filterSubmissionsRecentContests(submissions, CONTEST_LOOKBACK);
 	solvedByContests = findSolvedProblemsRecentContests(submissions);
+	sessionStorage.setItem("solvedProblemsByContests", JSON.stringify(solvedByContests));
 }
 
 export function setRatingRange(min, max) {
 	updateRatingRange(false, min - MIN_RATING, max - MIN_RATING);
 }
+
+window.addEventListener("load", () => {
+	const savedSolvedByContests = sessionStorage.getItem("solvedProblemsByContests");
+	if (!savedSolvedByContests) return;
+
+	solvedByContests = JSON.parse(savedSolvedByContests)
+	recommendProblems();
+});
 
 function updateRatingRange(isMin, rangeMin, rangeMax) {
 	rangeMin = clampRating(rangeMin);

@@ -3,6 +3,8 @@ import { getColors } from "./charts.js";
 import { observeAndAnimate } from "./entrance-anim.js";
 
 const root = document.documentElement;
+const main = document.querySelector("main");
+const footer = document.querySelector("footer");
 
 const form = document.getElementById("user-form");
 const input = document.getElementById("handle-input");
@@ -74,15 +76,23 @@ window.addEventListener("scroll", throttle(() => {
 	updateCursorCSS();
 }, 50));
 
+window.addEventListener("load", () => {
+	const hasAnalysed = sessionStorage.getItem("hasAnalysed");
+	if (hasAnalysed)
+		showMain();
+});
+
 async function analyzeUser(handle) {
 	controller.abort();
 	controller = new AbortController();
 
-	document.querySelector("main").scrollIntoView({
+	showMain();
+	main.scrollIntoView({
 		behavior: "smooth"
 	});
 
 	updateAnalytics(handle, controller.signal);
+	sessionStorage.setItem("hasAnalysed", "true");
 }
 
 function setTheme(theme) {
@@ -109,4 +119,10 @@ function throttle(fn, delay) {
 			t = now;
 		}
 	}
+}
+
+function showMain() {
+	// Make the main and footer appear and give them their CSS defined style.
+	main.removeAttribute("style");
+	footer.removeAttribute("style");
 }

@@ -43,13 +43,19 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
-	const userInfoTask = getUserInfo(handle, signal).then(handleUserInfo);
+	const userInfoTask = getUserInfo(handle, signal).then(info => {
+		handleUserInfo(info);
+		sessionStorage.setItem("userInfo", JSON.stringify(info));
+	});
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
-		handleSubmissions(submissions);
+		const solved = filterSolved(submissions);
+		handleSolved(solved);
 		updateSubmissions(submissions);
+		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
 	});
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
+		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	});
 
 	// Recommend problems after we have user's rating and submissions.
@@ -58,16 +64,17 @@ export async function updateAnalytics(handle, signal) {
 	});
 }
 
-function handleSubmissions(submissions) {
-	submissions = filterSolved(submissions);
-	submissions.sort((a, b) => {
+window.addEventListener("load", loadData);
+
+function handleSolved(solved) {
+	solved.sort((a, b) => {
 		return a.creationTimeSeconds - b.creationTimeSeconds;
 	});
 
 	// Get count of each tag and rating
 	const tagCnt = {}, ratingCnt = {};
 	const solvedTime = new Array();
-	submissions.forEach(sub => {
+	solved.forEach(sub => {
 		sub.problem.tags.forEach(tag => {
 			tagCnt[tag] = (tagCnt[tag] || 0) + 1;
 		});
@@ -99,7 +106,10 @@ function handleRatingHistory(handle, ratings, signal) {
 		});
 	});
 
-	getPerformance(handle, perfRequestData, signal).then(updatePerformance);
+	getPerformance(handle, perfRequestData, signal).then(perf => {
+		updatePerformance(perf)
+		sessionStorage.setItem("performance", JSON.stringify(perf));
+	});
 }
 
 function handleUserInfo(userInfo, signal) {
@@ -149,7 +159,7 @@ function filterSolved(submissions) {
 	const solved = new Array();
 	submissions.forEach(sub => {
 		if (sub.verdict === "OK") {
-			sub.problemId = sub.contestId + sub.problem.index; 
+			sub.problemId = sub.contestId + sub.problem.index;
 			solved.push(sub);
 		}
 	});
@@ -198,3 +208,32 @@ function updatePerformance(performance) {
 	ratingHistory.updateChart();
 }
 
+function loadData() {
+	const savedSolved = sessionStorage.getItem("solvedProblems");
+	if (savedSolved) {
+		const solved = JSON.parse(savedSolved);
+		handleSolved(solved);
+	}
+	solvedTags.dataLoaded = true;
+	solvedRatings.dataLoaded = true;
+
+	const savedInfo = sessionStorage.getItem("userInfo");
+	if (savedInfo) {
+		const info = JSON.parse(savedInfo);
+		handleUserInfo(info);
+	}
+
+	const savedRatings = sessionStorage.getItem("ratingHistory");
+	if (savedRatings) {
+		const ratings = JSON.parse(savedRatings);
+		updateRatingChanges(ratings);
+	}
+
+	const savedPerformance = sessionStorage.getItem("performance");
+	if (savedPerformance) {
+		const perf = JSON.parse(savedPerformance);
+		updatePerformance(perf);
+	}
+
+	ratingHistory.dataLoaded = true;
+}
