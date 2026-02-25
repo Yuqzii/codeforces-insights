@@ -1,4 +1,4 @@
-#nav-menu {
+#nav-bar {
 	--nav-padding: 2em;
 
 	position: fixed;
@@ -14,21 +14,21 @@
 	font-size: 1.1rem;
 }
 
-#nav-menu nav {
+#nav-bar nav {
 	display: flex;
 	flex-direction: row;
 	font-size: 1.35em;
 	gap: 1em;
 }
 
-#nav-menu nav a {
+#nav-bar nav a {
 	text-decoration: none;
 	color: var(--fg);
 	box-sizing: border-box;
 	position: relative;
 }
 
-#nav-menu nav a::after {
+#nav-bar nav a::after {
 	content: "";
 	position: absolute;
 	left: 50%;
@@ -42,7 +42,7 @@
 	transition: transform 150ms ease;
 }
 
-#nav-menu nav a:hover::after {
+#nav-bar nav a:hover::after {
 	transform: translateX(-50%) scaleX(1);
 }
 
@@ -69,7 +69,7 @@
 }
 
 @media (max-aspect-ratio: 4/5) {
-	#nav-menu {
+	#nav-bar {
 		display: none;
 	}
 }
