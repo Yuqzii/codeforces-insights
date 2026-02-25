@@ -1,15 +1,14 @@
 #nav-bar {
-	--nav-padding: 2em;
-
 	position: fixed;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	align-items: center;
 	z-index: 5;
 
 	width: 100vw;
-	height: 1em;
-	padding: var(--nav-padding);
+	height: 1.5em;
+	padding: 1em;
 
 	font-size: 1.1rem;
 }
@@ -32,7 +31,7 @@
 	content: "";
 	position: absolute;
 	left: 50%;
-	bottom: -75%;
+	bottom: 0;
 	width: 100%;
 	height: 1px;
 	background-color: var(--fg);
