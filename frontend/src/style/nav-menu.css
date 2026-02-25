@@ -1,4 +1,6 @@
 #nav-bar {
+	--transparency: 100%;
+
 	position: fixed;
 	display: flex;
 	flex-direction: row;
@@ -7,11 +9,26 @@
 	z-index: 5;
 
 	width: 100vw;
-	height: 3em;
-	padding: 0.5em 5%;
+	height: 4em;
+	padding: 1.25em 5% 0.75em 5%;
 	box-sizing: border-box;
-
 	font-size: 1.1rem;
+
+	background-color: color-mix(in srgb, var(--bg1), transparent var(--transparency));
+
+	/* Avoids white flash when scrolling. */
+	outline-color: color-mix(in srgb, var(--bg2), transparent 100%);
+
+	transition-duration: var(--bg-transition-speed);
+}
+
+#nav-bar.scrolled {
+	--transparency: 75%;
+
+	backdrop-filter: blur(15px);
+	outline: 1px solid var(--bg2);
+	height: 3em;
+	padding: 1em 5%;
 }
 
 #nav-bar nav {

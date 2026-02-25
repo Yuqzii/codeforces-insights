@@ -20,6 +20,7 @@
 html {
 	font-size: clamp(14px, 0.9vw, 2vh);
 	scroll-behavior: smooth;
+	scroll-padding-top: 2em;
 }
 
 ::placeholder {
@@ -82,6 +83,7 @@ input::-webkit-inner-spin-button {
 	appearance: none;
 	margin: 0;
 }
+
 input[type="number"] {
 	appearance: textfield;
 }

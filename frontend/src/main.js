@@ -8,6 +8,7 @@ const footer = document.querySelector("footer");
 
 const form = document.getElementById("user-form");
 const input = document.getElementById("handle-input");
+const navbar = document.getElementById("nav-bar");
 const themeSelect = document.getElementById("theme-select");
 
 let controller = new AbortController();
@@ -46,6 +47,11 @@ window.addEventListener("mousemove", throttle((e) => {
 
 window.addEventListener("scroll", throttle(() => {
 	updateCursorCSS();
+
+	if (window.scrollY > 50)
+		navbar.classList.add("scrolled");
+	else
+		navbar.classList.remove("scrolled");
 }, 50));
 
 window.addEventListener("load", () => {
