@@ -83,7 +83,7 @@
 }
 
 #handle-input-nav.hidden {
-	transform: translate(50%, -125%);
+	transform: translate(50%, -100px);
 }
 
 .theme-select {
@@ -101,7 +101,24 @@
 }
 
 @media (max-aspect-ratio: 4/5) {
-	#nav-bar {
+
+	#nav-bar.scrolled,
+	#nav-bar.scrolled:hover {
+		--transparency: 100%;
+		backdrop-filter: none;
+		outline: none;
+		height: 3em;
+	}
+
+	#nav-bar nav {
+		display: none;
+	}
+
+	#handle-input-nav {
+		font-size: 1.2rem;
+	}
+
+	.theme-select {
 		display: none;
 	}
 }
