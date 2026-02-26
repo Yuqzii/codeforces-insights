@@ -51,6 +51,11 @@ export function listenForSearch() {
 	});
 }
 
+export function setSearchValues(handle) {
+	heroInput.value = handle;
+	navInput.value = handle;
+}
+
 function analyzeUser(handle) {
 	controller.abort();
 	controller = new AbortController();
