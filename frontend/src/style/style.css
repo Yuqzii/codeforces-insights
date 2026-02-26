@@ -15,6 +15,7 @@
 	--transition-duration: 150ms;
 	--cursor-x: -100px;
 	--cursor-y: -100px;
+	--content-width: 85%;
 }
 
 * {
@@ -101,7 +102,7 @@ main {
 .main-section {
 	margin: 0 auto;
 	padding: 3rem 0;
-	width: 85%;
+	width: var(--content-width);
 }
 
 .main-section h2 {
@@ -124,12 +125,12 @@ main {
 }
 
 @media (max-aspect-ratio: 6/5) {
-	html {
-		font-size: 16px;
+	:root {
+		--content-width: 90%;
 	}
 
-	.main-section {
-		width: 90%;
+	html {
+		font-size: 16px;
 	}
 }
 
