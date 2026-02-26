@@ -8,7 +8,7 @@
 
 	width: 100vw;
 	height: 4em;
-	padding: 0 5% 0.75em 5%;
+	padding: 0 5% 0.5em 5%;
 	box-sizing: border-box;
 	font-size: 1.05rem;
 
@@ -26,8 +26,6 @@
 	justify-content: space-between;
 	width: 100%;
 	position: relative;
-	bottom: 0;
-	transform: translateY(0);
 
 	transition-duration: var(--bg-transition-speed);
 }
@@ -35,28 +33,16 @@
 #nav-bar.scrolled {
 	--transparency: 75%;
 
+	height: 3.5em;
 	backdrop-filter: blur(10px);
 	outline: 1px solid var(--bg2);
-	height: 3.5em;
-	padding-bottom: 0;
-
-	>div {
-		bottom: 50%;
-		transform: translateY(50%);
-	}
 }
 
 #nav-bar.scrolled:hover {
 	--transparency: 25%;
 
 	height: 4em;
-	padding-bottom: 0.75em;
 	outline-color: var(--bg3);
-
-	>div {
-		bottom: 0;
-		transform: translateY(0);
-	}
 }
 
 #nav-bar nav {
@@ -91,6 +77,14 @@
 	transform: translateX(-50%) scaleX(1);
 }
 
+#handle-input-nav {
+	position: absolute;
+	right: 50%;
+	bottom: 50%;
+	transform: translate(50%, 50%);
+	padding: 0.6em 1.2em;
+}
+
 .theme-select {
 	display: flex;
 	flex-direction: row;
@@ -98,12 +92,11 @@
 	align-items: center;
 	gap: 0.75em;
 	text-align: center;
-	height: 30px;
 }
 
 .theme-select select {
 	box-sizing: border-box;
-	padding: 0.4em 0.8em;
+	padding: 0.6em 1.2em;
 }
 
 @media (max-aspect-ratio: 4/5) {
