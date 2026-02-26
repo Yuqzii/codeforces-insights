@@ -44,7 +44,6 @@
 
 	color: var(--text-color);
 	font-size: 1.3em;
-	transition-duration: var(--bg-transition-speed);
 }
 
 .problem-tags-container {
@@ -60,6 +59,4 @@
 	border: 1px solid var(--bg2);
 	border-radius: 0.4em;
 	padding: 0.4em;
-
-	transition-duration: var(--bg-transition-speed);
 }

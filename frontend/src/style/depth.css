@@ -4,7 +4,7 @@
 		0 1px 2px var(--bg-dark),
 		0 0 5px var(--bg-dark);
 	background-color: var(--bg1);
-	transition-duration: var(--bg-transition-speed);
+	transition-duration: var(--transition-duration);
 }
 
 .depth-2 {
@@ -13,12 +13,12 @@
 		0 5px 4px var(--bg-shadow),
 		0 0 5px var(--bg-shadow);
 	background-color: var(--bg);
-	transition-duration: var(--bg-transition-speed);
+	transition-duration: var(--transition-duration);
 }
 
 .depth1-interactive,
 .depth2-interactive {
-	transition-duration: var(--bg-transition-speed);
+	transition-duration: var(--transition-duration);
 }
 
 .depth1-interactive:hover {

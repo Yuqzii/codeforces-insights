@@ -16,8 +16,6 @@
 
 	/* Avoids white flash when scrolling. */
 	outline-color: color-mix(in srgb, var(--bg2), transparent 100%);
-
-	transition-duration: var(--bg-transition-speed);
 }
 
 #nav-bar>div {
@@ -26,8 +24,6 @@
 	justify-content: space-between;
 	width: 100%;
 	position: relative;
-
-	transition-duration: var(--bg-transition-speed);
 }
 
 #nav-bar.scrolled {
