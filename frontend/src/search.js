@@ -5,6 +5,21 @@ const form = document.getElementById("user-form");
 const heroInput = document.getElementById("handle-input");
 const navInput = document.getElementById("handle-input-nav");
 
+navInput.style.display = "block";
+
+const observer = new IntersectionObserver(entries => {
+	entries.forEach(entry => {
+		if (!entry.isIntersecting) {
+			navInput.classList.remove("hidden");
+		} else
+			navInput.classList.add("hidden");
+	});
+}, {
+	threshold: 0.9
+});
+
+observer.observe(heroInput);
+
 let controller = new AbortController();
 
 export function listenForSearch() {

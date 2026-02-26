@@ -85,6 +85,10 @@
 	padding: 0.6em 1.2em;
 }
 
+#handle-input-nav.hidden {
+	transform: translate(50%, -125%);
+}
+
 .theme-select {
 	display: flex;
 	flex-direction: row;
