@@ -1,17 +1,14 @@
-import { updateAnalytics, solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
+import { solvedTags, solvedRatings, ratingHistory } from "./analytics.js";
 import { getColors } from "./charts.js";
 import { observeAndAnimate } from "./entrance-anim.js";
+import { listenForSearch } from "./search.js";
 
 const root = document.documentElement;
-const main = document.querySelector("main");
+export const main = document.querySelector("main");
 const footer = document.querySelector("footer");
 
-const form = document.getElementById("user-form");
-const input = document.getElementById("handle-input");
 const navbar = document.getElementById("nav-bar");
 const themeSelect = document.getElementById("theme-select");
-
-let controller = new AbortController();
 
 let cursorX = window.innerWidth / 2;
 let cursorY = window.innerHeight / 2;
@@ -21,19 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	setTheme(savedTheme);
 	themeSelect.value = savedTheme;
 
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault();
-
-		const handle = input.value.trim();
-		if (!handle) return;
-
-		analyzeUser(handle);
-	});
-
 	themeSelect.addEventListener("change", (e) => {
 		const theme = e.target.value;
 		setTheme(theme);
 	});
+
+	listenForSearch();
 
 	const analyticsCards = document.querySelectorAll(".card");
 	observeAndAnimate(analyticsCards);
@@ -60,18 +50,6 @@ window.addEventListener("load", () => {
 		showMain();
 });
 
-async function analyzeUser(handle) {
-	controller.abort();
-	controller = new AbortController();
-
-	showMain();
-	main.scrollIntoView({
-		behavior: "smooth"
-	});
-
-	updateAnalytics(handle, controller.signal);
-	sessionStorage.setItem("hasAnalysed", "true");
-}
 
 function setTheme(theme) {
 	root.classList.remove(localStorage.getItem("theme"));
@@ -99,7 +77,7 @@ function throttle(fn, delay) {
 	}
 }
 
-function showMain() {
+export function showMain() {
 	// Make the main and footer appear and give them their CSS defined style.
 	main.removeAttribute("style");
 	footer.removeAttribute("style");
