@@ -8,6 +8,7 @@ export const main = document.querySelector("main");
 const footer = document.querySelector("footer");
 
 const navbar = document.getElementById("nav-bar");
+const nav = document.querySelector("#nav-bar nav");
 const themeSelect = document.getElementById("theme-select");
 
 let cursorX = window.innerWidth / 2;
@@ -78,7 +79,8 @@ function throttle(fn, delay) {
 }
 
 export function showMain() {
-	// Make the main and footer appear and give them their CSS defined style.
+	// Make initially hidden content appear and give them their CSS defined style.
 	main.removeAttribute("style");
 	footer.removeAttribute("style");
+	nav.removeAttribute("style");
 }
