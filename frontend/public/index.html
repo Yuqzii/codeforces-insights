@@ -25,28 +25,17 @@
 </head>
 
 <body>
-	<button type="button" id="hamburger" aria-label="Navigation menu button">
-		<span></span>
-		<span></span>
-		<span></span>
-	</button>
-
-	<div id="nav-menu" class="depth-2">
-		<nav>
-			<a href="#hero-section">Home</a>
-			<a href="#analytics-section">Analytics</a>
-			<a href="#practice-section">Practice</a>
-		</nav>
+	<div id="nav-bar">
 		<div>
-			<div id="high-contrast-container">
-				<span>High Contrast</span>
-				<label class="switch">
-					<input type="checkbox" id="high-contrast-slider" aria-label="Toggle high contrast">
-					<span class="slider"></span>
-				</label>
-			</div>
+			<nav style="opacity: 0;">
+				<a href="#hero-section">Home</a>
+				<a href="#analytics-section">Analytics</a>
+				<a href="#practice-section">Practice</a>
+			</nav>
+			<input type="text" id="handle-input-nav" class="depth-1 depth1-interactive hidden"
+				placeholder="Enter Username" aria-label="Codeforces username input">
 			<div class="theme-select">
-				<label for="theme-select">Select Theme</label>
+				<label for="theme-select">Theme:</label>
 				<select id="theme-select" class="depth-1 depth1-interactive">
 					<option value="theme-catppuccin">Catppuccin Mocha</option>
 					<option value="theme-gruvbox">Gruvbox</option>

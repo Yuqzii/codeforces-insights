@@ -8,8 +8,8 @@ footer {
 	align-items: center;
 	gap: 1em;
 	border-top: 2px solid var(--bg1);
-	transition: background-color var(--bg-transition-speed);
 }
+
 footer p {
 	margin: 0;
 }

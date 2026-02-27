@@ -12,18 +12,20 @@
 @import "range.css";
 
 :root {
-	--bg-transition-speed: 150ms;
+	--transition-duration: 150ms;
 	--cursor-x: -100px;
 	--cursor-y: -100px;
+	--content-width: 85%;
 }
 
-.increased-contrast {
-	filter: contrast(1.2) saturate(1.5);
+* {
+	transition-duration: var(--transition-duration);
 }
 
 html {
 	font-size: clamp(14px, 0.9vw, 2vh);
 	scroll-behavior: smooth;
+	scroll-padding-top: 2em;
 }
 
 ::placeholder {
@@ -39,7 +41,6 @@ body {
 	width: auto;
 
 	background-color: var(--bg-dark);
-	transition: background-color var(--bg-transition-speed) ease;
 }
 
 h1,
@@ -86,6 +87,7 @@ input::-webkit-inner-spin-button {
 	appearance: none;
 	margin: 0;
 }
+
 input[type="number"] {
 	appearance: textfield;
 }
@@ -95,13 +97,12 @@ main {
 	background-color: var(--bg-dark);
 	position: relative;
 	z-index: 0;
-	transition-duration: var(--bg-transition-speed);
 }
 
 .main-section {
 	margin: 0 auto;
 	padding: 3rem 0;
-	width: 85%;
+	width: var(--content-width);
 }
 
 .main-section h2 {
@@ -124,12 +125,12 @@ main {
 }
 
 @media (max-aspect-ratio: 6/5) {
-	html {
-		font-size: 16px;
+	:root {
+		--content-width: 90%;
 	}
 
-	.main-section {
-		width: 90%;
+	html {
+		font-size: 16px;
 	}
 }
 

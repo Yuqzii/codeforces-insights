@@ -1,6 +1,7 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
+import { setSearchValues } from "./search.js";
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -221,6 +222,8 @@ function loadData() {
 	if (savedInfo) {
 		const info = JSON.parse(savedInfo);
 		handleUserInfo(info);
+
+		setSearchValues(info.handle);
 	}
 
 	const savedRatings = sessionStorage.getItem("ratingHistory");

@@ -1,58 +1,62 @@
-#hamburger {
-	position: fixed;
-	top: 2rem;
-	left: 2rem;
-	z-index: 11;
-	background: none;
-	display: flex;
-	flex-direction: column;
-	gap: 0.75em;
-	padding: 0;
-}
-
-#hamburger span {
-	width: 2.5em;
-	height: 0.25em;
-	background-color: var(--fg);
-}
-
-/* Nav bar */
-#nav-menu {
-	--nav-padding: 2em;
+#nav-bar {
+	--transparency: 100%;
 
 	position: fixed;
 	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+	align-items: flex-end;
 	z-index: 5;
-	top: 1vh;
-	/* This is changed with the active class */
-	transform: translateX(-100%);
 
-	width: 14rem;
-	height: calc(98vh - 2 * var(--nav-padding));
-	padding: var(--nav-padding);
-	border-radius: 15px;
+	width: 100vw;
+	height: 4em;
+	padding-bottom: 0.5em;
+	box-sizing: border-box;
+	font-size: 1.05rem;
 
-	font-size: 1.1rem;
+	background-color: color-mix(in srgb, var(--bg1), transparent var(--transparency));
+
+	/* Avoids white flash when scrolling. */
+	outline-color: color-mix(in srgb, var(--bg2), transparent 100%);
 }
 
-#nav-menu nav {
+#nav-bar>div {
 	display: flex;
-	flex-direction: column;
-	margin-top: 5rem;
-	font-size: 1.35em;
-	gap: 1em;
+	flex-direction: row;
+	justify-content: space-between;
+	width: var(--content-width);
+	margin: 0 auto;
+	position: relative;
 }
 
-#nav-menu nav a {
+#nav-bar.scrolled {
+	--transparency: 75%;
+
+	height: 3.5em;
+	backdrop-filter: blur(10px);
+	outline: 1px solid var(--bg2);
+}
+
+#nav-bar.scrolled:hover {
+	--transparency: 25%;
+
+	height: 4em;
+	outline-color: var(--bg3);
+}
+
+#nav-bar nav {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: clamp(1em, 2.5vw, 2.5em);
+}
+
+#nav-bar nav a {
 	text-decoration: none;
 	color: var(--fg);
 	box-sizing: border-box;
 	position: relative;
 }
 
-#nav-menu nav a::after {
+#nav-bar nav a::after {
 	content: "";
 	position: absolute;
 	left: 50%;
@@ -66,42 +70,57 @@
 	transition: transform 150ms ease;
 }
 
-#nav-menu nav a:hover::after {
+#nav-bar nav a:hover::after {
 	transform: translateX(-50%) scaleX(1);
 }
 
-#nav-menu.active {
-	transform: translateX(1vh);
+#handle-input-nav {
+	position: absolute;
+	right: 50%;
+	bottom: 50%;
+	transform: translate(50%, 50%);
+	padding: 0.6em 1.2em;
+	width: clamp(5em, 15vw, 15em);
 }
 
-#high-contrast-container {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	gap: 1em;
-	margin-bottom: 2em;
-}
-
-#high-contrast-container .switch {
-	font-size: 0.9em;
+#handle-input-nav.hidden {
+	transform: translate(50%, -100px);
 }
 
 .theme-select {
-	font-size: 1em;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	justify-content: center;
+	align-items: center;
 	gap: 0.75em;
 	text-align: center;
 }
 
+.theme-select select {
+	box-sizing: border-box;
+	padding: 0.6em 1.2em;
+}
+
 @media (max-aspect-ratio: 4/5) {
-	#nav-menu {
+
+	#nav-bar.scrolled,
+	#nav-bar.scrolled:hover {
+		--transparency: 100%;
+		backdrop-filter: none;
+		outline: none;
+		height: 3em;
+	}
+
+	#nav-bar nav {
 		display: none;
 	}
 
-	#hamburger {
+	#handle-input-nav {
+		font-size: 1.2rem;
+		width: 60vw;
+	}
+
+	.theme-select {
 		display: none;
 	}
 }

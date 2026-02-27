@@ -17,9 +17,11 @@
 }
 
 .hero {
+	--padding: calc((100% - var(--content-width)) / 2);
+
 	display: flex;
 	flex-direction: column;
-	padding: clamp(1em, 5vw, 5em) 0 0 clamp(1em, 5vw, 5em);
+	padding: 5rem 0 0 var(--padding);
 	font-size: clamp(20px, 1.1vw, 24px);
 	width: 32em;
 }

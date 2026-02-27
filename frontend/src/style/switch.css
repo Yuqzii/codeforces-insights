@@ -21,7 +21,6 @@
 		0 2px 1px var(--bg-dark),
 		0 0 2px 1px var(--bg-dark);
 	background-color: var(--bg1);
-	transition-duration: var(--bg-transition-speed);
 }
 
 .slider::before {
@@ -34,7 +33,6 @@
 	border-radius: 0.3em;
 	background-color: var(--bg3);
 	box-shadow: 0 0 1px var(--bg);
-	transition-duration: var(--bg-transition-speed);
 }
 
 input:checked+.slider {
