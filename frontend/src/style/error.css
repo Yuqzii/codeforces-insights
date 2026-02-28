@@ -1,7 +1,7 @@
 .error-container {
 	background-color: color-mix(in srgb, transparent, var(--red) 20%);
 	border: 1px solid var(--red);
-	border-radius: calc(var(--card-border-radius) * 0.75);
+	border-radius: 0.5em;
 	padding: 1em;
 	color: var(--red);
 }
