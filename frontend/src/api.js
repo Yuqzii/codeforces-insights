@@ -52,12 +52,12 @@ export async function getPerformance(handle, ratingHistory, signal) {
 			body: JSON.stringify(reqData),
 			signal: signal,
 		});
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
+		if (!resp.ok) throw new Error(`performance response not ok: ${resp.statusText}`);
 		const data = await resp.json();
 		return data;
 	} catch (err) {
 		if (err.name === "AbortError") return;
-		console.error("Performance request failed:", err);
+		throw err;
 	}
 }
 

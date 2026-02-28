@@ -76,6 +76,9 @@ export async function updateAnalytics(handle, signal) {
 		showError(err, solvedTagsEl);
 		toggleContentVisibility(solvedRatingsEl, false);
 		showError(err, solvedRatingsEl);
+
+		// Show error without hiding entire chart, as the rating history fetch can still succeed.
+		showError(err, ratingHistoryEl);
 	});
 
 	getRatingHistory(handle, signal).then(ratings => {
@@ -138,6 +141,9 @@ function handleRatingHistory(handle, ratings, signal) {
 	getPerformance(handle, perfRequestData, signal).then(perf => {
 		updatePerformance(perf)
 		sessionStorage.setItem("performance", JSON.stringify(perf));
+	}).catch(err => {
+		// Show error without hiding the other content, as we still have some information to display.
+		showError(err, ratingHistoryEl);
 	});
 }
 
