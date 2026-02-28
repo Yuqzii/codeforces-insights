@@ -10,6 +10,7 @@
 @import "fade-in.css";
 @import "problems.css";
 @import "range.css";
+@import "error.css";
 
 :root {
 	--transition-duration: 150ms;
