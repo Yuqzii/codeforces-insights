@@ -1,4 +1,3 @@
-
 .theme-catppuccin {
 	--bg: #1e1e2e;
 	--bg1: #313244;
@@ -35,4 +34,23 @@
 	--blue: #83a598;
 	--purple: #d3869b;
 	--aqua: #83c07c;
+}
+
+.theme-high-contrast {
+	--bg: #080808;
+	--bg1: #101010;
+	--bg2: #2f2f2f;
+	--bg3: #3f3f3f;
+	--bg-dark: #040404;
+	--bg-shadow: #000000;
+	--fg: #ffffff;
+	--glow: #ffffff00;
+	--border: #aaaaaa88;
+	--red: #ff2f2f;
+	--orange: #ffa340;
+	--green: #4fff4f;
+	--yellow: #ffff3a;
+	--blue: #70a0ff;
+	--purple: #df86ff;
+	--aqua: #54f2c5;
 }
