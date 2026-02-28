@@ -21,11 +21,6 @@ This endpoint is for calculating a users performance in a contest.
 
 ## Flowchart
 ```mermaid
-
-
-flowchart TD
-
-
 flowchart TD
 	stadiumStart(["`Receive POST request to /performance`"])
 	--> paraRevStart[\"Read request"\]
