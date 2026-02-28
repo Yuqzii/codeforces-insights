@@ -117,6 +117,7 @@ main {
 	padding: 1.25em;
 	display: flex;
 	flex-direction: column;
+	gap: 1em;
 	border-radius: var(--card-border-radius);
 	background-color: var(--bg);
 	opacity: 0;
