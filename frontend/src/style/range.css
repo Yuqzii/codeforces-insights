@@ -23,6 +23,9 @@
 	right: var(--right-pos);
 	position: absolute;
 	background-color: var(--fg);
+
+	/* Avoid bar lagging behind sliders. */
+	transition-duration: 0s;
 }
 
 .range-input {
