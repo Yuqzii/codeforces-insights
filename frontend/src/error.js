@@ -4,7 +4,7 @@ const errorTemplate = loadErrorTemplate();
 
 export function toggleContentVisibility(elem, isVisible) {
 	const content = elem.querySelector(".analytics-content")
-	if (isVisible) content.style.display = "block";
+	if (isVisible) content.removeAttribute("style");
 	else content.style.display = "none";
 }
 

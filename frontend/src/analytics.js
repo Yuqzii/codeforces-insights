@@ -10,7 +10,10 @@ export const solvedTags = new SolvedTags(toggleOtherTags);
 export const solvedRatings = new SolvedRatings(toggle800Probs);
 export const ratingHistory = new RatingHistory();
 
-const userDetails = document.getElementById("user-details");
+const userDetailsEl = document.getElementById("user-details");
+const solvedTagsEl = document.getElementById("solved-tags");
+const solvedRatingsEl = document.getElementById("solved-ratings");
+const ratingHistoryEl = document.getElementById("rating-history");
 
 document.addEventListener("DOMContentLoaded", () => {
 	solvedTags.updateChart();
@@ -37,13 +40,14 @@ export async function updateAnalytics(handle, signal) {
 
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
-	showLoader(userDetails);
+	showLoader(userDetailsEl);
 
-	// Prevent displaying stale data
+	// Prevent displaying stale data.
 	ratingHistory.updatePerfomanceData([]);
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
+	// Remove all previous error messages.
 	const errorElems = document.querySelectorAll(".error-container");
 	errorElems.forEach(el => {
 		el.remove();
@@ -51,20 +55,36 @@ export async function updateAnalytics(handle, signal) {
 
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
 		handleUserInfo(info);
+		toggleContentVisibility(userDetailsEl, true);
 		sessionStorage.setItem("userInfo", JSON.stringify(info));
 	}).catch(err => {
-		toggleContentVisibility(userDetails, false);
-		showError(err, userDetails);
+		toggleContentVisibility(userDetailsEl, false);
+		showError(err, userDetailsEl);
 	});
+
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
+
+		toggleContentVisibility(solvedTagsEl, true);
+		toggleContentVisibility(solvedRatingsEl, true);
+
 		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
+	}).catch(err => {
+		toggleContentVisibility(solvedTagsEl, false);
+		showError(err, solvedTagsEl);
+		toggleContentVisibility(solvedRatingsEl, false);
+		showError(err, solvedRatingsEl);
 	});
+
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
+		toggleContentVisibility(ratingHistoryEl, true);
 		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
+	}).catch(err => {
+		toggleContentVisibility(ratingHistoryEl, false);
+		showError(err, ratingHistoryEl);
 	});
 
 	// Recommend problems after we have user's rating and submissions.
@@ -156,7 +176,7 @@ function handleUserInfo(userInfo, signal) {
 		setRatingRange(800, 1100); // Recommend low rated problems for user without rating.
 	}
 
-	hideLoader(userDetails);
+	hideLoader(userDetailsEl);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
 	document.getElementById("username").href = "https://codeforces.com/profile/" + userInfo.handle;
