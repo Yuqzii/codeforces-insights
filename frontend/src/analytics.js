@@ -44,6 +44,11 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
+	const errorElems = document.querySelectorAll(".error-container");
+	errorElems.forEach(el => {
+		el.remove();
+	});
+
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
 		handleUserInfo(info);
 		sessionStorage.setItem("userInfo", JSON.stringify(info));
