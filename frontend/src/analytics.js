@@ -2,6 +2,7 @@ import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRa
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
 import { setSearchValues } from "./search.js";
+import { showError, toggleContentVisibility } from "./error.js"
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -46,6 +47,9 @@ export async function updateAnalytics(handle, signal) {
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
 		handleUserInfo(info);
 		sessionStorage.setItem("userInfo", JSON.stringify(info));
+	}).catch(err => {
+		toggleContentVisibility(userDetails, false);
+		showError(err, userDetails);
 	});
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
