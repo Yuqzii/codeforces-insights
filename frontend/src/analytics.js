@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-
 export async function updateAnalytics(handle, signal) {
 	// Set charts to loading
 	solvedTags.loading = true;
