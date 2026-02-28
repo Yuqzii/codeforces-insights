@@ -154,6 +154,8 @@ function handleUserInfo(userInfo, signal) {
 	if (userInfo.rating != undefined) {
 		getPercentile(userInfo.rating, signal).then(percentile => {
 			percentileElem.textContent = `${(percentile * 100).toFixed(2)}%`;
+		}).catch(err => {
+			showError(err, userDetailsEl);
 		});
 		percentileElem.classList.add("glow-text", "weight-600");
 
