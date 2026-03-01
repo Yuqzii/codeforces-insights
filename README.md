@@ -28,6 +28,28 @@ Then we can take the vector sum of the recent unsolved problems, and find other 
 For more details see the [recommendation documentation](docs/recommend.md).
 
 
+## Tech Stack
+### Backend
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)\
+Go for its high performance concurrency without sacrificing development speed.\
+Docker is (very surprisingly) used for containerization and deploying the backend.
+The different images should be listed under "packages" on GitHub.
+
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)\
+Used primarily as a local data store for caching Codeforces data to avoid waiting for their API.\
+SQLite would probably be a great fit for this as well.
+
+
+### Frontend
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![Esbuild](https://img.shields.io/badge/esbuild-%23FFCF00.svg?style=for-the-badge&logo=esbuild&logoColor=black)\
+To keep things fast and lean, also can't go wrong with the basics.\
+esbuild is used for bundling and minimization. Chosen due to its speed.
+
+
 ## Dev Environment
 ### Docker
 This project uses Docker and Docker Compose for containerization and container orchestration.\
