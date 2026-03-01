@@ -3,7 +3,6 @@ const url = "https://codeforces.com/api/"
 async function cfFetch(endpoint, signal) {
 	try {
 		const resp = await fetch(url + endpoint, { signal });
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
 		const data = await resp.json();
 		if (data.status !== "OK") throw new Error(`Codeforces not OK: ${data.comment}`);
 		return data.result;
@@ -52,7 +51,7 @@ export async function getPerformance(handle, ratingHistory, signal) {
 			body: JSON.stringify(reqData),
 			signal: signal,
 		});
-		if (!resp.ok) throw new Error(`performance response not ok: ${resp.statusText}`);
+		if (!resp.ok) throw new Error(`performance response not ok: ${await resp.text()}`);
 		const data = await resp.json();
 		return data;
 	} catch (err) {
@@ -64,7 +63,7 @@ export async function getPerformance(handle, ratingHistory, signal) {
 export async function getPercentile(rating, signal) {
 	try {
 		const resp = await fetch(`${process.env.API_URL}/percentile/${rating}`, { signal });
-		if (!resp.ok) throw new Error(`percentile response not ok: ${resp.statusText}`);
+		if (!resp.ok) throw new Error(`percentile response not ok: ${await resp.text()}`);
 		const data = await resp.json();
 		return data;
 	} catch (err) {
@@ -89,7 +88,7 @@ export async function getRecommendedProblems(count, ratingRange, contestsObj, si
 		});
 
 		if (!resp.ok)
-			throw new Error(`recommend response not ok: ${resp.statusText}`);
+			throw new Error(`recommend response not ok: ${await resp.text()}`);
 
 		const data = await resp.json();
 		return data;
