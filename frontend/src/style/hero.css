@@ -22,7 +22,7 @@
 	display: flex;
 	flex-direction: column;
 	padding: 5rem 0 0 var(--padding);
-	font-size: clamp(20px, 1.1vw, 24px);
+	font-size: 1.8vh;
 	width: 32em;
 }
 
@@ -158,28 +158,28 @@
 	}
 }
 
-@media (max-aspect-ratio: 4/5) {
+@media (max-width: 600px) {
 	header.hero {
 		flex-direction: column;
 		align-items: center;
 		justify-content: start;
 		width: 90vw;
 		height: 100vh;
+		font-size: 1.2rem;
 	}
 
 	.hero {
 		align-items: center;
 		width: 90vw;
-		font-size: clamp(24px, 1.5vh, 32px)
 	}
 
 	.hero h1 {
-		font-size: 5em;
+		font-size: 4.5em;
 		text-align: center;
 	}
 
 	.hero p {
-		font-size: 1.5em;
+		font-size: 1.25em;
 		text-align: center;
 	}
 

@@ -85,7 +85,7 @@ div:has(> #user-title-photo) {
 	border-radius: 5%;
 }
 
-@media (max-aspect-ratio: 6/5) {
+@media (max-width: 1200px) {
 	.analytics-grid {
 		grid-template-columns: 1fr 1fr;
 		grid-auto-rows: 55vh;
@@ -96,7 +96,7 @@ div:has(> #user-title-photo) {
 	}
 }
 
-@media (max-aspect-ratio: 4/5) {
+@media (max-width: 600px) {
 	.analytics-grid {
 		grid-template-columns: 1fr;
 		grid-auto-rows: 55vh;
