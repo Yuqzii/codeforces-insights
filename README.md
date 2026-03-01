@@ -3,6 +3,29 @@ Website for displaying analytics and providing insights into your Codeforces pro
 Visit it at https://cf-insights.org.
 
 
+## Feature Highlights
+### Analytics Dashboard
+This is split into four parts:
+- general user info,
+- rating distribution of solved problems,
+- tag distribution of solved problems,
+- and a chart over rating history.
+
+
+### Performance Calculation
+Performance calculation for the entire history of the user, displayed over the rating history chart.\
+This uses the standard elo rating system to calculate the probability of one rating achieving a higher rank in a contest than another.\
+It also utilizes Goroutines in a master-worker pattern for concurrent computation.\
+For more details see the [performance documentation](docs/performance.md).
+
+
+### Problem Recommendation
+Practice problem recommendations based on the first problem the user did not solve in recent contests.\
+This is done by representing each problem as a vector of its tags.
+Then we can take the vector sum of the recent unsolved problems, and find other problems with vectors similar to this.\
+For more details see the [recommendation documentation](docs/recommend.md).
+
+
 ## Dev Environment
 ### Docker
 This project uses Docker and Docker Compose for containerization and container orchestration.\
