@@ -1,5 +1,5 @@
 # Endpoint: POST /performance
-This endpoint is for calculating a users performance in a contest.
+This endpoint is for calculating a users performance in any number of contests.
 
 
 ## Specification
@@ -7,11 +7,7 @@ This endpoint is for calculating a users performance in a contest.
 | Property     | Type      | Description |
 |--------------|-----------|-------------|
 |`handle`       |`String`  |Codeforces handle of the user.|
-|`minRating`   |`Integer`  |Minimum possible rating of a user.|
-|`maxRating`   |`Integer`  |Maximum possible rating of a user.|
-|`amountOfContests`|`Integer`  |Number of contests to be analyzed.|
-|`ratingHistory`    |`Object[]` |Array of recent rating changes.|
-|`contests`    |`Object[]` |Array of recent contests.|
+|`ratingHistory`    |`RatingChange` |Array of recent rating changes.|
 
 ### Response
 | Property     | Type      | Description |
@@ -28,12 +24,12 @@ flowchart TD
 	stadiumStart(["`Receive POST request to /performance`"])
 	--> paraRevStart[\"Read request"\]
 	--> WR["Calculate winrate for every possible rating difference using the standard elo rating for win probabability 1/(1+10^(delta_elo/400))"]
-	--> iterator["i := 0 <br> jobQueue := queue <br> result channel := channel"]
+	--> iterator["i := 0 <br> jobQueue := queue <br> resultQueue := queue"]
 	--> forLoop["i < amountOfContests"]
 	forLoop -- Yes	--> addJ*b["queue contest[i] in jobQueue"]
 	--> increment[i := i+1] --> forLoop
 	forLoop -- No --> waitForWorkers["Wait until all workers finish"]
-	--> paraRevEnd[\"`Read result channel and write  it as response`"\]
+	--> paraRevEnd[\"`Read all of resultQueue and write  it as response`"\]
 	--> stadiumEnd(["`Send response`"])
 
 	Worker(["initiate as worker"])
@@ -50,6 +46,6 @@ flowchart TD
     Compare -- No --> DecreaseR["r := mid"]
     IncreaseL --> BinarySearch
     DecreaseR --> BinarySearch
-    BinarySearch -- No --> End["Send l-1 with contest timestamp to result channel"]
+    BinarySearch -- No --> End["queue l-1 with contest timestamp to resultQueue]
 	--> WaitForJ*b
 ```
