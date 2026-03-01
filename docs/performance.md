@@ -46,6 +46,6 @@ flowchart TD
     Compare -- No --> DecreaseR["r := mid"]
     IncreaseL --> BinarySearch
     DecreaseR --> BinarySearch
-    BinarySearch -- No --> End["queue l-1 with contest timestamp to resultQueue]
+    BinarySearch -- No --> End["queue l-1 with contest timestamp to resultQueue"]
 	--> WaitForJ*b
 ```
