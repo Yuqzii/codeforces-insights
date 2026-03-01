@@ -3,6 +3,63 @@ Website for displaying analytics and providing insights into your Codeforces pro
 Visit it at https://cf-insights.org.
 
 
+## Feature Highlights
+### Analytics Dashboard
+The dashboard is split into four parts:
+- general user info,
+- rating distribution of solved problems,
+- tag distribution of solved problems,
+- and a chart over rating history.
+
+The data for the abovementioned charts is from the [Codeforces API](https://codeforces.com/apiHelp).
+
+
+### Performance Calculation
+Performance calculation for the entire history of the user, displayed over the rating history chart.\
+This uses the standard elo rating system to calculate the probability of one rating achieving a higher rank in a contest than another.\
+It also utilizes Goroutines in a master-worker pattern for concurrent computation.\
+For more details see the [performance documentation](docs/performance.md).
+
+
+### Problem Recommendation
+Practice problem recommendations based on the first problem the user did not solve in recent contests.\
+This is done by representing each problem as a vector of its tags.
+Then we can take the vector sum of the recent unsolved problems, and find other problems with vectors similar to this.\
+For more details see the [recommendation documentation](docs/recommend.md).
+
+
+## Tech Stack
+### Backend
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+
+Go for its high performance concurrency without sacrificing development speed.
+
+PostgreSQL is primarily used as a local data store for caching Codeforces data to avoid waiting for their API.\
+SQLite would probably be a great fit for this as well.
+
+
+### Frontend
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+
+To keep things fast and lean, also can't go wrong with the basics.
+
+
+### Deployment
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Esbuild](https://img.shields.io/badge/esbuild-%23FFCF00.svg?style=for-the-badge&logo=esbuild&logoColor=black)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=Cloudflare&logoColor=white)
+
+Docker is (very surprisingly) used for containerization and deploying the backend.
+The different images should be listed under "packages" on GitHub and are automatically updated when the main branch is pushed to.
+Chose Docker due to its simplicity when deploying, and Kubernetes would likely be overkill for this project.
+
+esbuild is used for bundling and minimization. Chosen due to its speed.
+
+The frontend is hosted on Cloudflare Pages, which also automatically redeploys on pushes to main.
+
 ## Dev Environment
 ### Docker
 This project uses Docker and Docker Compose for containerization and container orchestration.\
