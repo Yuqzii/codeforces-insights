@@ -12,5 +12,5 @@ define function filterSolved:
 		if (uniqueSolved is empty) or (this submissions problem id is unequal to the problem id of the last element of unique solved)
 			add the submission to the end of uniqueSolved
 
-  return unique solved
+  return uniqueSolved
 ```
