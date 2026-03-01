@@ -7,7 +7,7 @@ This endpoint is for calculating a users performance in any number of contests.
 | Property     | Type      | Description |
 |--------------|-----------|-------------|
 |`handle`       |`String`  |Codeforces handle of the user.|
-|`ratingHistory`    |`RatingChange` |Array of recent rating changes.|
+|`ratingHistory`    |`[]RatingChange` |Array of recent rating changes.|
 
 ### Response
 | Property     | Type      | Description |
