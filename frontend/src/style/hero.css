@@ -22,7 +22,7 @@
 	display: flex;
 	flex-direction: column;
 	padding: 5rem 0 0 var(--padding);
-	font-size: 1.8vh;
+	font-size: clamp(16px, 1.8vh, 2.5vw);
 	width: 32em;
 }
 
@@ -165,16 +165,16 @@
 		justify-content: start;
 		width: 90vw;
 		height: 100vh;
-		font-size: 1.2rem;
 	}
 
 	.hero {
 		align-items: center;
 		width: 90vw;
+		font-size: 1.2rem;
 	}
 
 	.hero h1 {
-		font-size: 4.5em;
+		font-size: 5em;
 		text-align: center;
 	}
 
