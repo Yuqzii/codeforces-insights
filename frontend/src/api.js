@@ -52,24 +52,24 @@ export async function getPerformance(handle, ratingHistory, signal) {
 			body: JSON.stringify(reqData),
 			signal: signal,
 		});
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
+		if (!resp.ok) throw new Error(`performance response not ok: ${resp.statusText}`);
 		const data = await resp.json();
 		return data;
 	} catch (err) {
 		if (err.name === "AbortError") return;
-		console.error("Performance request failed:", err);
+		throw err;
 	}
 }
 
 export async function getPercentile(rating, signal) {
 	try {
 		const resp = await fetch(`${process.env.API_URL}/percentile/${rating}`, { signal });
-		if (!resp.ok) throw new Error(`response not ok: ${resp.statusText}`);
+		if (!resp.ok) throw new Error(`percentile response not ok: ${resp.statusText}`);
 		const data = await resp.json();
 		return data;
 	} catch (err) {
 		if (err.name === "AbortError") return;
-		console.error("Percentile request failed:", err);
+		throw err;
 	}
 }
 

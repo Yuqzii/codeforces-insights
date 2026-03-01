@@ -1,6 +1,7 @@
 import { getRecommendedProblems } from "./api";
 import { getRatingColor } from "./charts";
 import { observeAndAnimate } from "./entrance-anim";
+import { showError } from "./error";
 import problemHTML from "./templates/problem.html";
 
 const PROBLEM_COUNT = 6;
@@ -55,22 +56,21 @@ export function recommendProblems() {
 	controller.abort();
 	controller = new AbortController();
 
-	try {
-		const ratingRange = getSelectedRatingRange();
-		getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, controller.signal).then(problems => {
-			clearProblemContainer();
-			const elements = new Array();
+	clearProblemContainer();
 
-			problems.forEach(resp => {
-				const element = displayProblem(resp.problem);
-				elements.push(element);
-			});
+	const ratingRange = getSelectedRatingRange();
+	getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, controller.signal).then(problems => {
+		const elements = new Array();
 
-			observeAndAnimate(elements);
+		problems.forEach(resp => {
+			const element = displayProblem(resp.problem);
+			elements.push(element);
 		});
-	} catch (err) {
-		console.error(`Encountered problem recommending problems: ${err}`);
-	}
+
+		observeAndAnimate(elements);
+	}).catch(err => {
+		showError(err, problemContainer);
+	});
 }
 
 export function updateSubmissions(submissions) {

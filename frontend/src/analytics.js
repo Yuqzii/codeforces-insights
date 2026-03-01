@@ -2,6 +2,7 @@ import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRa
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
 import { setSearchValues } from "./search.js";
+import { showError, toggleContentVisibility } from "./error.js"
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
 const toggle800Probs = document.getElementById("toggle-800-rating");
@@ -9,7 +10,10 @@ export const solvedTags = new SolvedTags(toggleOtherTags);
 export const solvedRatings = new SolvedRatings(toggle800Probs);
 export const ratingHistory = new RatingHistory();
 
-const userDetails = document.getElementById("user-details");
+const userDetailsEl = document.getElementById("user-details");
+const solvedTagsEl = document.getElementById("solved-tags");
+const solvedRatingsEl = document.getElementById("solved-ratings");
+const ratingHistoryEl = document.getElementById("rating-history");
 
 document.addEventListener("DOMContentLoaded", () => {
 	solvedTags.updateChart();
@@ -25,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-
 export async function updateAnalytics(handle, signal) {
 	// Set charts to loading
 	solvedTags.loading = true;
@@ -37,26 +40,54 @@ export async function updateAnalytics(handle, signal) {
 
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
-	showLoader(userDetails);
+	showLoader(userDetailsEl);
 
-	// Prevent displaying stale data
+	// Prevent displaying stale data.
 	ratingHistory.updatePerfomanceData([]);
 	ratingHistory.updateRatingData([]);
 	ratingHistory.updateSolvedData([]);
 
+	// Remove all previous error messages.
+	const errorElems = document.querySelectorAll(".error-container");
+	errorElems.forEach(el => {
+		el.remove();
+	});
+
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
 		handleUserInfo(info);
+		toggleContentVisibility(userDetailsEl, true);
 		sessionStorage.setItem("userInfo", JSON.stringify(info));
+	}).catch(err => {
+		toggleContentVisibility(userDetailsEl, false);
+		showError(err, userDetailsEl);
 	});
+
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
+
+		toggleContentVisibility(solvedTagsEl, true);
+		toggleContentVisibility(solvedRatingsEl, true);
+
 		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
+	}).catch(err => {
+		toggleContentVisibility(solvedTagsEl, false);
+		showError(err, solvedTagsEl);
+		toggleContentVisibility(solvedRatingsEl, false);
+		showError(err, solvedRatingsEl);
+
+		// Show error without hiding entire chart, as the rating history fetch can still succeed.
+		showError(err, ratingHistoryEl);
 	});
+
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
+		toggleContentVisibility(ratingHistoryEl, true);
 		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
+	}).catch(err => {
+		toggleContentVisibility(ratingHistoryEl, false);
+		showError(err, ratingHistoryEl);
 	});
 
 	// Recommend problems after we have user's rating and submissions.
@@ -110,6 +141,9 @@ function handleRatingHistory(handle, ratings, signal) {
 	getPerformance(handle, perfRequestData, signal).then(perf => {
 		updatePerformance(perf)
 		sessionStorage.setItem("performance", JSON.stringify(perf));
+	}).catch(err => {
+		// Show error without hiding the other content, as we still have some information to display.
+		showError(err, ratingHistoryEl);
 	});
 }
 
@@ -120,6 +154,8 @@ function handleUserInfo(userInfo, signal) {
 	if (userInfo.rating != undefined) {
 		getPercentile(userInfo.rating, signal).then(percentile => {
 			percentileElem.textContent = `${(percentile * 100).toFixed(2)}%`;
+		}).catch(err => {
+			showError(err, userDetailsEl);
 		});
 		percentileElem.classList.add("glow-text", "weight-600");
 
@@ -148,7 +184,7 @@ function handleUserInfo(userInfo, signal) {
 		setRatingRange(800, 1100); // Recommend low rated problems for user without rating.
 	}
 
-	hideLoader(userDetails);
+	hideLoader(userDetailsEl);
 	document.getElementById("user-title-photo").src = userInfo.titlePhoto;
 	document.getElementById("username").textContent = userInfo.handle;
 	document.getElementById("username").href = "https://codeforces.com/profile/" + userInfo.handle;

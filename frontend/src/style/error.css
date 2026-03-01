@@ -1,0 +1,16 @@
+.error-container {
+	background-color: color-mix(in srgb, transparent, var(--red) 20%);
+	border: 1px solid var(--red);
+	border-radius: 0.5em;
+	padding: 1em;
+	color: var(--red);
+}
+
+.error-container h4 {
+	font-size: 1.3rem;
+	margin-top: 0;
+}
+
+.error-container p {
+	margin: 0;
+}
