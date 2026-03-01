@@ -5,11 +5,13 @@ Visit it at https://cf-insights.org.
 
 ## Feature Highlights
 ### Analytics Dashboard
-This is split into four parts:
+The dashboard is split into four parts:
 - general user info,
 - rating distribution of solved problems,
 - tag distribution of solved problems,
 - and a chart over rating history.
+
+The data for the abovementioned charts is from the [Codeforces API](https://codeforces.com/apiHelp).
 
 
 ### Performance Calculation
