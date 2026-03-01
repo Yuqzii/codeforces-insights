@@ -9,7 +9,7 @@ const CONTEST_LOOKBACK = 5;
 let solvedByContests;
 
 const problemTemplate = loadProblemTemplate();
-const problemContainer = document.getElementById("problem-container");
+export const problemContainer = document.getElementById("problem-container");
 
 // Rating slider update logic
 const MIN_RATING = 800;
@@ -81,6 +81,11 @@ export function updateSubmissions(submissions) {
 
 export function setRatingRange(min, max) {
 	updateRatingRange(false, min - MIN_RATING, max - MIN_RATING);
+}
+
+export function clearProblemContainer() {
+	while (problemContainer.firstChild)
+		problemContainer.removeChild(problemContainer.lastChild);
 }
 
 window.addEventListener("load", () => {
@@ -213,9 +218,4 @@ function loadProblemTemplate() {
 	const doc = parser.parseFromString(problemHTML, "text/html");
 	const template = doc.getElementById("problem-template");
 	return template;
-}
-
-function clearProblemContainer() {
-	while (problemContainer.firstChild)
-		problemContainer.removeChild(problemContainer.lastChild);
 }
