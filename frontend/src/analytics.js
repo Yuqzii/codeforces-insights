@@ -1,6 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
-import { recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
+import { clearProblemContainer, problemContainer, recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
 import { setSearchValues } from "./search.js";
 import { showError, toggleContentVisibility } from "./error.js"
 
@@ -38,6 +38,10 @@ export async function updateAnalytics(handle, signal) {
 	toggle800Probs.style.display = "none";
 	solvedRatings.updateChart();
 
+	toggleContentVisibility(solvedTagsEl, true);
+	toggleContentVisibility(solvedRatingsEl, true);
+	toggleContentVisibility(ratingHistoryEl, true);
+
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
 	showLoader(userDetailsEl);
@@ -60,14 +64,13 @@ export async function updateAnalytics(handle, signal) {
 	}).catch(err => {
 		toggleContentVisibility(userDetailsEl, false);
 		showError(err, userDetailsEl);
+
+		throw err;
 	});
 
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
-
-		toggleContentVisibility(solvedTagsEl, true);
-		toggleContentVisibility(solvedRatingsEl, true);
 
 		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
@@ -79,11 +82,12 @@ export async function updateAnalytics(handle, signal) {
 
 		// Show error without hiding entire chart, as the rating history fetch can still succeed.
 		showError(err, ratingHistoryEl);
+
+		throw err;
 	});
 
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
-		toggleContentVisibility(ratingHistoryEl, true);
 		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	}).catch(err => {
 		toggleContentVisibility(ratingHistoryEl, false);
@@ -93,6 +97,9 @@ export async function updateAnalytics(handle, signal) {
 	// Recommend problems after we have user's rating and submissions.
 	Promise.all([userInfoTask, submissionTask]).then(() => {
 		recommendProblems();
+	}).catch(err => {
+		clearProblemContainer();
+		showError(err, problemContainer);
 	});
 }
 
