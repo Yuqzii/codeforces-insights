@@ -101,8 +101,7 @@
 	padding: 0.6em 1.2em;
 }
 
-@media (max-aspect-ratio: 4/5) {
-
+@media (max-width: 600px) {
 	#nav-bar.scrolled,
 	#nav-bar.scrolled:hover {
 		--transparency: 100%;
