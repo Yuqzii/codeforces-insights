@@ -38,6 +38,10 @@ export async function updateAnalytics(handle, signal) {
 	toggle800Probs.style.display = "none";
 	solvedRatings.updateChart();
 
+	toggleContentVisibility(solvedTagsEl, true);
+	toggleContentVisibility(solvedRatingsEl, true);
+	toggleContentVisibility(ratingHistoryEl, true);
+
 	ratingHistory.loading = true;
 	ratingHistory.updateChart();
 	showLoader(userDetailsEl);
@@ -68,9 +72,6 @@ export async function updateAnalytics(handle, signal) {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
 
-		toggleContentVisibility(solvedTagsEl, true);
-		toggleContentVisibility(solvedRatingsEl, true);
-
 		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
 	}).catch(err => {
@@ -87,7 +88,6 @@ export async function updateAnalytics(handle, signal) {
 
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
-		toggleContentVisibility(ratingHistoryEl, true);
 		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	}).catch(err => {
 		toggleContentVisibility(ratingHistoryEl, false);
