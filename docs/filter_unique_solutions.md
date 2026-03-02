@@ -1,5 +1,5 @@
-# Function: filter uniqiue solutions
-This function is for filtering out duplicate solutions and unsolved problems from a list of submissions
+# Function: filter unique solutions
+This function is for filtering out duplicate solutions and unsolved problems from a list of submissions.
 
 
 ```text
