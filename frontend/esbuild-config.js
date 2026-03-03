@@ -1,4 +1,4 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
 
 esbuild.build({
 	entryPoints: ["src/main.js", "src/style/style.css"],

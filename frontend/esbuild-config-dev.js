@@ -1,8 +1,12 @@
-esbuild = require("esbuild");
-gaze = require("gaze");
-fs = require("fs");
+import esbuild from "esbuild";
+import gaze from "gaze";
+import fs from "fs";
 
-gaze("./public/*", function(err, watcher) {
+let watcher;
+
+gaze("./public/*", function() {
+	watcher = this;
+
 	if (!fs.existsSync("/app/dist")) {
 		fs.mkdirSync("/app/dist", { recursive: true });
 	}
@@ -11,15 +15,15 @@ gaze("./public/*", function(err, watcher) {
 	var watched = this.watched();
 	for (const filepath of watched["/app/public/"]) {
 		console.log("Copying", filepath);
-		var filename = filepath.replace(/^.*[\\/]/, "")
+		const filename = filepath.replace(/^.*[\\/]/, "")
 		fs.copyFileSync(filepath, `/app/dist/${filename}`);
 	}
 
 	// On file changed
 	this.on("changed", function(filepath) {
 		console.log(filepath + " was changed");
-		var filename = filepath.replace(/^.*[\\/]/, "")
-		var destPath = `/app/dist/${filename}`;
+		const filename = filepath.replace(/^.*[\\/]/, "")
+		const destPath = `/app/dist/${filename}`;
 
 		function tryCopy(attempts = 0) {
 			try {
