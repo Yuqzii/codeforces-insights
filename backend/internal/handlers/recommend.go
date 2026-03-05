@@ -54,9 +54,8 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if data.Count > 10 || data.Count < 0 {
-		http.Error(w, "Invalid count requested, must be between 0 and 10", http.StatusBadRequest)
-		return
+	if err = data.validate(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	ctx := r.Context()
@@ -126,4 +125,12 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failure writing response", http.StatusInternalServerError)
 		log.Printf("Error writing recommendations: %v\n", err)
 	}
+}
+
+func (r *recommendReq) validate() error {
+	if r.Count > 10 || r.Count < 0 {
+		return errors.New("count must be between 0 and 10")
+	}
+
+	return nil
 }
