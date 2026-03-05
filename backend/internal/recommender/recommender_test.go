@@ -32,6 +32,8 @@ func TestRecommend(t *testing.T) {
 	m := new(mockProblemRepository)
 	r := New(m)
 
+	emptySet := make(map[int64]struct{})
+
 	t.Run("Filtering input problems", func(t *testing.T) {
 		input := []*codeforces.Problem{{
 			Name:  "Very cool Problem",
@@ -52,7 +54,7 @@ func TestRecommend(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 1, 0, 0)
+		res, err := r.Recommend(context.Background(), input, emptySet, 1, 0, 0)
 		assert.Nil(t, err)
 		assert.NotZero(t, len(res))
 		assert.Equal(t, expected.Problem.Name, res[0].Problem.Name, "Recommended same problem as in input.")
@@ -75,7 +77,7 @@ func TestRecommend(t *testing.T) {
 		mockCall := m.On("GetProblemsWithTags", []string{"graph", "greedy"}).Return(allProbs, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 2, 0, 0)
+		res, err := r.Recommend(context.Background(), input, emptySet, 2, 0, 0)
 
 		assert.Nil(t, err)
 		assert.Equal(t, len(res), 2, "Did not recommend the correct amount of problems.")
