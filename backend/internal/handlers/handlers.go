@@ -35,6 +35,7 @@ type RecommendationProvider interface {
 		[]*recommender.ProbWithScore, error)
 	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
 		*codeforces.Problem, error)
+	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
 }
 
 type Handler struct {

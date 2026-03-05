@@ -31,13 +31,11 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data struct {
-		Count     int `json:"count"`
-		MinRating int `json:"minRating"`
-		MaxRating int `json:"maxRating"`
-		Contests  []struct {
-			ID      int      `json:"id"`
-			Indices []string `json:"indices"`
-		} `json:"contests"`
+		Count        int                     `json:"count"`
+		MinRating    int                     `json:"minRating"`
+		MaxRating    int                     `json:"maxRating"`
+		AcceptedSubs []codeforces.Submission `json:"submissions"`
+		Lookback     int                     `json:"lookback"`
 	}
 	if err = json.Unmarshal(body, &data); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -52,17 +50,24 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	// Find unsolved problem for each contest.
-	unsolved := make([]*codeforces.Problem, 0, len(data.Contests))
-	for _, c := range data.Contests {
-		p, err := h.rec.FindFirstUnsolvedProblem(ctx, c.ID, c.Indices)
+	solvedRecent := h.rec.FindSolvedRecentContests(data.AcceptedSubs, data.Lookback)
+
+	// Find first unsolved problem for each from solvedRecent.
+	unsolved := make([]*codeforces.Problem, 0, data.Lookback)
+	for contestID, probs := range solvedRecent {
+		indices := make([]string, 0)
+		for _, p := range probs {
+			indices = append(indices, p.Index)
+		}
+
+		unsolvedProb, err := h.rec.FindFirstUnsolvedProblem(ctx, contestID, indices)
 		if err != nil {
 			if errors.Is(err, recommender.ErrNoUnsolvedProblem) {
 				continue
 			}
 
 			if errors.Is(err, db.ErrNoProblemsForContest) {
-				log.Printf("Couldn't find problems from contest %d: %v\n", c.ID, err)
+				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
 				continue
 			}
 
@@ -72,9 +77,10 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 			}
 
 			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
-				c.ID, c.Indices, err)
+				contestID, indices, err)
 		}
-		unsolved = append(unsolved, p)
+
+		unsolved = append(unsolved, unsolvedProb)
 	}
 
 	if len(unsolved) == 0 {
