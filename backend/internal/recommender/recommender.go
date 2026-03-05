@@ -41,18 +41,19 @@ var (
 // Converts all the problems tags into a vector, and compares the direction of this vector
 // to each vector of other problems with at least one tag in common to find the most similar problems.
 // @param probs Slice containing problems that we want to find similar problems to.
+// @param disallowedProbs Map of empty structs (effectively a set) containing hashes of problems
+// to not recommend. E.g. problems the user has already solved.
 // @param cnt Amount of problems to recommend.
 // @param minRat Minimum rating of recommended problems.
 // @param maxRat Maximum rating of recommended problems.
 // @return A slice of length cnt, the recommended problems.
 func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem,
-	cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
+	disallowedProbs map[int64]struct{}, cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
 
 	tags := make([]string, 0)
-	unavailableProbs := make(map[int64]struct{})
 	for _, p := range probs {
 		tags = append(tags, p.Tags...)
-		unavailableProbs[p.Hash()] = struct{}{}
+		disallowedProbs[p.Hash()] = struct{}{}
 	}
 
 	u := r.tagsToVec(tags)
@@ -70,8 +71,8 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 	heap.Init(&pq)
 
 	for _, prob := range allProbs {
-		_, isUnavailable := unavailableProbs[prob.Hash()]
-		if isUnavailable {
+		_, isDisallowed := disallowedProbs[prob.Hash()]
+		if isDisallowed {
 			continue
 		}
 

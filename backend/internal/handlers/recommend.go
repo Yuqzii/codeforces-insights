@@ -16,8 +16,8 @@ import (
 const maxRecommendRequestSize = 1 << 16 // 65536 bytes
 
 type RecommendationProvider interface {
-	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt, minRat, maxRat int) (
-		[]*recommender.ProbWithScore, error)
+	Recommend(ctx context.Context, probs []*codeforces.Problem, disallowedProbs map[int64]struct{},
+		cnt, minRat, maxRat int) ([]*recommender.ProbWithScore, error)
 	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
 		*codeforces.Problem, error)
 	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
@@ -99,7 +99,14 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recs, err := h.rec.Recommend(ctx, unsolved, data.Count, data.MinRating, data.MaxRating)
+	// Collect all already solved problems into a set.
+	disallowedProbs := make(map[int64]struct{})
+	for _, sub := range data.AcceptedSubs {
+		hash := sub.Problem.Hash()
+		disallowedProbs[hash] = struct{}{}
+	}
+
+	recs, err := h.rec.Recommend(ctx, unsolved, disallowedProbs, data.Count, data.MinRating, data.MaxRating)
 	if err != nil {
 		http.Error(w, "Failure recommending problems", http.StatusInternalServerError)
 		log.Printf("Error recommending %d problems: %v\n", data.Count, err)
