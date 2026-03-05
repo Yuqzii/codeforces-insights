@@ -125,6 +125,39 @@ func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID in
 	return &allProbs[len(indices)], nil
 }
 
+func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
+	lookback int) map[int][]*codeforces.Problem {
+
+	// Sort submissions in descending order of submission time.
+	slices.SortFunc(subs, func(a, b codeforces.Submission) int {
+		return b.Timestamp - a.Timestamp
+	})
+
+	probsByContest := make(map[int][]*codeforces.Problem, lookback)
+	for i := range subs {
+		if subs[i].Author.ParticipantType != "CONTESTANT" {
+			// Submission was not in contest.
+			continue
+		}
+
+		s, contestStored := probsByContest[subs[i].ContestID]
+		if contestStored {
+			s = append(s, &subs[i].Problem)
+			probsByContest[subs[i].ContestID] = s
+		} else {
+			if len(probsByContest) >= lookback {
+				break
+			} else {
+				s = make([]*codeforces.Problem, 1)
+				s[0] = &subs[i].Problem
+				probsByContest[subs[i].ContestID] = s
+			}
+		}
+	}
+
+	return probsByContest
+}
+
 func (r *recommender) getIdxOfTag(tag string) int {
 	r.mu.RLock()
 	idx, ok := r.tagToIndex[tag]
