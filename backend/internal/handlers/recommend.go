@@ -23,6 +23,14 @@ type RecommendationProvider interface {
 	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
 }
 
+type recommendReq struct {
+	Count        int                     `json:"count"`
+	MinRating    int                     `json:"minRating"`
+	MaxRating    int                     `json:"maxRating"`
+	AcceptedSubs []codeforces.Submission `json:"submissions"`
+	Lookback     int                     `json:"lookback"`
+}
+
 // The endpoint expects json on the format specified in the data struct.
 func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxRecommendRequestSize)
@@ -39,13 +47,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data struct {
-		Count        int                     `json:"count"`
-		MinRating    int                     `json:"minRating"`
-		MaxRating    int                     `json:"maxRating"`
-		AcceptedSubs []codeforces.Submission `json:"submissions"`
-		Lookback     int                     `json:"lookback"`
-	}
+	var data recommendReq
 	if err = json.Unmarshal(body, &data); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("Error unmarshalling json in recommend request: %v\n", err)
