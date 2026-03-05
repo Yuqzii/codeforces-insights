@@ -26,8 +26,8 @@ type recommendReq struct {
 	Count        int                     `json:"count"`
 	MinRating    int                     `json:"minRating"`
 	MaxRating    int                     `json:"maxRating"`
-	AcceptedSubs []codeforces.Submission `json:"submissions"`
 	Lookback     int                     `json:"lookback"`
+	AcceptedSubs []codeforces.Submission `json:"submissions"`
 }
 
 // The endpoint expects json on the format specified in the data struct.
@@ -55,6 +55,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 
 	if err = data.validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	ctx := r.Context()
@@ -108,6 +109,10 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 func (r *recommendReq) validate() error {
 	if r.Count > 10 || r.Count < 0 {
 		return errors.New("count must be between 0 and 10")
+	}
+
+	if len(r.AcceptedSubs) == 0 {
+		return errors.New("submissions cannot be empty")
 	}
 
 	return nil
