@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
 	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
@@ -18,8 +17,8 @@ const maxRecommendRequestSize = 1 << 16 // 65536 bytes
 type RecommendationProvider interface {
 	Recommend(ctx context.Context, probs []*codeforces.Problem, disallowedProbs map[int64]struct{},
 		cnt, minRat, maxRat int) ([]*recommender.ProbWithScore, error)
-	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
-		*codeforces.Problem, error)
+	FindUnsolvedProblems(ctx context.Context, solvedByContest map[int][]*codeforces.Problem) (
+		[]*codeforces.Problem, error)
 	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
 }
 
@@ -60,38 +59,17 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	solvedRecent := h.rec.FindSolvedRecentContests(data.AcceptedSubs, data.Lookback)
-
-	// Find first unsolved problem for each from solvedRecent.
-	unsolved := make([]*codeforces.Problem, 0, data.Lookback)
-	for contestID, probs := range solvedRecent {
-		indices := make([]string, 0)
-		for _, p := range probs {
-			indices = append(indices, p.Index)
+	solvedByContest := h.rec.FindSolvedRecentContests(data.AcceptedSubs, data.Lookback)
+	unsolved, err := h.rec.FindUnsolvedProblems(ctx, solvedByContest)
+	if err != nil {
+		if errors.Is(err, recommender.ErrInvalidIndices) {
+			http.Error(w, "Invalid indices in recent solved problems", http.StatusBadRequest)
+			return
 		}
 
-		unsolvedProb, err := h.rec.FindFirstUnsolvedProblem(ctx, contestID, indices)
-		if err != nil {
-			if errors.Is(err, recommender.ErrNoUnsolvedProblem) {
-				continue
-			}
-
-			if errors.Is(err, db.ErrNoProblemsForContest) {
-				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
-				continue
-			}
-
-			// TODO: Update to more correct error, the client no longer provides the indices.
-			if errors.Is(err, recommender.ErrInvalidIndices) {
-				http.Error(w, "Invalid problem indices", http.StatusBadRequest)
-				return
-			}
-
-			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
-				contestID, indices, err)
-		}
-
-		unsolved = append(unsolved, unsolvedProb)
+		http.Error(w, "Could not find unsolved problems", http.StatusInternalServerError)
+		log.Printf("Error in recommend request: %v", err)
+		return
 	}
 
 	if len(unsolved) == 0 {

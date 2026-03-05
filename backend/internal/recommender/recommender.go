@@ -5,11 +5,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"slices"
 	"strings"
 	"sync"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/db"
 )
 
 type ProblemRepository interface {
@@ -94,36 +96,42 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 	return pq, nil
 }
 
-// @param indices Slice of the indices of the solved problems for the contest.
-func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID int,
-	indices []string) (*codeforces.Problem, error) {
+// @param solvedByContest Map with key as contest ID and value as slice of problems.
+// This should generally be the output of FindSolvedRecentContests.
+func (r *recommender) FindUnsolvedProblems(ctx context.Context,
+	solvedByContest map[int][]*codeforces.Problem) ([]*codeforces.Problem, error) {
 
-	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)
-	if err != nil {
-		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
-	}
+	unsolved := make([]*codeforces.Problem, 0, len(solvedByContest))
 
-	if len(indices) > len(allProbs) {
-		return nil, ErrInvalidIndices
-	}
-
-	// Sort problems by index (A, B, C, D1, D2, ...).
-	slices.SortFunc(allProbs, func(a, b codeforces.Problem) int {
-		return strings.Compare(a.Index, b.Index)
-	})
-	slices.Sort(indices)
-
-	for i := range indices {
-		if indices[i] != allProbs[i].Index {
-			return &allProbs[i], nil
+	for contestID, probs := range solvedByContest {
+		indices := make([]string, 0)
+		for _, p := range probs {
+			indices = append(indices, p.Index)
 		}
+
+		unsolvedProb, err := r.findFirstUnsolvedProblem(ctx, contestID, indices)
+		if err != nil {
+			if errors.Is(err, ErrNoUnsolvedProblem) {
+				continue
+			}
+
+			if errors.Is(err, db.ErrNoProblemsForContest) {
+				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
+				continue
+			}
+
+			if errors.Is(err, ErrInvalidIndices) {
+				return nil, fmt.Errorf("finding unsolved problems: %w", err)
+			}
+
+			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
+				contestID, indices, err)
+		}
+
+		unsolved = append(unsolved, unsolvedProb)
 	}
 
-	if len(indices) == len(allProbs) {
-		return nil, ErrNoUnsolvedProblem
-	}
-
-	return &allProbs[len(indices)], nil
+	return unsolved, nil
 }
 
 func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
@@ -157,6 +165,38 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 	}
 
 	return probsByContest
+}
+
+// @param indices Slice of the indices of the solved problems for the contest.
+func (r *recommender) findFirstUnsolvedProblem(ctx context.Context, contestID int,
+	indices []string) (*codeforces.Problem, error) {
+
+	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)
+	if err != nil {
+		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
+	}
+
+	if len(indices) > len(allProbs) {
+		return nil, ErrInvalidIndices
+	}
+
+	// Sort problems by index (A, B, C, D1, D2, ...).
+	slices.SortFunc(allProbs, func(a, b codeforces.Problem) int {
+		return strings.Compare(a.Index, b.Index)
+	})
+	slices.Sort(indices)
+
+	for i := range indices {
+		if indices[i] != allProbs[i].Index {
+			return &allProbs[i], nil
+		}
+	}
+
+	if len(indices) == len(allProbs) {
+		return nil, ErrNoUnsolvedProblem
+	}
+
+	return &allProbs[len(indices)], nil
 }
 
 func (r *recommender) getIdxOfTag(tag string) int {

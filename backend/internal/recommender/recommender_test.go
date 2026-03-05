@@ -133,7 +133,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
@@ -179,7 +179,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
@@ -214,7 +214,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"A", "B", "C1"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 42, []string{"A", "B", "C1"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
