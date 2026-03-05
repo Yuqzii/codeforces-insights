@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -13,6 +14,14 @@ import (
 )
 
 const maxRecommendRequestSize = 1 << 16 // 65536 bytes
+
+type RecommendationProvider interface {
+	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt, minRat, maxRat int) (
+		[]*recommender.ProbWithScore, error)
+	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
+		*codeforces.Problem, error)
+	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
+}
 
 // The endpoint expects json on the format specified in the data struct.
 func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +80,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
+			// TODO: Update to more correct error, the client no longer provides the indices.
 			if errors.Is(err, recommender.ErrInvalidIndices) {
 				http.Error(w, "Invalid problem indices", http.StatusBadRequest)
 				return

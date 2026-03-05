@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
 type Client interface {
@@ -28,14 +27,6 @@ type ContestResultsProvider interface {
 
 type PercentileProvider interface {
 	GetPercentile(rating int) float64
-}
-
-type RecommendationProvider interface {
-	Recommend(ctx context.Context, probs []*codeforces.Problem, cnt, minRat, maxRat int) (
-		[]*recommender.ProbWithScore, error)
-	FindFirstUnsolvedProblem(ctx context.Context, contestID int, indices []string) (
-		*codeforces.Problem, error)
-	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
 }
 
 type Handler struct {
