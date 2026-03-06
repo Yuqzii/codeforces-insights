@@ -12,7 +12,7 @@ import (
 	"github.com/yuqzii/cf-stats/internal/recommender"
 )
 
-const maxRecommendRequestSize = 1 << 16 // 65536 bytes
+const maxRecommendRequestSize = 1 << 23 // 8 MiB
 
 type RecommendationProvider interface {
 	Recommend(ctx context.Context, probs []*codeforces.Problem, disallowedProbs map[int64]struct{},
