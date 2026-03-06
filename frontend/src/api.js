@@ -73,12 +73,14 @@ export async function getPercentile(rating, signal) {
 }
 
 export async function getRecommendedProblems(count, ratingRange, lookback, solved, signal) {
+	const subs = minifySubmissions(solved);
+
 	const reqData = {
 		count: count,
 		minRating: ratingRange.min,
 		maxRating: ratingRange.max,
 		lookback: lookback,
-		submissions: solved,
+		submissions: subs,
 	};
 
 	try {
@@ -97,4 +99,32 @@ export async function getRecommendedProblems(count, ratingRange, lookback, solve
 		if (err.name === "AbortError") return;
 		throw err;
 	}
+}
+
+// Removes unnecessary properties of submissions for more efficient data transfer.
+function minifySubmissions(subs) {
+	const res = new Array();
+
+	subs.forEach(sub => {
+		// Only exactly what we store on the backend.
+		res.push({
+			id: sub.id,
+			contestId: sub.contestId,
+			verdict: sub.verdict,
+			problem: {
+				name: sub.problem.name,
+				contestId: sub.problem.contestId,
+				index: sub.problem.index,
+				rating: sub.problem.rating,
+				tags: sub.problem.tags,
+			},
+			author: {
+				participantType: sub.author.participantType,
+			},
+			programmingLanguage: sub.programmingLanguage,
+			creationTimeSeconds: sub.creationTimeSeconds,
+		});
+	});
+
+	return res;
 }
