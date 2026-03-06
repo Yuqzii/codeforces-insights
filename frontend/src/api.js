@@ -83,10 +83,19 @@ export async function getRecommendedProblems(count, ratingRange, lookback, solve
 		submissions: subs,
 	};
 
+	const blob = new Blob([JSON.stringify(reqData)], { type: "application/json" });
+	const stream = blob.stream();
+
+	const compressed = stream.pipeThrough(new CompressionStream("gzip"));
+
 	try {
 		const resp = await fetch(`${process.env.API_URL}/recommend`, {
 			method: "POST",
-			body: JSON.stringify(reqData),
+			headers: {
+				"Content-Encoding": "gzip",
+				"Content-Type": "application/json",
+			},
+			body: await new Response(compressed).blob(),
 			signal: signal,
 		});
 
