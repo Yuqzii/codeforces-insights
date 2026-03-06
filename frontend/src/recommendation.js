@@ -48,7 +48,7 @@ rangeTexts.forEach(input => {
 	});
 });
 
-export function recommendProblems() {
+export function recommendProblems(solved) {
 	if (solvedByContests === undefined)
 		return
 
@@ -59,7 +59,7 @@ export function recommendProblems() {
 	clearProblemContainer();
 
 	const ratingRange = getSelectedRatingRange();
-	getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, controller.signal).then(problems => {
+	getRecommendedProblems(PROBLEM_COUNT, ratingRange, CONTEST_LOOKBACK, solved, controller.signal).then(problems => {
 		const elements = new Array();
 
 		problems.forEach(resp => {

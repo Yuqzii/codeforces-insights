@@ -72,12 +72,13 @@ export async function getPercentile(rating, signal) {
 	}
 }
 
-export async function getRecommendedProblems(count, ratingRange, contestsObj, signal) {
+export async function getRecommendedProblems(count, ratingRange, lookback, solved, signal) {
 	const reqData = {
 		count: count,
 		minRating: ratingRange.min,
 		maxRating: ratingRange.max,
-		contests: contestsObj,
+		lookback: lookback,
+		submissions: solved,
 	};
 
 	try {

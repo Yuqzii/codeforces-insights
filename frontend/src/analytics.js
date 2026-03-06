@@ -74,6 +74,8 @@ export async function updateAnalytics(handle, signal) {
 
 		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
+
+		return solved;
 	}).catch(err => {
 		toggleContentVisibility(solvedTagsEl, false);
 		showError(err, solvedTagsEl);
@@ -95,8 +97,8 @@ export async function updateAnalytics(handle, signal) {
 	});
 
 	// Recommend problems after we have user's rating and submissions.
-	Promise.all([userInfoTask, submissionTask]).then(() => {
-		recommendProblems();
+	Promise.all([userInfoTask, submissionTask]).then(([, solved]) => {
+		recommendProblems(solved);
 	}).catch(err => {
 		clearProblemContainer();
 		showError(err, problemContainer);
