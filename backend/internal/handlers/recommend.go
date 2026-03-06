@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -11,8 +12,6 @@ import (
 	"github.com/yuqzii/cf-stats/internal/codeforces"
 	"github.com/yuqzii/cf-stats/internal/recommender"
 )
-
-const maxRecommendRequestSize = 1 << 23 // 8 MiB
 
 type RecommendationProvider interface {
 	Recommend(ctx context.Context, probs []*codeforces.Problem, disallowedProbs map[int64]struct{},
@@ -32,9 +31,28 @@ type recommendReq struct {
 
 // The endpoint expects json on the format specified in the data struct.
 func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, maxRecommendRequestSize)
+	const (
+		maxRequestSize = 1 << 20 // 1 MiB
+		maxRequestBody = 1 << 23 // 8 MiB
+	)
+
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestSize)
 	defer r.Body.Close() //nolint:errcheck
-	body, err := io.ReadAll(r.Body)
+
+	var reader io.Reader = r.Body
+
+	if r.Header.Get("Content-Encoding") == "gzip" {
+		gz, err := gzip.NewReader(r.Body)
+		if err != nil {
+			http.Error(w, "Invalid gzip", http.StatusBadRequest)
+			return
+		}
+		defer gz.Close() // nolint:errcheck
+
+		reader = http.MaxBytesReader(w, gz, maxRequestBody)
+	}
+
+	body, err := io.ReadAll(reader)
 	if err != nil {
 		var maxBytesErr *http.MaxBytesError
 		if errors.As(err, &maxBytesErr) {
