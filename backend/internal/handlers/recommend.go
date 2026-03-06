@@ -52,26 +52,21 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		reader = http.MaxBytesReader(w, gz, maxRequestBody)
 	}
 
-	body, err := io.ReadAll(reader)
-	if err != nil {
+	var data recommendReq
+	decoder := json.NewDecoder(reader)
+	if err := decoder.Decode(&data); err != nil {
 		var maxBytesErr *http.MaxBytesError
 		if errors.As(err, &maxBytesErr) {
 			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
 			return
 		}
+
 		http.Error(w, "Couldn't read request", http.StatusBadRequest)
 		log.Printf("Error reading recommend request: %v\n", err)
 		return
 	}
 
-	var data recommendReq
-	if err = json.Unmarshal(body, &data); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Printf("Error unmarshalling json in recommend request: %v\n", err)
-		return
-	}
-
-	if err = data.validate(); err != nil {
+	if err := data.validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
