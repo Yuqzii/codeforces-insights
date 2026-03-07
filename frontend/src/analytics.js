@@ -1,6 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
-import { clearProblemContainer, problemContainer, recommendProblems, setRatingRange, updateSubmissions } from "./recommendation.js";
+import { clearProblemContainer, problemContainer, recommendProblems, setRatingRange } from "./recommendation.js";
 import { setSearchValues } from "./search.js";
 import { showError, toggleContentVisibility } from "./error.js"
 
@@ -72,7 +72,6 @@ export async function updateAnalytics(handle, signal) {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
 
-		updateSubmissions(submissions);
 		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
 
 		return solved;
@@ -259,6 +258,7 @@ function loadData() {
 	if (savedSolved) {
 		const solved = JSON.parse(savedSolved);
 		handleSolved(solved);
+		recommendProblems(solved);
 	}
 	solvedTags.dataLoaded = true;
 	solvedRatings.dataLoaded = true;
