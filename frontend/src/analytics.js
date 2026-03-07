@@ -46,6 +46,8 @@ export async function updateAnalytics(handle, signal) {
 	ratingHistory.updateChart();
 	showLoader(userDetailsEl);
 
+	clearProblemContainer();
+
 	// Prevent displaying stale data.
 	ratingHistory.updatePerfomanceData([]);
 	ratingHistory.updateRatingData([]);
