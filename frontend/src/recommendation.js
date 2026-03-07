@@ -6,6 +6,7 @@ import problemHTML from "./templates/problem.html";
 
 const PROBLEM_COUNT = 6;
 const CONTEST_LOOKBACK = 5;
+let solvedSubs;
 
 const problemTemplate = loadProblemTemplate();
 export const problemContainer = document.getElementById("problem-container");
@@ -31,7 +32,7 @@ rangeInputs.forEach(input => {
 		updateRatingRange(isMin, rangeMin, rangeMax);
 
 		clearTimeout(inputTimer);
-		inputTimer = setTimeout(recommendProblems, INPUT_WAIT);
+		inputTimer = setTimeout(recommendProblems, INPUT_WAIT, solvedSubs);
 	});
 });
 
@@ -43,14 +44,19 @@ rangeTexts.forEach(input => {
 
 		updateRatingRange(isMin, rangeMin, rangeMax);
 
-		recommendProblems();
+		recommendProblems(solvedSubs);
 	});
 });
 
 export function recommendProblems(solved) {
+	if (solved === undefined)
+		return;
+
 	// Cancel previous requests.
 	controller.abort();
 	controller = new AbortController();
+
+	solvedSubs = solved;
 
 	clearProblemContainer();
 
