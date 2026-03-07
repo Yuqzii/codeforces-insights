@@ -113,8 +113,8 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if _, err = w.Write(j); err != nil {
-		http.Error(w, "Failure writing response", http.StatusInternalServerError)
 		log.Printf("Error writing recommendations: %v\n", err)
 	}
 }
