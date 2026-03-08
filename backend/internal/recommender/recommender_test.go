@@ -219,5 +219,88 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
 	})
+}
 
+func TestFindSolvedRecentContests(t *testing.T) {
+	m := new(mockProblemRepository)
+	r := New(m)
+
+	type args struct {
+		subs     []codeforces.Submission
+		lookback int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected map[int][]*codeforces.Problem
+	}{
+		{
+			name: "Group problems by contests",
+			args: args{
+				lookback: 1,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 200,
+						ContestID: 100,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					}, {
+						Timestamp: 100,
+						ContestID: 100,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				100: {{Index: "B"}, {Index: "A"}},
+			},
+		}, {
+			name: "Ignore non-contestant submissions",
+			args: args{
+				lookback: 1,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 825,
+						ContestID: 67,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "C"},
+					}, {
+						Timestamp: 1000,
+						ContestID: 69,
+						Author:    codeforces.Party{ParticipantType: "PRACTICE"},
+						Problem:   codeforces.Problem{Index: "D"},
+					}, {
+						Timestamp: 600,
+						ContestID: 67,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				67: {{Index: "C"}, {Index: "B"}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		// Update ContestID of argument problems.
+		for i := range tt.args.subs {
+			tt.args.subs[i].Problem.ContestID = tt.args.subs[i].ContestID
+		}
+
+		// Update ContestID of expected problems.
+		for i := range tt.expected {
+			for j := range tt.expected[i] {
+				tt.expected[i][j].ContestID = i
+			}
+		}
+
+		t.Run(tt.name, func(t *testing.T) {
+			actual := r.FindSolvedRecentContests(tt.args.subs, tt.args.lookback)
+
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
