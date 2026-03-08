@@ -72,18 +72,30 @@ export async function getPercentile(rating, signal) {
 	}
 }
 
-export async function getRecommendedProblems(count, ratingRange, contestsObj, signal) {
+export async function getRecommendedProblems(count, ratingRange, lookback, solved, signal) {
+	const subs = minifySubmissions(solved);
+
 	const reqData = {
 		count: count,
 		minRating: ratingRange.min,
 		maxRating: ratingRange.max,
-		contests: contestsObj,
+		lookback: lookback,
+		submissions: subs,
 	};
+
+	const blob = new Blob([JSON.stringify(reqData)], { type: "application/json" });
+	const stream = blob.stream();
+
+	const compressed = stream.pipeThrough(new CompressionStream("gzip"));
 
 	try {
 		const resp = await fetch(`${process.env.API_URL}/recommend`, {
 			method: "POST",
-			body: JSON.stringify(reqData),
+			headers: {
+				"Content-Encoding": "gzip",
+				"Content-Type": "application/json",
+			},
+			body: await new Response(compressed).blob(),
 			signal: signal,
 		});
 
@@ -96,4 +108,32 @@ export async function getRecommendedProblems(count, ratingRange, contestsObj, si
 		if (err.name === "AbortError") return;
 		throw err;
 	}
+}
+
+// Removes unnecessary properties of submissions for more efficient data transfer.
+function minifySubmissions(subs) {
+	const res = new Array();
+
+	subs.forEach(sub => {
+		// Only exactly what we store on the backend.
+		res.push({
+			id: sub.id,
+			contestId: sub.contestId,
+			verdict: sub.verdict,
+			problem: {
+				name: sub.problem.name,
+				contestId: sub.problem.contestId,
+				index: sub.problem.index,
+				rating: sub.problem.rating,
+				tags: sub.problem.tags,
+			},
+			author: {
+				participantType: sub.author.participantType,
+			},
+			programmingLanguage: sub.programmingLanguage,
+			creationTimeSeconds: sub.creationTimeSeconds,
+		});
+	});
+
+	return res;
 }

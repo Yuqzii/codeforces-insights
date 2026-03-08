@@ -5,11 +5,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"slices"
 	"strings"
 	"sync"
 
 	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/cf-stats/internal/db"
 )
 
 type ProblemRepository interface {
@@ -41,18 +43,19 @@ var (
 // Converts all the problems tags into a vector, and compares the direction of this vector
 // to each vector of other problems with at least one tag in common to find the most similar problems.
 // @param probs Slice containing problems that we want to find similar problems to.
+// @param disallowedProbs Map of empty structs (effectively a set) containing hashes of problems
+// to not recommend. E.g. problems the user has already solved.
 // @param cnt Amount of problems to recommend.
 // @param minRat Minimum rating of recommended problems.
 // @param maxRat Maximum rating of recommended problems.
 // @return A slice of length cnt, the recommended problems.
 func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem,
-	cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
+	disallowedProbs map[int64]struct{}, cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
 
 	tags := make([]string, 0)
-	unavailableProbs := make(map[int64]struct{})
 	for _, p := range probs {
 		tags = append(tags, p.Tags...)
-		unavailableProbs[p.Hash()] = struct{}{}
+		disallowedProbs[p.Hash()] = struct{}{}
 	}
 
 	u := r.tagsToVec(tags)
@@ -70,8 +73,8 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 	heap.Init(&pq)
 
 	for _, prob := range allProbs {
-		_, isUnavailable := unavailableProbs[prob.Hash()]
-		if isUnavailable {
+		_, isDisallowed := disallowedProbs[prob.Hash()]
+		if isDisallowed {
 			continue
 		}
 
@@ -93,8 +96,79 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 	return pq, nil
 }
 
+// @param solvedByContest Map with key as contest ID and value as slice of problems.
+// This should generally be the output of FindSolvedRecentContests.
+func (r *recommender) FindUnsolvedProblems(ctx context.Context,
+	solvedByContest map[int][]*codeforces.Problem) ([]*codeforces.Problem, error) {
+
+	unsolved := make([]*codeforces.Problem, 0, len(solvedByContest))
+
+	for contestID, probs := range solvedByContest {
+		indices := make([]string, 0)
+		for _, p := range probs {
+			indices = append(indices, p.Index)
+		}
+
+		unsolvedProb, err := r.findFirstUnsolvedProblem(ctx, contestID, indices)
+		if err != nil {
+			if errors.Is(err, ErrNoUnsolvedProblem) {
+				continue
+			}
+
+			if errors.Is(err, db.ErrNoProblemsForContest) {
+				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
+				continue
+			}
+
+			if errors.Is(err, ErrInvalidIndices) {
+				return nil, fmt.Errorf("finding unsolved problems: %w", err)
+			}
+
+			log.Printf("Error finding unsolved problem for contest %d and indices %v: %v\n",
+				contestID, indices, err)
+		}
+
+		unsolved = append(unsolved, unsolvedProb)
+	}
+
+	return unsolved, nil
+}
+
+func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
+	lookback int) map[int][]*codeforces.Problem {
+
+	// Sort submissions in descending order of submission time.
+	slices.SortFunc(subs, func(a, b codeforces.Submission) int {
+		return b.Timestamp - a.Timestamp
+	})
+
+	probsByContest := make(map[int][]*codeforces.Problem, lookback)
+	for i := range subs {
+		if subs[i].Author.ParticipantType != "CONTESTANT" {
+			// Submission was not in contest.
+			continue
+		}
+
+		s, contestStored := probsByContest[subs[i].ContestID]
+		if contestStored {
+			s = append(s, &subs[i].Problem)
+			probsByContest[subs[i].ContestID] = s
+		} else {
+			if len(probsByContest) >= lookback {
+				break
+			} else {
+				s = make([]*codeforces.Problem, 1)
+				s[0] = &subs[i].Problem
+				probsByContest[subs[i].ContestID] = s
+			}
+		}
+	}
+
+	return probsByContest
+}
+
 // @param indices Slice of the indices of the solved problems for the contest.
-func (r *recommender) FindFirstUnsolvedProblem(ctx context.Context, contestID int,
+func (r *recommender) findFirstUnsolvedProblem(ctx context.Context, contestID int,
 	indices []string) (*codeforces.Problem, error) {
 
 	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)

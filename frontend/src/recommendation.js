@@ -6,7 +6,7 @@ import problemHTML from "./templates/problem.html";
 
 const PROBLEM_COUNT = 6;
 const CONTEST_LOOKBACK = 5;
-let solvedByContests;
+let solvedSubs;
 
 const problemTemplate = loadProblemTemplate();
 export const problemContainer = document.getElementById("problem-container");
@@ -32,7 +32,7 @@ rangeInputs.forEach(input => {
 		updateRatingRange(isMin, rangeMin, rangeMax);
 
 		clearTimeout(inputTimer);
-		inputTimer = setTimeout(recommendProblems, INPUT_WAIT);
+		inputTimer = setTimeout(recommendProblems, INPUT_WAIT, solvedSubs);
 	});
 });
 
@@ -44,22 +44,24 @@ rangeTexts.forEach(input => {
 
 		updateRatingRange(isMin, rangeMin, rangeMax);
 
-		recommendProblems();
+		recommendProblems(solvedSubs);
 	});
 });
 
-export function recommendProblems() {
-	if (solvedByContests === undefined)
-		return
+export function recommendProblems(solved) {
+	if (solved === undefined)
+		return;
 
 	// Cancel previous requests.
 	controller.abort();
 	controller = new AbortController();
 
+	solvedSubs = solved;
+
 	clearProblemContainer();
 
 	const ratingRange = getSelectedRatingRange();
-	getRecommendedProblems(PROBLEM_COUNT, ratingRange, solvedByContests, controller.signal).then(problems => {
+	getRecommendedProblems(PROBLEM_COUNT, ratingRange, CONTEST_LOOKBACK, solved, controller.signal).then(problems => {
 		const elements = new Array();
 
 		problems.forEach(resp => {
@@ -73,12 +75,6 @@ export function recommendProblems() {
 	});
 }
 
-export function updateSubmissions(submissions) {
-	submissions = filterSubmissionsRecentContests(submissions, CONTEST_LOOKBACK);
-	solvedByContests = findSolvedProblemsRecentContests(submissions);
-	sessionStorage.setItem("solvedProblemsByContests", JSON.stringify(solvedByContests));
-}
-
 export function setRatingRange(min, max) {
 	updateRatingRange(false, min - MIN_RATING, max - MIN_RATING);
 }
@@ -87,14 +83,6 @@ export function clearProblemContainer() {
 	while (problemContainer.firstChild)
 		problemContainer.removeChild(problemContainer.lastChild);
 }
-
-window.addEventListener("load", () => {
-	const savedSolvedByContests = sessionStorage.getItem("solvedProblemsByContests");
-	if (!savedSolvedByContests) return;
-
-	solvedByContests = JSON.parse(savedSolvedByContests)
-	recommendProblems();
-});
 
 function updateRatingRange(isMin, rangeMin, rangeMax) {
 	rangeMin = clampRating(rangeMin);
@@ -128,45 +116,6 @@ function clampRating(rating) {
 	rating = Math.max(rating, 0);
 	rating = Math.min(rating, rangeInputs[0].max);
 	return rating;
-}
-
-function filterSubmissionsRecentContests(submissions, amountOfContests) {
-	const recentContestsId = [];
-	const recentContests = [];
-
-	for (let i = 0; i < submissions.length; i++) {
-		if (submissions[i].author.participantType != "CONTESTANT") {
-			continue;
-		}
-
-		let ID = submissions[i].contestId;
-		if (recentContestsId.includes(ID)) {
-			recentContests[recentContestsId.indexOf(ID)].submissions.push(submissions[i]);
-		} else if (recentContestsId.length < amountOfContests) {
-			recentContestsId.push(ID);
-			recentContests.push({ id: ID, submissions: [submissions[i]] })
-		}
-	}
-
-	return recentContests
-}
-
-function findSolvedProblemsRecentContests(contests) {
-	const solvedByContests = [];
-
-	for (const contest of contests) {
-		const solvedInContest = [];
-
-		for (const problem of contest.submissions) {
-			if (problem.verdict == "OK" && !(solvedInContest.includes(problem.index))) {
-				solvedInContest.push(problem.problem.index);
-			}
-		}
-
-		solvedByContests.push({ id: contest.id, indices: solvedInContest })
-	}
-
-	return solvedByContests
 }
 
 // @param problemData Object with the name, constestId, index, rating, and tags properties.

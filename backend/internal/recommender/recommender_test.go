@@ -32,6 +32,8 @@ func TestRecommend(t *testing.T) {
 	m := new(mockProblemRepository)
 	r := New(m)
 
+	emptySet := make(map[int64]struct{})
+
 	t.Run("Filtering input problems", func(t *testing.T) {
 		input := []*codeforces.Problem{{
 			Name:  "Very cool Problem",
@@ -52,7 +54,7 @@ func TestRecommend(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 1, 0, 0)
+		res, err := r.Recommend(context.Background(), input, emptySet, 1, 0, 0)
 		assert.Nil(t, err)
 		assert.NotZero(t, len(res))
 		assert.Equal(t, expected.Problem.Name, res[0].Problem.Name, "Recommended same problem as in input.")
@@ -75,7 +77,7 @@ func TestRecommend(t *testing.T) {
 		mockCall := m.On("GetProblemsWithTags", []string{"graph", "greedy"}).Return(allProbs, nil)
 		defer mockCall.Unset()
 
-		res, err := r.Recommend(context.Background(), input, 2, 0, 0)
+		res, err := r.Recommend(context.Background(), input, emptySet, 2, 0, 0)
 
 		assert.Nil(t, err)
 		assert.Equal(t, len(res), 2, "Did not recommend the correct amount of problems.")
@@ -131,7 +133,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 1, []string{"B", "A", "D"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
@@ -177,7 +179,7 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 42, []string{"B", "A", "D1", "C1"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
@@ -212,10 +214,127 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 		}, nil)
 		defer mockCall.Unset()
 
-		p, err := r.FindFirstUnsolvedProblem(context.Background(), 42, []string{"A", "B", "C1"})
+		p, err := r.findFirstUnsolvedProblem(context.Background(), 42, []string{"A", "B", "C1"})
 
 		assert.Nil(t, err)
 		assert.Equal(t, *p, expected)
 	})
+}
 
+func TestFindSolvedRecentContests(t *testing.T) {
+	m := new(mockProblemRepository)
+	r := New(m)
+
+	type args struct {
+		subs     []codeforces.Submission
+		lookback int
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected map[int][]*codeforces.Problem
+	}{
+		{
+			name: "Group problems by contests",
+			args: args{
+				lookback: 1,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 200,
+						ContestID: 100,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					}, {
+						Timestamp: 100,
+						ContestID: 100,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				100: {{Index: "B"}, {Index: "A"}},
+			},
+		}, {
+			name: "Ignore non-contestant submissions",
+			args: args{
+				lookback: 1,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 825,
+						ContestID: 67,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "C"},
+					}, {
+						Timestamp: 1000,
+						ContestID: 69,
+						Author:    codeforces.Party{ParticipantType: "PRACTICE"},
+						Problem:   codeforces.Problem{Index: "D"},
+					}, {
+						Timestamp: 600,
+						ContestID: 67,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				67: {{Index: "C"}, {Index: "B"}},
+			},
+		}, {
+			name: "Empty input",
+			args: args{
+				lookback: 5,
+				subs:     []codeforces.Submission{},
+			},
+			expected: map[int][]*codeforces.Problem{},
+		}, {
+			name: "Respect lookback",
+			args: args{
+				lookback: 2,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 1000,
+						ContestID: 420,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					}, {
+						Timestamp: 2000,
+						ContestID: 421,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					}, {
+						Timestamp: 4267,
+						ContestID: 670,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				421: {{Index: "B"}},
+				670: {{Index: "A"}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		// Update ContestID of argument problems.
+		for i := range tt.args.subs {
+			tt.args.subs[i].Problem.ContestID = tt.args.subs[i].ContestID
+		}
+
+		// Update ContestID of expected problems.
+		for i := range tt.expected {
+			for j := range tt.expected[i] {
+				tt.expected[i][j].ContestID = i
+			}
+		}
+
+		t.Run(tt.name, func(t *testing.T) {
+			actual := r.FindSolvedRecentContests(tt.args.subs, tt.args.lookback)
+
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }

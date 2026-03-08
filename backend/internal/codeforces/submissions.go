@@ -9,10 +9,16 @@ import (
 
 type Submission struct {
 	ID                  int     `json:"id"`
+	ContestID           int     `json:"contestId"`
 	Verdict             string  `json:"verdict"`
 	Problem             Problem `json:"problem"`
+	Author              Party   `json:"author"`
 	ProgrammingLanguage string  `json:"programmingLanguage"`
 	Timestamp           int     `json:"creationTimeSeconds"`
+}
+
+type Party struct {
+	ParticipantType string `json:"participantType"`
 }
 
 func (c *client) GetSubmissions(ctx context.Context, handle string) ([]Submission, error) {
