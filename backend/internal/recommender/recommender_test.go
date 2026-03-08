@@ -281,6 +281,40 @@ func TestFindSolvedRecentContests(t *testing.T) {
 			expected: map[int][]*codeforces.Problem{
 				67: {{Index: "C"}, {Index: "B"}},
 			},
+		}, {
+			name: "Empty input",
+			args: args{
+				lookback: 5,
+				subs:     []codeforces.Submission{},
+			},
+			expected: map[int][]*codeforces.Problem{},
+		}, {
+			name: "Respect lookback",
+			args: args{
+				lookback: 2,
+				subs: []codeforces.Submission{
+					{
+						Timestamp: 1000,
+						ContestID: 420,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					}, {
+						Timestamp: 2000,
+						ContestID: 421,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "B"},
+					}, {
+						Timestamp: 4267,
+						ContestID: 670,
+						Author:    codeforces.Party{ParticipantType: "CONTESTANT"},
+						Problem:   codeforces.Problem{Index: "A"},
+					},
+				},
+			},
+			expected: map[int][]*codeforces.Problem{
+				421: {{Index: "B"}},
+				670: {{Index: "A"}},
+			},
 		},
 	}
 
