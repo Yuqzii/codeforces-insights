@@ -82,6 +82,9 @@ To make the PostgreSQL database work, you need to create a `.env` file with thes
 
 It does not matter what these are for the dev environment, but they must be set.
 
+If you wish to run the frontend in addition to the server, you must enable the `frontend` compose profile.\
+This can be done by adding `COMPOSE_PROFILES=frontend` to `.env`.
+
 
 ### Running Services
 For running the site locally use the provided `Makefile`.\
