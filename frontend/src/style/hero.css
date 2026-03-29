@@ -59,27 +59,38 @@
 	gap: 0.5em;
 }
 
-.grid-bg {
+#grid-bg {
 	--grid-grap: 60px;
 	--dot-size: 2px;
 	--line-thickness: 1px;
 
-	position: absolute;
+	position: fixed;
 	inset: 0;
+	z-index: -1;
+}
+
+#grid-dots {
+	position: fixed;
+	inset: 0;
+
 	background-size: var(--grid-grap) var(--grid-grap);
 	background-image: radial-gradient(circle, var(--bg3) var(--dot-size), transparent var(--dot-size));
 	background-attachment: fixed;
 	background-position: 0 0;
-	mask-image: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y),
+
+	mask-image: radial-gradient(circle 200px,
 			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
-	will-change: mask-image;
+	mask-repeat: no-repeat;
+	will-change: mask-position;
 	z-index: -1;
+
+	transition: mask-position 0s;
 }
 
-.grid-bg::before {
-	content: "";
-	position: absolute;
+#grid-lines {
+	position: fixed;
 	inset: 0;
+
 	background-size: var(--grid-grap) var(--grid-grap);
 	background-image:
 		linear-gradient(to right, var(--bg3) var(--line-thickness), transparent var(--line-thickness)),
@@ -87,9 +98,13 @@
 	background-attachment: fixed;
 	--background-offset: calc(var(--grid-grap) / 2 - var(--line-thickness) / 2);
 	background-position: var(--background-offset) var(--background-offset);
-	mask-image: radial-gradient(circle 150px at var(--cursor-x) var(--cursor-y),
+
+	mask-image: radial-gradient(circle 150px,
 			rgba(255, 255, 255, 0.3) 0%, transparent 100%);
-	will-change: mask-image;
+	mask-repeat: no-repeat;
+	will-change: mask-position;
+
+	transition: mask-position 0s;
 }
 
 /* Hero graph animation */
