@@ -64,8 +64,17 @@
 	--dot-size: 2px;
 	--line-thickness: 1px;
 
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+}
+
+.grid-bg::before {
+	content: "";
 	position: absolute;
 	inset: 0;
+
 	background-size: var(--grid-grap) var(--grid-grap);
 	background-image: radial-gradient(circle, var(--bg3) var(--dot-size), transparent var(--dot-size));
 	background-attachment: fixed;
@@ -74,12 +83,14 @@
 			rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
 	will-change: mask-image;
 	z-index: -1;
+
 }
 
-.grid-bg::before {
+.grid-bg::after {
 	content: "";
 	position: absolute;
 	inset: 0;
+
 	background-size: var(--grid-grap) var(--grid-grap);
 	background-image:
 		linear-gradient(to right, var(--bg3) var(--line-thickness), transparent var(--line-thickness)),

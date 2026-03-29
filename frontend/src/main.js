@@ -63,8 +63,8 @@ function setTheme(theme) {
 }
 
 function updateCursorCSS() {
-	root.style.setProperty("--cursor-x", (cursorX + window.scrollX) + "px");
-	root.style.setProperty("--cursor-y", (cursorY + window.scrollY) + "px");
+	root.style.setProperty("--cursor-x", (cursorX) + "px");
+	root.style.setProperty("--cursor-y", (cursorY) + "px");
 }
 
 function throttle(fn, delay) {
