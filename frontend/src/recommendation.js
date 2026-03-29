@@ -18,7 +18,7 @@ const rangeInputs = document.querySelectorAll(".range-input input");
 const rangeTexts = document.querySelectorAll("#rating-range>input");
 
 const STALE_OPACITY = 0.3;
-const INPUT_WAIT = 500; // Time in ms.
+const INPUT_WAIT = 300; // Time in ms.
 let inputTimer;
 let controller = new AbortController();
 
