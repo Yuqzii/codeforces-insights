@@ -7,6 +7,9 @@ const root = document.documentElement;
 export const main = document.querySelector("main");
 const footer = document.querySelector("footer");
 
+const dots = document.getElementById("grid-dots");
+const lines = document.getElementById("grid-lines");
+
 const navbar = document.getElementById("nav-bar");
 const nav = document.querySelector("#nav-bar nav");
 const themeSelect = document.getElementById("theme-select");
@@ -62,8 +65,10 @@ function setTheme(theme) {
 }
 
 function updateCursorCSS() {
-	root.style.setProperty("--cursor-x", (cursorX) + "px");
-	root.style.setProperty("--cursor-y", (cursorY) + "px");
+	dots.style.maskPosition =
+		`${cursorX - window.innerWidth / 2}px ${cursorY - window.innerHeight / 2}px, 0 0`;
+	lines.style.maskPosition =
+		`${cursorX - window.innerWidth / 2}px ${cursorY - window.innerHeight / 2}px`;
 
 	requestAnimationFrame(updateCursorCSS);
 }
