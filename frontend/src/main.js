@@ -30,11 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	observeAndAnimate(analyticsCards);
 });
 
-window.addEventListener("mousemove", throttle((e) => {
+window.addEventListener("mousemove", e => {
 	cursorX = e.clientX;
 	cursorY = e.clientY;
-	updateCursorCSS();
-}, 50));
+});
+
+requestAnimationFrame(updateCursorCSS);
 
 window.addEventListener("scroll", () => {
 	if (window.scrollY > 50)
@@ -42,8 +43,6 @@ window.addEventListener("scroll", () => {
 	else
 		navbar.classList.remove("scrolled");
 });
-
-window.addEventListener("scroll", throttle(updateCursorCSS, 50));
 
 window.addEventListener("load", () => {
 	const hasAnalysed = sessionStorage.getItem("hasAnalysed");
@@ -65,17 +64,8 @@ function setTheme(theme) {
 function updateCursorCSS() {
 	root.style.setProperty("--cursor-x", (cursorX) + "px");
 	root.style.setProperty("--cursor-y", (cursorY) + "px");
-}
 
-function throttle(fn, delay) {
-	let t = 0;
-	return function(...args) {
-		const now = Date.now();
-		if (now - t >= delay) {
-			fn.apply(this, args);
-			t = now;
-		}
-	}
+	requestAnimationFrame(updateCursorCSS);
 }
 
 export function showMain() {
