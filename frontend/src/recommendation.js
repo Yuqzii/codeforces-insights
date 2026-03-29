@@ -17,6 +17,7 @@ const rangeSlider = document.getElementById("range-slider");
 const rangeInputs = document.querySelectorAll(".range-input input");
 const rangeTexts = document.querySelectorAll("#rating-range>input");
 
+const STALE_OPACITY = 0.3;
 const INPUT_WAIT = 500; // Time in ms.
 let inputTimer;
 let controller = new AbortController();
@@ -58,11 +59,14 @@ export function recommendProblems(solved) {
 
 	solvedSubs = solved;
 
-	clearProblemContainer();
+	setProblemOpacity(STALE_OPACITY);
 
 	const ratingRange = getSelectedRatingRange();
 	getRecommendedProblems(PROBLEM_COUNT, ratingRange, CONTEST_LOOKBACK, solved, controller.signal).then(problems => {
 		const elements = new Array();
+
+		const scrollY = window.scrollY;
+		clearProblemContainer();
 
 		problems.forEach(resp => {
 			const element = displayProblem(resp.problem);
@@ -70,6 +74,8 @@ export function recommendProblems(solved) {
 		});
 
 		observeAndAnimate(elements);
+
+		window.scrollTo({ top: scrollY, behavior: "instant" });
 	}).catch(err => {
 		showError(err, problemContainer);
 	});
@@ -153,6 +159,13 @@ function displayProblem(problem) {
 
 	problemContainer.appendChild(problemClone);
 	return problemElem;
+}
+
+function setProblemOpacity(opacity) {
+	for (let i = 0; i < problemContainer.children.length; i++) {
+		const child = problemContainer.children[i];
+		child.style.opacity = opacity;
+	}
 }
 
 function getSelectedRatingRange() {
