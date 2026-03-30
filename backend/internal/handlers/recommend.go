@@ -55,8 +55,7 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	var data recommendReq
 	decoder := json.NewDecoder(reader)
 	if err := decoder.Decode(&data); err != nil {
-		var maxBytesErr *http.MaxBytesError
-		if errors.As(err, &maxBytesErr) {
+		if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
 			return
 		}
