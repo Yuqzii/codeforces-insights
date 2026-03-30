@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
 type ProblemRepository interface {

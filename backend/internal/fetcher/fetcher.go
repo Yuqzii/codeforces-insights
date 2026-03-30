@@ -5,13 +5,13 @@ import (
 	"errors"
 	"time"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
 var ErrNoRatingInfo = errors.New("no rating info exists for this contest")
 
-type Service struct {
+type fetcher struct {
 	contestProvider ContestProvider
 	contestRepo     ContestRepository
 	problemProvider ProblemProvider
@@ -42,9 +42,9 @@ type ProblemRepository interface {
 }
 
 func New(contestProvider ContestProvider, contestRepo ContestRepository,
-	problemProvider ProblemProvider, problemRepo ProblemRepository, tx db.TxManager) *Service {
+	problemProvider ProblemProvider, problemRepo ProblemRepository, tx db.TxManager) *fetcher {
 
-	return &Service{
+	return &fetcher{
 		contestProvider: contestProvider,
 		contestRepo:     contestRepo,
 		problemProvider: problemProvider,

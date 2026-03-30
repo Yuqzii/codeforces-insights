@@ -4,8 +4,8 @@ import (
 	"math"
 	"strings"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/fft"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/fft"
 )
 
 const (

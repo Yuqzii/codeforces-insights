@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/bits"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 const totalTagCnt int = 40 // Actual value is 36, but added some for safety in case new tags are added.

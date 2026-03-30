@@ -6,8 +6,8 @@ import (
 )
 
 // @return Amount of problems inserted or updated.
-func (s *Service) FetchProblems(ctx context.Context) (int64, error) {
-	probs, err := s.problemProvider.GetProblems(ctx)
+func (f *fetcher) FetchProblems(ctx context.Context) (int64, error) {
+	probs, err := f.problemProvider.GetProblems(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("getting problems: %w", err)
 	}
@@ -25,7 +25,7 @@ func (s *Service) FetchProblems(ctx context.Context) (int64, error) {
 
 	probs = probs[:n] // Remove all incomplete problems.
 
-	updated, err := s.problemRepo.UpsertProblemsBatch(ctx, probs)
+	updated, err := f.problemRepo.UpsertProblemsBatch(ctx, probs)
 	if err != nil {
 		return 0, fmt.Errorf("upserting %d problems: %w", n, err)
 	}

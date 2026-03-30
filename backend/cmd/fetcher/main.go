@@ -10,9 +10,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
-	"github.com/yuqzii/cf-stats/internal/fetcher"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/fetcher"
 )
 
 const (

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 type mockProblemRepository struct {

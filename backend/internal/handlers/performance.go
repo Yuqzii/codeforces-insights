@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/stats"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/stats"
 )
 
 const maxPerfRequestSize = 1 << 16 // 65536 bytes
@@ -40,11 +40,11 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close() //nolint:errcheck
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		var maxBytesErr *http.MaxBytesError
-		if errors.As(err, &maxBytesErr) {
+		if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
 			return
 		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("Error reading performance request: %v\n", err)
 		return

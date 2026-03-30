@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 var ErrNoProblemsForContest = errors.New("there are no stored problems for this contest")

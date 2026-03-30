@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
 // First tries getting contest results from the DB, if unsuccessful tries the API.
