@@ -71,7 +71,7 @@
 
 #grid-dots {
 	position: fixed;
-	inset: 0;
+	inset: min(-50vw, -50vh);
 
 	background-size: var(--grid-grap) var(--grid-grap);
 	background-image: radial-gradient(circle, var(--bg3) var(--dot-size), transparent var(--dot-size));
