@@ -109,7 +109,7 @@ func (f *fetcher) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Contest,
 	contestants []codeforces.Contestant) {
 
-	go func() {
+	f.WG.Go(func() {
 		err := f.tx.WithTx(ctx, func(q db.Querier) error {
 			id, err := f.contestRepo.UpsertContestTx(ctx, q, contest)
 			if err != nil {
@@ -129,5 +129,5 @@ func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Conte
 		} else {
 			log.Printf("Successfully updated contest %d\n", contest.ID)
 		}
-	}()
+	})
 }
