@@ -1,6 +1,6 @@
 package recommender
 
-import "github.com/yuqzii/cf-stats/internal/codeforces"
+import "github.com/yuqzii/codeforces-insights/internal/codeforces"
 
 type ProbWithScore struct {
 	Score   float64             `json:"score"`

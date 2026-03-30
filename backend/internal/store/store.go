@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 type API interface {

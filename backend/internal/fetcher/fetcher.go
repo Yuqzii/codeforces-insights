@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
 var ErrNoRatingInfo = errors.New("no rating info exists for this contest")

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 type Client interface {

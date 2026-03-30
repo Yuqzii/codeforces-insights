@@ -7,12 +7,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/db"
-	"github.com/yuqzii/cf-stats/internal/handlers"
-	"github.com/yuqzii/cf-stats/internal/recommender"
-	"github.com/yuqzii/cf-stats/internal/stats"
-	"github.com/yuqzii/cf-stats/internal/store"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/db"
+	"github.com/yuqzii/codeforces-insights/internal/handlers"
+	"github.com/yuqzii/codeforces-insights/internal/recommender"
+	"github.com/yuqzii/codeforces-insights/internal/stats"
+	"github.com/yuqzii/codeforces-insights/internal/store"
 )
 
 const (

@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
-	"github.com/yuqzii/cf-stats/internal/stats"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/stats"
 )
 
 const maxPerfRequestSize = 1 << 16 // 65536 bytes

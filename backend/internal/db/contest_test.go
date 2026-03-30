@@ -8,7 +8,7 @@ import (
 
 	"github.com/pashagolub/pgxmock/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 func setupMockDB(t *testing.T) (pgxmock.PgxPoolIface, *db) {

@@ -1,4 +1,4 @@
-module github.com/yuqzii/cf-stats
+module github.com/yuqzii/codeforces-insights
 
 go 1.24.6
 

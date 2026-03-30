@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yuqzii/cf-stats/internal/codeforces"
+	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
 func (db *db) ContestExists(ctx context.Context, id int) (exists bool, err error) {
