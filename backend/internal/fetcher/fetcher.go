@@ -3,6 +3,7 @@ package fetcher
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/yuqzii/codeforces-insights/internal/codeforces"
@@ -17,6 +18,8 @@ type fetcher struct {
 	problemProvider ProblemProvider
 	problemRepo     ProblemRepository
 	tx              db.TxManager
+
+	WG sync.WaitGroup
 }
 
 type ContestProvider interface {
