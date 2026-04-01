@@ -77,7 +77,7 @@ func TestPerfmanceCalculation(t *testing.T) {
 		}
 
 		data, err := json.Marshal(entries)
-		require.Nil(t, err, "Failed marshalling snapshot data")
+		require.Nil(t, err, "Failed marshalling snapshot data: %v", err)
 
 		err = os.WriteFile("testdata/performance_snapshot.json", data, 0644)
 		require.Nil(t, err, "Failed writing perfomance snapshot: %v", err)
@@ -88,7 +88,7 @@ func TestPerfmanceCalculation(t *testing.T) {
 
 	var snapshot []snapshotEntry
 	err = json.Unmarshal(snapshotResult, &snapshot)
-	require.Nil(t, err, "Failed parsing snapshot")
+	require.Nil(t, err, "Failed parsing snapshot: %v", err)
 
 	for _, s := range snapshot {
 		actual := seed.CalculatePerformance(s.Rank, s.Rating)
