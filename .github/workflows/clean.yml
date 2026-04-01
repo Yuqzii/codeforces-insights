@@ -1,0 +1,29 @@
+name: Delete old container images
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  delete-old:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+      - name: Lowercase repo name
+        run: |
+          echo "REPO_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+    
+      - name: Delete old containers
+        uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: user
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: |
+            ${{ env.REPO_NAME }}/server
+            ${{ env.REPO_NAME }}/fetcher
+            ${{ env.REPO_NAME }}/migrate
+          cut-off: 30d
+          tag-selection: untagged
