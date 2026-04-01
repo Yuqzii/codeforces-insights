@@ -21,10 +21,12 @@ lint:
 format:
 	cd backend && gofmt -d -s -l
 
+CONTAINER_NAME=codeforces-insights-server-1
+
 debug:
 	docker run -it --rm \
-		--pid=container:codeforces-insights-server-1 \
-		--net=container:codeforces-insights-server-1 \
+		--pid=container:$(CONTAINER_NAME) \
+		--net=container:$(CONTAINER_NAME) \
 		--cap-add=SYS_PTRACE \
 		golang:alpine \
 		sh -c "apk add --no-cache delve htop && sh"
