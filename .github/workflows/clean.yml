@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Lowercase repo name
         run: |
-          echo "REPO_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+          REPO_ONLY="${{ github.event.repository.name }}"
+          echo "REPO_NAME=${REPO_ONLY,,}" >> ${GITHUB_ENV}
     
       - name: Delete old containers
         uses: snok/container-retention-policy@v3.0.0
