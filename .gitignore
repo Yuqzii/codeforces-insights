@@ -4,5 +4,5 @@ dist/
 certs/
 
 *.test
-*.prof
+*.pprof
 *.out
