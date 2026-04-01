@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 	"github.com/yuqzii/codeforces-insights/internal/store"
@@ -59,13 +60,13 @@ func TestPerfmanceCalculation(t *testing.T) {
 	err = json.Unmarshal(testdataRatings, &testRatings)
 	require.Nil(t, err)
 
+	store.MapRatingToContestants(testRatings.Ratings, testStandings.Result.Contestants)
+	seed := CalculateSeed(testStandings.Result.Contestants, &testStandings.Result.Contest)
+
 	if os.Getenv("UPDATE_SNAPSHOT") == "true" {
 		t.Log("Updating performance snapshot")
 
 		entries := make([]snapshotEntry, len(testStandings.Result.Contestants))
-
-		store.MapRatingToContestants(testRatings.Ratings, testStandings.Result.Contestants)
-		seed := CalculateSeed(testStandings.Result.Contestants, &testStandings.Result.Contest)
 
 		for i, c := range testStandings.Result.Contestants {
 			entries[i].Rank = c.Rank
@@ -83,5 +84,14 @@ func TestPerfmanceCalculation(t *testing.T) {
 
 		t.Log("Successfully updated performance snapshot")
 		return
+	}
+
+	var snapshot []snapshotEntry
+	err = json.Unmarshal(snapshotResult, &snapshot)
+	require.Nil(t, err, "Failed parsing snapshot")
+
+	for _, s := range snapshot {
+		actual := seed.CalculatePerformance(s.Rank, s.Rating)
+		assert.Equal(t, s.Performance, actual)
 	}
 }
