@@ -169,7 +169,17 @@ export class SolvedRatings {
 	}
 
 	updateData(data) {
-		this.#data = data;
+		this.#data = {};
+		let prev = 700;
+
+		Object.entries(data).forEach(([ratingStr, cnt]) => {
+			const rating = Number(ratingStr);
+
+			for (let i = prev + 100; i < rating; i += 100)
+				this.#data[i] = 0;
+			this.#data[rating] = cnt;
+			prev = rating;
+		});
 	}
 
 	toggle800Rating() {
