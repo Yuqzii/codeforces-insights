@@ -9,6 +9,29 @@ func FFT(x []complex128) []complex128 {
 	return fftRecursive(x, len(x), 1)
 }
 
+func fftIterative(a []complex128) []complex128 {
+	// do bit-reverse-copy of a
+
+	for s := 1; s <= int(math.Log2(float64(len(a)))); s++ {
+		m := 1 << s
+		exponent := complex(0, -2*math.Pi/float64(m))
+		omegaM := cmplx.Exp(exponent)
+
+		for k := 0; k < len(a); k += m {
+			omega := complex(1, 0)
+			for j := 0; j < m/2; j++ {
+				t := omega * a[k*j+m/2]
+				u := a[k+j]
+				a[k+j] = u + t
+				a[k+j+m/2] = u - t
+				omega *= omegaM
+			}
+		}
+	}
+
+	return a
+}
+
 // Simple implementation of the Cooley-Tukey radix-2 algorithm.
 // Recursively splits the DFT into two smaller smaller DFTs. O(nlogn) time complexity.
 // Possible optimization is removing explicit recursion.
