@@ -2,6 +2,7 @@ package fft
 
 import (
 	"math"
+	"math/bits"
 	"math/cmplx"
 )
 
@@ -10,7 +11,7 @@ func FFT(x []complex128) []complex128 {
 }
 
 func fftIterative(a []complex128) []complex128 {
-	// do bit-reverse-copy of a
+	bitReverseCopy(a)
 
 	for s := 1; s <= int(math.Log2(float64(len(a)))); s++ {
 		m := 1 << s
@@ -30,6 +31,25 @@ func fftIterative(a []complex128) []complex128 {
 	}
 
 	return a
+}
+
+// @param a Slice to do bit reversal on. Length must be power of 2. Modified in place.
+func bitReverseCopy(a []complex128) {
+	n := len(a)
+	if n <= 2 {
+		return
+	}
+
+	leading := bits.LeadingZeros(uint(n - 1))
+
+	for i := range n {
+		// After reversing all the leading zeros will be on the right side.
+		// Therefore bitshift with that amount to keep it correctly inside the length of a.
+		r := int(bits.Reverse(uint(i)) >> uint(leading))
+		if i < r {
+			a[i], a[r] = a[r], a[i]
+		}
+	}
 }
 
 // Simple implementation of the Cooley-Tukey radix-2 algorithm.
