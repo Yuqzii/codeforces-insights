@@ -4,15 +4,11 @@ import (
 	"math"
 	"math/bits"
 	"math/cmplx"
-	"slices"
 )
 
-func FFT(x []complex128) []complex128 {
-	n := nextPow2(len(x))
-	x = slices.Grow(x, n-len(x))
-	x = x[:cap(x)]
-
-	return fftIterative(x)
+// @param a Slice to perform FFT on. Length must be a power of two.
+func FFT(a []complex128) []complex128 {
+	return fftIterative(a)
 }
 
 func fftIterative(a []complex128) []complex128 {

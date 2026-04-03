@@ -6,12 +6,12 @@ import (
 )
 
 func Convolve(f, g []complex128) []complex128 {
-	// Pad f and g to next power of 2
-	n := nextPow2(len(f) + len(g))
+	// Pad f and g to the next power of 2.
+	n := nextPow2(max(len(f), len(g)))
 	f = slices.Grow(f, n-len(f))
-	f = f[:cap(f)]
+	f = f[:n]
 	g = slices.Grow(g, n-len(g))
-	g = g[:cap(g)]
+	g = g[:n]
 
 	x := FFT(f)
 	y := FFT(g)
