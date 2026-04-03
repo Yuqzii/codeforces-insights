@@ -13,14 +13,16 @@ func Convolve(f, g []complex128) []complex128 {
 	g = slices.Grow(g, n-len(g))
 	g = g[:n]
 
-	x := FFT(f)
-	y := FFT(g)
+	fftDIF(f)
+	fftDIF(g)
 
-	for i := range x {
-		x[i] *= y[i]
+	for i := range f {
+		f[i] *= g[i]
 	}
 
-	return IFFT(x)
+	ifftDIT(f)
+
+	return f
 }
 
 // Returns smallest power of 2 that is >= n.
