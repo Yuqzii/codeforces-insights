@@ -48,6 +48,7 @@ func main() {
 		"Maximum allowed contests to update. Default is no maximum")
 	retryCount := flag.Int("retryCount", 5,
 		"How many times should we retry fetching a contest if it gives an error?")
+	contestIDToFetch := flag.Int("contestID", -1, "Fetch this specific contest. Used for debugging.")
 	flag.Parse()
 
 	if *fetchContests {
@@ -60,6 +61,11 @@ func main() {
 		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
 			// Limit updates to maxContestUpdates.
 			contestIDs = contestIDs[:*maxContestUpdates]
+		}
+
+		if *contestIDToFetch != -1 {
+			contestIDs = contestIDs[:0]
+			contestIDs = append(contestIDs, *contestIDToFetch)
 		}
 
 		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
