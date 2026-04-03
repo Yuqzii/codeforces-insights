@@ -3,13 +3,17 @@ package fft
 import (
 	"math"
 	"math/bits"
+	"sync"
 )
 
-const MAXN = 1 << 16
+type twiddleTable struct {
+	forward []complex128
+	inverse []complex128
+}
 
 var (
-	forwardTwiddles = computeTwiddles(MAXN, false)
-	inverseTwiddles = computeTwiddles(MAXN, true)
+	cacheMu sync.RWMutex
+	cache   = make(map[int]twiddleTable)
 )
 
 // Iterative implementation of the Cooley-Tukey DIF algorithm.
@@ -18,13 +22,15 @@ var (
 // @param a The slice to perform FFT on. Length must be a power of 2.
 // Transform is done in-place and modifies this slice.
 func fftDIF(a []complex128) {
+	twiddles := getTwiddles(len(a))
+
 	for s := bits.Len(uint(len(a))) - 1; s >= 1; s-- {
 		m := 1 << s
-		stride := MAXN / m
+		stride := len(a) / m
 
 		for k := 0; k < len(a); k += m {
 			for j := 0; j < m/2; j++ {
-				twiddle := forwardTwiddles[j*stride]
+				twiddle := twiddles.forward[j*stride]
 
 				u := a[k+j]
 				v := a[k+j+m/2]
@@ -40,13 +46,15 @@ func fftDIF(a []complex128) {
 // @param a The slice to perform IFFT on. Length must be a power of 2.
 // Transform is done in-place and modifies this slice.
 func ifftDIT(a []complex128) {
+	twiddles := getTwiddles(len(a))
+
 	for s := 1; s < bits.Len(uint(len(a))); s++ {
 		m := 1 << s
-		stride := MAXN / m
+		stride := len(a) / m
 
 		for k := 0; k < len(a); k += m {
 			for j := 0; j < m/2; j++ {
-				twiddle := inverseTwiddles[j*stride]
+				twiddle := twiddles.inverse[j*stride]
 
 				t := twiddle * a[k+j+m/2]
 				u := a[k+j]
@@ -64,18 +72,32 @@ func ifftDIT(a []complex128) {
 	}
 }
 
-func computeTwiddles(n int, inverse bool) []complex128 {
-	twiddles := make([]complex128, n/2)
-	sign := -1.0
-	if inverse {
-		sign = 1.0
+func getTwiddles(n int) twiddleTable {
+	cacheMu.RLock()
+	table, ok := cache[n]
+	cacheMu.RUnlock()
+	if ok {
+		// Value is already stored in cache.
+		return table
 	}
 
+	// We need to compute it.
+	fwd := make([]complex128, n/2)
+	inv := make([]complex128, n/2)
 	for i := range n / 2 {
-		theta := sign * 2.0 * math.Pi * float64(i) / float64(n)
+		theta := 2.0 * math.Pi * float64(i) / float64(n)
 		s, c := math.Sincos(theta)
-		twiddles[i] = complex(c, s)
+		fwd[i] = complex(c, -s)
+		inv[i] = complex(c, s)
 	}
 
-	return twiddles
+	table = twiddleTable{forward: fwd, inverse: inv}
+
+	go func() {
+		cacheMu.Lock()
+		cache[n] = table
+		cacheMu.Unlock()
+	}()
+
+	return table
 }
