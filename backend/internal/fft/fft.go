@@ -4,10 +4,15 @@ import (
 	"math"
 	"math/bits"
 	"math/cmplx"
+	"slices"
 )
 
 func FFT(x []complex128) []complex128 {
-	return fftRecursive(x, len(x), 1)
+	n := nextPow2(len(x))
+	x = slices.Grow(x, n-len(x))
+	x = x[:cap(x)]
+
+	return fftIterative(x)
 }
 
 func fftIterative(a []complex128) []complex128 {
@@ -21,7 +26,7 @@ func fftIterative(a []complex128) []complex128 {
 		for k := 0; k < len(a); k += m {
 			omega := complex(1, 0)
 			for j := 0; j < m/2; j++ {
-				t := omega * a[k*j+m/2]
+				t := omega * a[k+j+m/2]
 				u := a[k+j]
 				a[k+j] = u + t
 				a[k+j+m/2] = u - t
