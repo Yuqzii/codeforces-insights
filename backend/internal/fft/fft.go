@@ -18,7 +18,7 @@ func FFT(x []complex128) []complex128 {
 func fftIterative(a []complex128) []complex128 {
 	bitReverseCopy(a)
 
-	for s := 1; s <= int(math.Log2(float64(len(a)))); s++ {
+	for s := 1; s < bits.Len(uint(len(a))); s++ {
 		m := 1 << s
 		exponent := complex(0, -2*math.Pi/float64(m))
 		omegaM := cmplx.Exp(exponent)
