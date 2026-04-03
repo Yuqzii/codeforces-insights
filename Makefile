@@ -37,7 +37,7 @@ profile:
 	@docker run --rm \
 		--pid=container:$(CONTAINER_NAME) \
 		--net=container:$(CONTAINER_NAME) \
-		-v $(PWD):/out \
+		-v $(PWD):/out:z \
 		golang:alpine \
 		sh -c "go tool pprof -proto http://localhost:6060/debug/pprof/profile?seconds=$(PROFILE_TIME) > /out/cpu.pprof"
 	@echo "Profile captured to ./cpu.pprof, opening flamegraph..."
