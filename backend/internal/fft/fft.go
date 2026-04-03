@@ -27,16 +27,17 @@ func fftDIF(a []complex128) {
 	for s := bits.Len(uint(len(a))) - 1; s >= 1; s-- {
 		m := 1 << s
 		stride := len(a) / m
+		half := m / 2
 
 		for k := 0; k < len(a); k += m {
-			for j := 0; j < m/2; j++ {
+			for j := range half {
 				twiddle := twiddles.forward[j*stride]
 
 				u := a[k+j]
-				v := a[k+j+m/2]
+				v := a[k+j+half]
 
 				a[k+j] = u + v
-				a[k+j+m/2] = (u - v) * twiddle
+				a[k+j+half] = (u - v) * twiddle
 			}
 		}
 	}
@@ -51,16 +52,17 @@ func ifftDIT(a []complex128) {
 	for s := 1; s < bits.Len(uint(len(a))); s++ {
 		m := 1 << s
 		stride := len(a) / m
+		half := m / 2
 
 		for k := 0; k < len(a); k += m {
-			for j := 0; j < m/2; j++ {
+			for j := range half {
 				twiddle := twiddles.inverse[j*stride]
 
-				t := twiddle * a[k+j+m/2]
+				t := twiddle * a[k+j+half]
 				u := a[k+j]
 
 				a[k+j] = u + t
-				a[k+j+m/2] = u - t
+				a[k+j+half] = u - t
 			}
 		}
 	}
