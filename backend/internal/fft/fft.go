@@ -3,7 +3,13 @@ package fft
 import (
 	"math"
 	"math/bits"
-	"math/cmplx"
+)
+
+const MAXN = 1 << 16
+
+var (
+	forwardTwiddles = computeTwiddles(MAXN, false)
+	inverseTwiddles = computeTwiddles(MAXN, true)
 )
 
 // Iterative implementation of the Cooley-Tukey DIF algorithm.
@@ -14,18 +20,17 @@ import (
 func fftDIF(a []complex128) {
 	for s := bits.Len(uint(len(a))) - 1; s >= 1; s-- {
 		m := 1 << s
-		exp := cmplx.Exp(complex(0, -2*math.Pi/float64(m)))
+		stride := MAXN / m
 
 		for k := 0; k < len(a); k += m {
-			twiddle := complex(1, 0)
 			for j := 0; j < m/2; j++ {
+				twiddle := forwardTwiddles[j*stride]
+
 				u := a[k+j]
 				v := a[k+j+m/2]
 
 				a[k+j] = u + v
 				a[k+j+m/2] = (u - v) * twiddle
-
-				twiddle *= exp
 			}
 		}
 	}
@@ -37,17 +42,17 @@ func fftDIF(a []complex128) {
 func ifftDIT(a []complex128) {
 	for s := 1; s < bits.Len(uint(len(a))); s++ {
 		m := 1 << s
-		exp := cmplx.Exp(complex(0, 2*math.Pi/float64(m))) // Positive for inverse.
+		stride := MAXN / m
 
 		for k := 0; k < len(a); k += m {
-			twiddle := complex(1, 0)
 			for j := 0; j < m/2; j++ {
+				twiddle := inverseTwiddles[j*stride]
+
 				t := twiddle * a[k+j+m/2]
 				u := a[k+j]
 
 				a[k+j] = u + t
 				a[k+j+m/2] = u - t
-				twiddle *= exp
 			}
 		}
 	}
@@ -57,4 +62,20 @@ func ifftDIT(a []complex128) {
 	for i := range a {
 		a[i] *= invN
 	}
+}
+
+func computeTwiddles(n int, inverse bool) []complex128 {
+	twiddles := make([]complex128, n/2)
+	sign := -1.0
+	if inverse {
+		sign = 1.0
+	}
+
+	for i := range n / 2 {
+		theta := sign * 2.0 * math.Pi * float64(i) / float64(n)
+		s, c := math.Sincos(theta)
+		twiddles[i] = complex(c, s)
+	}
+
+	return twiddles
 }
