@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	ErrContestNotStored    = errors.New("did not find contest in db")
-	ErrNoResultsWithHandle = errors.New("did not find contest results with provided handle")
+	ErrContestNotStored        = errors.New("did not find contest in db")
+	ErrNoResultsWithHandle     = errors.New("did not find contest results with provided handle")
+	ErrContestantMissingHandle = errors.New("a contestant did not have any associated handles")
 )
 
 func (db *db) InsertContestResults(ctx context.Context, contestants []codeforces.Contestant, id int) error {
@@ -24,6 +25,10 @@ func (db *db) InsertContestResultsTx(ctx context.Context, q Querier,
 
 	batch := &pgx.Batch{}
 	for _, c := range contestants {
+		if len(c.MemberHandles) == 0 {
+			return ErrContestantMissingHandle
+		}
+
 		for i := range c.MemberHandles {
 			c.MemberHandles[i] = strings.ToLower(c.MemberHandles[i])
 		}
