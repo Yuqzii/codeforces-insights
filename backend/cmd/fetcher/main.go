@@ -53,7 +53,7 @@ func main() {
 
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
-		contestIDs, err := f.FindContestsToUpdate(*maxContestsAge)
+		contestIDs, err := f.FindContestsToUpdate(context.Background(), *maxContestsAge)
 		if err != nil {
 			log.Fatalf("Failed to find contests to update: %v\n", err)
 		}
@@ -76,7 +76,7 @@ func main() {
 		i := 0
 		curFail := 0
 		for i < len(contestIDs) {
-			err := f.FetchContest(contestIDs[i])
+			err := f.FetchContest(context.Background(), contestIDs[i])
 			shouldContinue := true
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {

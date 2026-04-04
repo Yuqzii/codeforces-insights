@@ -11,17 +11,17 @@ import (
 	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
-func (f *fetcher) FetchContest(id int) error {
-	contestants, contest, err := f.contestProvider.GetContestStandings(context.TODO(), id)
+func (f *fetcher) FetchContest(ctx context.Context, id int) error {
+	contestants, contest, err := f.contestProvider.GetContestStandings(ctx, id)
 	if err != nil {
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
 
-	ratings, err := f.contestProvider.GetContestRatingChanges(context.TODO(), id)
+	ratings, err := f.contestProvider.GetContestRatingChanges(ctx, id)
 	if err != nil {
 		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 			// Insert to avoid refetch, usually means the contest was unrated.
-			_, err = f.contestRepo.UpsertContest(context.TODO(), contest)
+			_, err = f.contestRepo.UpsertContest(ctx, contest)
 			return err
 		}
 		return fmt.Errorf("getting contest ratings: %w", err)
@@ -43,7 +43,7 @@ func (f *fetcher) FetchContest(id int) error {
 			// Only insert the contest, no contestants as they don't have any rating info.
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
-			_, err = f.contestRepo.UpsertContest(context.TODO(), contest)
+			_, err = f.contestRepo.UpsertContest(ctx, contest)
 			return err
 		}
 
@@ -62,15 +62,15 @@ func (f *fetcher) FetchContest(id int) error {
 		}
 	}
 
-	f.insertContestDB(context.TODO(), contest, contestants)
+	f.insertContestDB(ctx, contest, contestants)
 
 	return nil
 }
 
 // @param maxAge The maximum age allowed before the data is considered stale.
 // @return Slice of the IDs of all contests needing to be updated. (Either stale or not previously fetched).
-func (f *fetcher) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
-	c, err := f.contestProvider.GetContests(context.TODO())
+func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration) ([]int, error) {
+	c, err := f.contestProvider.GetContests(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting contests: %w", err)
 	}
@@ -82,7 +82,7 @@ func (f *fetcher) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 		}
 	}
 
-	existing, err := f.contestRepo.ContestsExists(context.TODO(), finished)
+	existing, err := f.contestRepo.ContestsExists(ctx, finished)
 	if err != nil {
 		return nil, fmt.Errorf("checking contests existence: %w", err)
 	}
@@ -95,7 +95,7 @@ func (f *fetcher) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 		}
 	}
 
-	stale, err := f.contestRepo.FindStaleContests(context.TODO(), maxAge)
+	stale, err := f.contestRepo.FindStaleContests(ctx, maxAge)
 	if err != nil {
 		return nil, fmt.Errorf("finding stale contests: %w", err)
 	}
