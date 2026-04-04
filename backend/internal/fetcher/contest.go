@@ -20,8 +20,8 @@ func (f *fetcher) FetchContest(id int) error {
 	ratings, err := f.contestProvider.GetContestRatingChanges(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
-			// Insert to avoid refetch.
-			f.insertContestDB(context.TODO(), contest, contestants)
+			// Insert to avoid refetch, usually means the contest was unrated.
+			_, err = f.contestRepo.UpsertContest(context.TODO(), contest)
 			return err
 		}
 		return fmt.Errorf("getting contest ratings: %w", err)
@@ -43,7 +43,6 @@ func (f *fetcher) FetchContest(id int) error {
 			// Only insert the contest, no contestants as they don't have any rating info.
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
-			log.Println("is old")
 			_, err = f.contestRepo.UpsertContest(context.TODO(), contest)
 			return err
 		}
