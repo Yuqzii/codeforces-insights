@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/yuqzii/codeforces-insights/internal/codeforces"
@@ -62,9 +61,7 @@ func (f *fetcher) FetchContest(ctx context.Context, id int) error {
 		}
 	}
 
-	f.insertContestDB(ctx, contest, contestants)
-
-	return nil
+	return f.insertContestDB(ctx, contest, contestants)
 }
 
 // @param maxAge The maximum age allowed before the data is considered stale.
@@ -107,7 +104,7 @@ func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration
 // Upserts the provided contest and contestants.
 // Uses a gouroutine to avoid blocking while waiting for the DB update.
 func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Contest,
-	contestants []codeforces.Contestant) {
+	contestants []codeforces.Contestant) error {
 
 	err := f.tx.WithTx(ctx, func(q db.Querier) error {
 		id, err := f.contestRepo.UpsertContestTx(ctx, q, contest)
@@ -124,8 +121,8 @@ func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Conte
 	})
 
 	if err != nil {
-		log.Printf("Error when updating db during contest fetch (id %d): %v\n", contest.ID, err)
-	} else {
-		log.Printf("Successfully updated contest %d\n", contest.ID)
+		return fmt.Errorf("updating db during contest fetch (id %d): %w", contest.ID, err)
 	}
+
+	return nil
 }
