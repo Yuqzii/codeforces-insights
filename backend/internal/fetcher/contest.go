@@ -21,7 +21,7 @@ func (f *fetcher) FetchContest(id int) error {
 	if err != nil {
 		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 			// Insert to avoid refetch.
-			f.insertContestDB(context.Background(), contest, nil)
+			f.insertContestDB(context.TODO(), contest, contestants)
 			return err
 		}
 		return fmt.Errorf("getting contest ratings: %w", err)
@@ -43,6 +43,7 @@ func (f *fetcher) FetchContest(id int) error {
 			// Only insert the contest, no contestants as they don't have any rating info.
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
+			log.Println("is old")
 			_, err = f.contestRepo.UpsertContest(context.TODO(), contest)
 			return err
 		}
@@ -109,25 +110,23 @@ func (f *fetcher) FindContestsToUpdate(maxAge time.Duration) ([]int, error) {
 func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Contest,
 	contestants []codeforces.Contestant) {
 
-	f.WG.Go(func() {
-		err := f.tx.WithTx(ctx, func(q db.Querier) error {
-			id, err := f.contestRepo.UpsertContestTx(ctx, q, contest)
-			if err != nil {
-				return fmt.Errorf("upserting contest %d: %w", id, err)
-			}
-
-			err = f.contestRepo.InsertContestResultsTx(ctx, q, contestants, id)
-			if err != nil {
-				return fmt.Errorf("inserting contest %d results: %w", id, err)
-			}
-
-			return nil
-		})
-
+	err := f.tx.WithTx(ctx, func(q db.Querier) error {
+		id, err := f.contestRepo.UpsertContestTx(ctx, q, contest)
 		if err != nil {
-			log.Printf("Error when updating db during contest fetch (id %d): %v\n", contest.ID, err)
-		} else {
-			log.Printf("Successfully updated contest %d\n", contest.ID)
+			return fmt.Errorf("upserting contest %d: %w", id, err)
 		}
+
+		err = f.contestRepo.InsertContestResultsTx(ctx, q, contestants, id)
+		if err != nil {
+			return fmt.Errorf("inserting contest %d results: %w", id, err)
+		}
+
+		return nil
 	})
+
+	if err != nil {
+		log.Printf("Error when updating db during contest fetch (id %d): %v\n", contest.ID, err)
+	} else {
+		log.Printf("Successfully updated contest %d\n", contest.ID)
+	}
 }

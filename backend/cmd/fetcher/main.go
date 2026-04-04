@@ -120,6 +120,4 @@ func main() {
 			log.Printf("Successfully fetched and updated %d problems\n", count)
 		}
 	}
-
-	f.WG.Wait() // Wait until all DB updates finish.
 }
