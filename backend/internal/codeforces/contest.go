@@ -40,7 +40,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	params := url.Values{}
 	params.Set("contestId", strconv.Itoa(id))
 	params.Set("from", "1")
-	params.Set("showUnofficial", "false")
+	params.Set("showUnofficial", "true")
 
 	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
 	if err != nil {
@@ -76,7 +76,9 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		return nil, nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
-	return apiResp.Result.Contestants, &apiResp.Result.Contest, nil
+	contestants := filterContestantsToOfficial(apiResp.Result.Contestants)
+
+	return contestants, &apiResp.Result.Contest, nil
 }
 
 func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
@@ -112,7 +114,7 @@ func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 
 // Codeforces doesn't seem to return all official participants when "showUnofficial" is false.
 // This function is used to first get all contestants including unofficial ones, and then filter them.
-func FilterContestantsToOfficial(contestants []Contestant) []Contestant {
+func filterContestantsToOfficial(contestants []Contestant) []Contestant {
 	i, n := 0, len(contestants)
 	for i < n {
 		if contestants[i].Type != "CONTESTANT" {
