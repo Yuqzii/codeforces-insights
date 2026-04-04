@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -128,6 +129,27 @@ func filterContestantsToOfficial(contestants []Contestant) []Contestant {
 	}
 
 	contestants = contestants[:n]
+
+	if len(contestants) == 0 {
+		return contestants
+	}
+
+	slices.SortFunc(contestants, func(a, b Contestant) int {
+		return a.Rank - b.Rank
+	})
+
+	// Recalculate ranks after removing unofficial participants.
+	curRank, prvRank := 1, contestants[0].Rank
+	contestants[0].Rank = 1
+	for i := 1; i < len(contestants); i++ {
+		// Two contestants with the same official rank must also have the same unofficial rank.
+		if contestants[i].Rank != prvRank {
+			curRank = i + 1
+		}
+
+		prvRank = contestants[i].Rank
+		contestants[i].Rank = curRank
+	}
 
 	return contestants
 }
