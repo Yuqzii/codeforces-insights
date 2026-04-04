@@ -14,22 +14,23 @@ import (
 
 type Contestant struct {
 	Rank          int
-	Points        float64
+	ContestID     int
 	Penalty       int
-	ID            uint64
 	OldRating     int
 	NewRating     int
+	ID            uint64
+	Points        float64
+	Type          string
 	MemberHandles []string
-	ContestID     int
 }
 
 type Contest struct {
 	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	StartTime time.Time `json:"startTime"`
-	Duration  int       `json:"durationSeconds"`
-	Phase     string    `json:"phase"`
 	Div       int       `db:"div"`
+	Duration  int       `json:"durationSeconds"`
+	StartTime time.Time `json:"startTime"`
+	Name      string    `json:"name"`
+	Phase     string    `json:"phase"`
 }
 
 var ErrNoStandings = errors.New("could not find standings")
@@ -109,14 +110,35 @@ func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 	return apiResp.Result, nil
 }
 
+// Codeforces doesn't seem to return all official participants when "showUnofficial" is false.
+// This function is used to first get all contestants including unofficial ones, and then filter them.
+func FilterContestantsToOfficial(contestants []Contestant) []Contestant {
+	i, n := 0, len(contestants)
+	for i < n {
+		if contestants[i].Type != "CONTESTANT" {
+			// Contestant is not official, swap to back
+			contestants[i], contestants[n-1] = contestants[n-1], contestants[i]
+			n--
+			continue
+		}
+
+		i++
+	}
+
+	contestants = contestants[:n]
+
+	return contestants
+}
+
 func (c *Contestant) UnmarshalJSON(data []byte) error {
 	type rawContestant struct {
 		Rank    int     `json:"rank"`
 		Points  float64 `json:"points"`
 		Penalty int     `json:"penalty"`
 		Party   struct {
-			ParticipantID uint64 `json:"participantId"`
-			Members       []struct {
+			ParticipantID   uint64 `json:"participantId"`
+			ParticipantType string `json:"participantType"`
+			Members         []struct {
 				Handle string `json:"handle"`
 			} `json:"members"`
 		} `json:"party"`
@@ -131,6 +153,7 @@ func (c *Contestant) UnmarshalJSON(data []byte) error {
 	c.Points = raw.Points
 	c.Penalty = raw.Penalty
 	c.ID = raw.Party.ParticipantID
+	c.Type = raw.Party.ParticipantType
 
 	for _, member := range raw.Party.Members {
 		c.MemberHandles = append(c.MemberHandles, member.Handle)
