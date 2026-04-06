@@ -11,7 +11,7 @@ problems the user has struggled with in earlier contests.
 |`minRating`   |`Integer`   |Minimum rating of recommended problems.|
 |`maxRating`   |`Integer`   |Maximum rating of recommended problems.|
 |`lookback`    |`Integer`   |How many recent contests to consider when making recommendations.|
-|`submissions` |`Submission`|All submissions the user has ever made.|
+|`submissions` |`Submission`|All accepted submissions the user has ever made.|
 
 ### Response
 | Property     | Type      | Description |
