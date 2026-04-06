@@ -7,12 +7,11 @@ problems the user has struggled with in earlier contests.
 ### Request
 | Property     | Type      | Description |
 |--------------|-----------|-------------|
-|`count`       |`Integer`  |Amount of problems to recommend. Must be in the range [0, 10].|
-|`minRating`   |`Integer`  |Minimum rating of recommended problems.|
-|`maxRating`   |`Integer`  |Maximum rating of recommended problems.|
-|`contests`    |`Object[]` |Array of recent contests.|
-|`contests[].id`|`Integer`  |The Codeforces contest ID.|
-|`contests[].indices`|`String[]` |The indices of all problems solved for this contest.|
+|`count`       |`Integer`   |Amount of problems to recommend. Must be in the range [0, 10].|
+|`minRating`   |`Integer`   |Minimum rating of recommended problems.|
+|`maxRating`   |`Integer`   |Maximum rating of recommended problems.|
+|`lookback`    |`Integer`   |How many recent contests to consider when making recommendations.|
+|`submissions` |`Submission`|All submissions the user has ever made.|
 
 ### Response
 | Property     | Type      | Description |
