@@ -43,6 +43,7 @@ flowchart TD
 
   subgraph Find first unsolved problem in recent contests
     solvedLenCheck -- false --> unsolvedInit
+    lookbackCheck -- false --> unsolvedInit
     unsolvedInit["unsolved := empty list of problems"]
     unsolvedInit --> unsolvedLenCheck{"probsByContest has remaining entries"}
     unsolvedLenCheck -- true --> getMapEntry["Get next (contest, problems) in probsByContest"]
