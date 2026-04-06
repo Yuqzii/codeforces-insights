@@ -24,17 +24,36 @@ problems the user has struggled with in earlier contests.
 flowchart TD
   A([Receive POST request to<br>/recommend])
   A --> B[/Read request as req/]
-  B --> C
-  subgraph Find unsolved problems
-    C[i := 0<br>unsolved := empty array]
-    C --> D{"i < len(req)"}
-    D -- true --> E[("Get all problems of contests[i]")]
-    E --> F["Sort problems based on index, e.g. ['A', 'B', 'C1']"]
-    F --> G["Find first problem with index not in req.contests[i].indices, and append to unsolved"]
-    G --> H[i += 1] --> D
+  B --> solvedSort
+  subgraph Find solved problems from recent contests
+    solvedSort["Sort submissions based on submission time"]
+    solvedSort --> filterInit["probsByContest := map of contest ID to problem list<br>i := 0"]
+    filterInit --> solvedLenCheck{"i < len(req.submissions)"}
+
+    solvedLenCheck -- true --> isContestant{"Was submission i made as a contestant?"}
+    isContestant -- false --> solvedInc
+    isContestant -- true --> isStored{"probsByContest contains an entry for contest ID of submission i"}
+    isStored -- true --> appendSubmission["Append problem of submission i to the list in the map"]
+      appendSubmission --> solvedInc
+    isStored -- false --> lookbackCheck{"len(probsByContest) < req.lookback"}
+    lookbackCheck -- true --> newContestEntry["Create a new entry for the contest ID of submission i containing its corresponding problem"]
+      newContestEntry --> solvedInc
+    solvedInc["i += 1"] --> solvedLenCheck
+  end
+
+  subgraph Find first unsolved problem in recent contests
+    solvedLenCheck -- false --> unsolvedInit
+    unsolvedInit["unsolved := empty list of problems"]
+    unsolvedInit --> unsolvedLenCheck{"probsByContest has remaining entries"}
+    unsolvedLenCheck -- true --> getMapEntry["Get next (contest, problems) in probsByContest"]
+      getMapEntry --> createIndexList["indices := sorted list of the indices of problems"]
+      createIndexList --> getAllProbs[("allProblems := all problems of contest sorted by indices")]
+      getAllProbs --> unsolvedFind["Find first problem in allProblems with index not in indices, and append to unsolved"]
+      unsolvedFind --> unsolvedLenCheck
+    
   end
   subgraph Find similar problems
-    D -- false --> I[Convert each problem in unsolved to vector]
+    unsolvedLenCheck -- false --> I[Convert each problem in unsolved to vector]
     I --> J[target := sum of these vectors]
     J --> K[("Get all problems matching at least one tag of any problem in unsolved,
   and with rating in the range [req.minRating, req.MaxRating] as probs")]
