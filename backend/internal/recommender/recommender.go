@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"slices"
 	"strings"
 	"sync"
@@ -49,6 +50,12 @@ var (
 // @param minRat Minimum rating of recommended problems.
 // @param maxRat Maximum rating of recommended problems.
 // @return A slice of length cnt, the recommended problems.
+
+func Scaler(contest_id int) float64 {
+	x := float64(contest_id)
+	return 1.0 / (1.0 + math.Exp(-(x-1500)/500))
+}
+
 func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem,
 	disallowedProbs map[int64]struct{}, cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
 
@@ -79,7 +86,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 		}
 
 		v := r.problemToVec(&prob)
-		score := similarity(&u, v)
+		score := similarity(&u, v)*Scaler(prob.ContestID)
 
 		ps := ProbWithScore{
 			Score:   score,
