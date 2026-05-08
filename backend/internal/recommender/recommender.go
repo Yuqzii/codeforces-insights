@@ -79,7 +79,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 		}
 
 		v := r.problemToVec(&prob)
-		score := similarity(&u, v)*(p.contest_id/1500) //simple scaling to push newer problems
+		score := similarity(&u, v)
 
 		ps := ProbWithScore{
 			Score:   score,

@@ -23,23 +23,15 @@ func (r *recommender) problemToVec(p *codeforces.Problem) probVec {
 		res |= 1 << idx
 	}
 
-	res |= 1 << r.getIdxOfTag("*special")
-
 	return res
 }
 
 func (r *recommender) tagsToVec(tags []string) vec {
 	var res vec
 
-	res[r.getIdxOfTag("*special")] := 1
-
 	for _, t := range tags {
 		idx := r.getIdxOfTag(t)
-		if t == "*special" {
-			res[idx] := -3000
-		} else{
-			res[idx]++
-		}
+		res[idx]++
 	}
 
 	return res
