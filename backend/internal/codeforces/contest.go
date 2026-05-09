@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/url"
 	"regexp"
-	"slices"
 	"strconv"
 	"time"
 )
@@ -40,8 +39,6 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	endpoint := "contest.standings?"
 	params := url.Values{}
 	params.Set("contestId", strconv.Itoa(id))
-	params.Set("from", "1")
-	params.Set("showUnofficial", "true")
 
 	resChan, err := c.makeRequest(ctx, endpoint+params.Encode())
 	if err != nil {
@@ -77,9 +74,7 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 		return nil, nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
-	contestants := filterContestantsToOfficial(apiResp.Result.Contestants)
-
-	return contestants, &apiResp.Result.Contest, nil
+	return apiResp.Result.Contestants, &apiResp.Result.Contest, nil
 }
 
 func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
@@ -111,47 +106,6 @@ func (c *client) GetContests(ctx context.Context) ([]Contest, error) {
 	}
 
 	return apiResp.Result, nil
-}
-
-// Codeforces doesn't seem to return all official participants when "showUnofficial" is false.
-// This function is used to first get all contestants including unofficial ones, and then filter them.
-func filterContestantsToOfficial(contestants []Contestant) []Contestant {
-	i, n := 0, len(contestants)
-	for i < n {
-		if contestants[i].Type != "CONTESTANT" {
-			// Contestant is not official, swap to back
-			contestants[i], contestants[n-1] = contestants[n-1], contestants[i]
-			n--
-			continue
-		}
-
-		i++
-	}
-
-	contestants = contestants[:n]
-
-	if len(contestants) == 0 {
-		return contestants
-	}
-
-	slices.SortFunc(contestants, func(a, b Contestant) int {
-		return a.Rank - b.Rank
-	})
-
-	// Recalculate ranks after removing unofficial participants.
-	curRank, prvRank := 1, contestants[0].Rank
-	contestants[0].Rank = 1
-	for i := 1; i < len(contestants); i++ {
-		// Two contestants with the same official rank must also have the same unofficial rank.
-		if contestants[i].Rank != prvRank {
-			curRank = i + 1
-		}
-
-		prvRank = contestants[i].Rank
-		contestants[i].Rank = curRank
-	}
-
-	return contestants
 }
 
 func (c *Contestant) UnmarshalJSON(data []byte) error {
