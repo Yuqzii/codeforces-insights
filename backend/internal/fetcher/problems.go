@@ -14,8 +14,15 @@ func (f *fetcher) FetchProblems(ctx context.Context) (int64, error) {
 
 	n := len(probs)
 	for i := 0; i < n; i++ {
+		isSpecial := false
+		for _, tag := range probs[i].Tags {
+			if tag[0] == '*' {
+				isSpecial = true
+			}
+		}
+
 		isIncomplete := len(probs[i].Tags) == 0
-		if isIncomplete {
+		if isIncomplete || isSpecial {
 			// Swap problem with the last one and reevaluate for efficient removal at the end.
 			probs[i], probs[n-1] = probs[n-1], probs[i]
 			i--
