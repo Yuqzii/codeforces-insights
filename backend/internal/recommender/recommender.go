@@ -80,7 +80,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 		}
 
 		v := r.problemToVec(&prob)
-		score := similarity(&u, v)*sigmoid(float64(prob.ContestID))
+		score := similarity(&u, v) * sigmoid(float64(prob.ContestID))
 
 		ps := ProbWithScore{
 			Score:   score,
@@ -96,7 +96,6 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 
 	return pq, nil
 }
-
 
 // @param solvedByContest Map with key as contest ID and value as slice of problems.
 // This should generally be the output of FindSolvedRecentContests.
@@ -173,7 +172,7 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 func sigmoid(x float64) float64 {
 	const (
 		inflection float64 = 1500
-		growth float64 = 500
+		growth     float64 = 500
 	)
 	return 1.0 / (1.0 + math.Exp(-(x-inflection)/growth))
 }
