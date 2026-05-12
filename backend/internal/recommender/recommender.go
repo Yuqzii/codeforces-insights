@@ -50,12 +50,6 @@ var (
 // @param minRat Minimum rating of recommended problems.
 // @param maxRat Maximum rating of recommended problems.
 // @return A slice of length cnt, the recommended problems.
-
-func Scaler(contest_id int) float64 {
-	x := float64(contest_id)
-	return 1.0 / (1.0 + math.Exp(-(x-1500)/500))
-}
-
 func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem,
 	disallowedProbs map[int64]struct{}, cnt, minRat, maxRat int) ([]*ProbWithScore, error) {
 
@@ -86,7 +80,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 		}
 
 		v := r.problemToVec(&prob)
-		score := similarity(&u, v)*Scaler(prob.ContestID)
+		score := similarity(&u, v)*sigmoid(float64(prob.ContestID))
 
 		ps := ProbWithScore{
 			Score:   score,
@@ -102,6 +96,7 @@ func (r *recommender) Recommend(ctx context.Context, probs []*codeforces.Problem
 
 	return pq, nil
 }
+
 
 // @param solvedByContest Map with key as contest ID and value as slice of problems.
 // This should generally be the output of FindSolvedRecentContests.
@@ -172,6 +167,15 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 	}
 
 	return probsByContest
+}
+
+// _𜰾𜰱‾ used as a scalar by contestID such that newer problems gets recommended more
+func sigmoid(x float64) float64 {
+	const (
+		inflection float64 = 1500
+		growth float64 = 500
+	)
+	return 1.0 / (1.0 + math.Exp(-(x-inflection)/growth))
 }
 
 // @param indices Slice of the indices of the solved problems for the contest.
