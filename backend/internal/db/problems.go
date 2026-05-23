@@ -77,7 +77,7 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 		WHERE
 			c.start_time = rc.start_time AND
 			COALESCE(c.div, 0) <= rc.div
-		ORDER BY COALESCE(c.div, 0) DESC`,
+		ORDER BY COALESCE(c.div, 0) DESC, p.index ASC`,
 		id,
 	)
 	if err != nil {
@@ -162,7 +162,7 @@ type probWithDiv struct {
 
 // Converts []probWithDiv to []codeforces.Problem and updates their indices,
 // in case of multiple contests sharing problems.
-// @param probs Slice of probWithDiv, must be sorted by div in descending order.
+// @param probs Slice of probWithDiv, must be sorted by div descending, and then by index ascending.
 func correctProblemIndices(probs []probWithDiv) ([]codeforces.Problem, error) {
 	res := make([]codeforces.Problem, 0, len(probs))
 	var increment uint8 = 0
