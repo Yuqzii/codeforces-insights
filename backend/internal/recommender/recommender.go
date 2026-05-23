@@ -17,7 +17,7 @@ import (
 )
 
 type ProblemRepository interface {
-	GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error)
+	GetProblemsFromContests(ctx context.Context, ids []int) (map[int][]codeforces.Problem, error)
 	// Should return all problems matching at least one tag.
 	GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 		[]codeforces.Problem, error)
@@ -117,7 +117,7 @@ func (r *recommender) FindUnsolvedProblems(ctx context.Context,
 				continue
 			}
 
-			if errors.Is(err, db.ErrNoProblemsForContest) {
+			if errors.Is(err, db.ErrNoProblemsForContests) {
 				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
 				continue
 			}
@@ -176,8 +176,8 @@ func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codef
 	for i, p := range probs {
 		contestProbs, ok := probsByContest[p.ContestID]
 		if !ok {
-			var err error
-			contestProbs, err = r.probRepo.GetProblemsFromContest(ctx, p.ContestID)
+			probMap, err := r.probRepo.GetProblemsFromContests(ctx, []int{p.ContestID})
+			contestProbs = probMap[p.ContestID]
 			if err != nil {
 				return nil, fmt.Errorf("getting problems from contest %d: %w", p.ContestID, err)
 			}
@@ -209,10 +209,11 @@ func sigmoid(x float64) float64 {
 func (r *recommender) findFirstUnsolvedProblem(ctx context.Context, contestID int,
 	indices []string) (*codeforces.Problem, error) {
 
-	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)
+	probMap, err := r.probRepo.GetProblemsFromContests(ctx, []int{contestID})
 	if err != nil {
 		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
 	}
+	allProbs := probMap[contestID]
 
 	if len(indices) > len(allProbs) {
 		return nil, ErrInvalidIndices
