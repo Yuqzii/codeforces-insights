@@ -53,6 +53,7 @@ func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []strin
 }
 
 // @param id External Codeforces ID of the contest.
+// @return List of problems beloning to the specified contest in ascending order of index.
 func (db *db) GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error) {
 	return db.GetProblemsFromContestTx(ctx, db.q, id)
 }
