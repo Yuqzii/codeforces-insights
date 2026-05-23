@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"slices"
+	"sort"
 	"strings"
 	"sync"
 
@@ -166,6 +167,33 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 	}
 
 	return probsByContest
+}
+
+func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codeforces.Problem) ([]int64, error) {
+	probsByContest := make(map[int][]codeforces.Problem)
+	hashes := make([]int64, len(probs))
+
+	for i, p := range probs {
+		contestProbs, ok := probsByContest[p.ContestID]
+		if !ok {
+			var err error
+			contestProbs, err = r.probRepo.GetProblemsFromContest(ctx, p.ContestID)
+			if err != nil {
+				return nil, fmt.Errorf("getting problems from contest %d: %w", p.ContestID, err)
+			}
+
+			probsByContest[p.ContestID] = contestProbs
+		}
+
+		j := sort.Search(len(contestProbs), func(i int) bool {
+			return contestProbs[i].Index >= p.Index
+		})
+
+		actualProb := contestProbs[j]
+		hashes[i] = actualProb.Hash()
+	}
+
+	return hashes, nil
 }
 
 // _𜰾𜰱‾ used as a scalar by contestID such that newer problems gets recommended more
