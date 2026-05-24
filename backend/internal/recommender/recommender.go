@@ -38,8 +38,9 @@ func New(repo ProblemRepository) *recommender {
 }
 
 var (
-	ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this contest")
-	ErrInvalidIndices    = errors.New("given problem indices are invalid")
+	ErrNoUnsolvedProblem   = errors.New("there are no unsolved problems for this contest")
+	ErrInvalidIndices      = errors.New("given problem indices are invalid")
+	ErrNoProblemsInContest = errors.New("no problems returned for this contest")
 )
 
 // Converts all the problems tags into a vector, and compares the direction of this vector
@@ -170,26 +171,30 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 }
 
 func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codeforces.Problem) ([]int64, error) {
-	probsByContest := make(map[int][]codeforces.Problem)
+	contestIDs := make([]int, 0)
+	for _, p := range probs {
+		contestIDs = append(contestIDs, p.ContestID)
+	}
+
+	probsByContest, err := r.probRepo.GetProblemsFromContests(ctx, contestIDs)
+	if err != nil {
+		return nil, fmt.Errorf("getting problems from contests %v: %w", contestIDs, err)
+	}
+
 	hashes := make([]int64, len(probs))
 
 	for i, p := range probs {
-		contestProbs, ok := probsByContest[p.ContestID]
+		actualProbs, ok := probsByContest[p.ContestID]
 		if !ok {
-			probMap, err := r.probRepo.GetProblemsFromContests(ctx, []int{p.ContestID})
-			contestProbs = probMap[p.ContestID]
-			if err != nil {
-				return nil, fmt.Errorf("getting problems from contest %d: %w", p.ContestID, err)
-			}
-
-			probsByContest[p.ContestID] = contestProbs
+			return nil, fmt.Errorf("accessing contest %d problems: %w", p.ContestID, ErrNoProblemsInContest)
 		}
 
-		j := sort.Search(len(contestProbs), func(i int) bool {
-			return contestProbs[i].Index >= p.Index
+		// Find actual problem index.
+		j := sort.Search(len(actualProbs), func(i int) bool {
+			return actualProbs[i].Index >= p.Index
 		})
 
-		actualProb := contestProbs[j]
+		actualProb := actualProbs[j]
 		hashes[i] = actualProb.Hash()
 	}
 

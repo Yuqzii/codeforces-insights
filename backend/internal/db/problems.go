@@ -202,6 +202,7 @@ func correctProblemIndices(probsDiv []probWithDiv, probs map[int][]codeforces.Pr
 	[]probWithDiv, map[int][]codeforces.Problem, error) {
 
 	var increment uint8 = 0
+	contestIDs := make(map[int]struct{})
 
 	for i, p := range probsDiv {
 		newProb := p.Problem
@@ -219,7 +220,11 @@ func correctProblemIndices(probsDiv []probWithDiv, probs map[int][]codeforces.Pr
 			}
 		}
 
-		probs[probsDiv[0].ContestID] = append(probs[probsDiv[0].ContestID], newProb)
+		contestIDs[p.ContestID] = struct{}{}
+		// Add problem to all contests it was part of.
+		for id := range contestIDs {
+			probs[id] = append(probs[probsDiv[0].ContestID], newProb)
+		}
 	}
 
 	probsDiv = probsDiv[:0]
