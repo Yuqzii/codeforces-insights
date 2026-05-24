@@ -74,7 +74,7 @@ func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration
 
 	finished := make([]int, 0)
 	for _, cont := range c {
-		if cont.Phase == "FINISHED" && !containsCyrillic(cont.Name) {
+		if cont.Phase == "FINISHED" {
 			finished = append(finished, cont.ID)
 		}
 	}
