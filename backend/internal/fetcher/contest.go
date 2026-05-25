@@ -10,13 +10,15 @@ import (
 	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
-func (f *fetcher) FetchContest(ctx context.Context, id int) error {
-	contestants, contest, err := f.contestProvider.GetContestStandings(ctx, id)
+var ErrContestNotInList = errors.New("contest is not in Codeforces's list")
+
+func (f *fetcher) FetchContest(ctx context.Context, contest *codeforces.Contest) error {
+	contestants, _, err := f.contestProvider.GetContestStandings(ctx, contest.ID)
 	if err != nil {
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
 
-	ratings, err := f.contestProvider.GetContestRatingChanges(ctx, id)
+	ratings, err := f.contestProvider.GetContestRatingChanges(ctx, contest.ID)
 	if err != nil {
 		if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
 			// Insert to avoid refetch, usually means the contest was unrated.
@@ -36,9 +38,7 @@ func (f *fetcher) FetchContest(ctx context.Context, id int) error {
 	}
 
 	if !hasRatingInfo {
-		const minOldTime = 24 * 14 * time.Hour // Two weeks
-		isOld := contest.StartTime.Add(minOldTime).Before(time.Now())
-		if isOld {
+		if contestIsOld(contest) {
 			// Only insert the contest, no contestants as they don't have any rating info.
 			// This is to avoid calling the Codeforces API many times for the same contest,
 			// when we could just store it to indicate that we already have all available data.
@@ -46,7 +46,7 @@ func (f *fetcher) FetchContest(ctx context.Context, id int) error {
 			return err
 		}
 
-		return fmt.Errorf("contest %d: %w", id, ErrNoRatingInfo)
+		return fmt.Errorf("contest %d: %w", contest.ID, ErrNoRatingInfo)
 	}
 
 	// Set ratings of contestants
@@ -66,29 +66,34 @@ func (f *fetcher) FetchContest(ctx context.Context, id int) error {
 
 // @param maxAge The maximum age allowed before the data is considered stale.
 // @return Slice of the IDs of all contests needing to be updated. (Either stale or not previously fetched).
-func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration) ([]int, error) {
-	c, err := f.contestProvider.GetContests(ctx)
+func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration) ([]*codeforces.Contest, error) {
+	contests, err := f.contestProvider.GetContests(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting contests: %w", err)
 	}
 
-	finished := make([]int, 0)
-	for _, cont := range c {
-		if cont.Phase == "FINISHED" {
-			finished = append(finished, cont.ID)
+	finished := make(map[int]*codeforces.Contest, 0)
+	for i := range contests {
+		if contests[i].Phase == "FINISHED" {
+			finished[contests[i].ID] = &contests[i]
 		}
 	}
 
-	existing, err := f.contestRepo.ContestsExists(ctx, finished)
+	finishedIDs := make([]int, 0, len(finished))
+	for id := range finished {
+		finishedIDs = append(finishedIDs, id)
+	}
+
+	existing, err := f.contestRepo.ContestsExists(ctx, finishedIDs)
 	if err != nil {
 		return nil, fmt.Errorf("checking contests existence: %w", err)
 	}
 
-	result := make([]int, 0)
-	for _, id := range finished {
+	result := make([]*codeforces.Contest, 0)
+	for id, c := range finished {
 		_, exists := existing[id]
 		if !exists {
-			result = append(result, id)
+			result = append(result, c)
 		}
 	}
 
@@ -96,9 +101,26 @@ func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration
 	if err != nil {
 		return nil, fmt.Errorf("finding stale contests: %w", err)
 	}
-	result = append(result, stale...)
+	for _, id := range stale {
+		result = append(result, finished[id])
+	}
 
 	return result, nil
+}
+
+func (f *fetcher) FindSpecificContest(ctx context.Context, id int) (codeforces.Contest, error) {
+	contests, err := f.contestProvider.GetContests(ctx)
+	if err != nil {
+		return codeforces.Contest{}, err
+	}
+
+	for _, c := range contests {
+		if c.ID == id {
+			return c, nil
+		}
+	}
+
+	return codeforces.Contest{}, ErrContestNotInList
 }
 
 // Upserts the provided contest and contestants.
@@ -125,4 +147,10 @@ func (f *fetcher) insertContestDB(ctx context.Context, contest *codeforces.Conte
 	}
 
 	return nil
+}
+
+func contestIsOld(contest *codeforces.Contest) bool {
+	const minOldTime = 24 * 14 * time.Hour // Two weeks
+	isOld := contest.StartTime.Add(minOldTime).Before(time.Now())
+	return isOld
 }
