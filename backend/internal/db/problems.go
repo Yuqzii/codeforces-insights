@@ -114,7 +114,7 @@ func (db *db) GetProblemsFromContestsTx(ctx context.Context, q Querier, ids []in
 		probsDiv = append(probsDiv, prob)
 	}
 
-	probsDiv, problems, err = correctProblemIndices(probsDiv, problems)
+	_, problems, err = correctProblemIndices(probsDiv, problems)
 	if err != nil {
 		return nil, fmt.Errorf("correcting problem indices: %w", err)
 	}
