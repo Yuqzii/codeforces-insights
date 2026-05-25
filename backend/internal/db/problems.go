@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
-var ErrNoProblemsForContest = errors.New("there are no stored problems for this contest")
+var ErrNoProblemsForContests = errors.New("there are no stored problems for these contests")
 var ErrTooManyProblems = errors.New("amount of problems exceeds alphabet")
 
 func (db *db) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
@@ -53,16 +54,19 @@ func (db *db) GetProblemsWithTagsTx(ctx context.Context, q Querier, tags []strin
 }
 
 // @param id External Codeforces ID of the contest.
-func (db *db) GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error) {
-	return db.GetProblemsFromContestTx(ctx, db.q, id)
+// @return Map of problems slices belonging to the specified contests in ascending order of index.
+func (db *db) GetProblemsFromContests(ctx context.Context, ids []int) (map[int][]codeforces.Problem, error) {
+	return db.GetProblemsFromContestsTx(ctx, db.q, ids)
 }
 
-func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) ([]codeforces.Problem, error) {
+func (db *db) GetProblemsFromContestsTx(ctx context.Context, q Querier, ids []int) (
+	map[int][]codeforces.Problem, error) {
+
 	rows, err := q.Query(ctx, `
 		WITH reference_contest AS (
 			SELECT COALESCE(div, 0) AS div, start_time, contest_id
 			FROM contests
-			WHERE contest_id = $1
+			WHERE contest_id = ANY($1)
 		)
 		SELECT
 			p.name,
@@ -70,30 +74,60 @@ func (db *db) GetProblemsFromContestTx(ctx context.Context, q Querier, id int) (
 			COALESCE(p.rating, 0) AS rating,
 			p.tags,
 			c.contest_id,
-			COALESCE(c.div, 0) AS div
+			COALESCE(c.div, 0) AS div,
+			c.start_time
 		FROM problems p
 		JOIN contests c ON p.contest_id = c.id
 		CROSS JOIN reference_contest rc
 		WHERE
 			c.start_time = rc.start_time AND
 			COALESCE(c.div, 0) <= rc.div
-		ORDER BY COALESCE(c.div, 0) DESC, p.index ASC`,
-		id,
+		ORDER BY c.start_time ASC, COALESCE(c.div, 0) DESC, p.index ASC`,
+		ids,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("querying problems: %w", err)
 	}
 
-	problems, err := pgx.CollectRows(rows, pgx.RowToStructByName[probWithDiv])
+	// Problems from contests sharing problems are grouped together in probsDiv.
+	// When a new "group" starts the indices are corrected and problems are pushed into the problems slice,
+	// and probsDiv is cleared.
+	probsDiv := make([]probWithDiv, 0)
+	problems := make(map[int][]codeforces.Problem, 0)
+	for rows.Next() {
+		var prob probWithDiv
+		err := rows.Scan(&prob.Name, &prob.Index, &prob.Rating, &prob.Tags,
+			&prob.ContestID, &prob.Div, &prob.StartTime,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scanning row into problem: %w", err)
+		}
+
+		n := len(probsDiv)
+		if n > 0 && !probsDiv[n-1].StartTime.Equal(prob.StartTime) {
+			probsDiv, problems, err = correctProblemIndices(probsDiv, problems)
+			if err != nil {
+				return nil, fmt.Errorf("correcting problem indices: %w", err)
+			}
+		}
+
+		probsDiv = append(probsDiv, prob)
+	}
+
+	_, problems, err = correctProblemIndices(probsDiv, problems)
 	if err != nil {
-		return nil, fmt.Errorf("collecting rows: %w", err)
+		return nil, fmt.Errorf("correcting problem indices: %w", err)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("reading rows: %w", err)
 	}
 
 	if len(problems) == 0 {
-		return nil, ErrNoProblemsForContest
+		return nil, ErrNoProblemsForContests
 	}
 
-	return correctProblemIndices(problems)
+	return problems, nil
 }
 
 func (db *db) UpsertProblem(ctx context.Context, p *codeforces.Problem) error {
@@ -157,36 +191,45 @@ func (db *db) UpsertProblemsBatchTx(ctx context.Context, q Querier, probs []code
 
 type probWithDiv struct {
 	codeforces.Problem
-	Div int `db:"div"`
+	Div       int       `db:"div"`
+	StartTime time.Time `db:"start_time"`
 }
 
 // Converts []probWithDiv to []codeforces.Problem and updates their indices,
 // in case of multiple contests sharing problems.
-// @param probs Slice of probWithDiv, must be sorted by div descending, and then by index ascending.
-func correctProblemIndices(probs []probWithDiv) ([]codeforces.Problem, error) {
-	res := make([]codeforces.Problem, 0, len(probs))
-	var increment uint8 = 0
+// @param probsDiv Slice of probWithDiv, must be sorted by div descending, and then by index ascending.
+func correctProblemIndices(probsDiv []probWithDiv, probs map[int][]codeforces.Problem) (
+	[]probWithDiv, map[int][]codeforces.Problem, error) {
 
-	for i, p := range probs {
+	var increment uint8 = 0
+	contestIDs := make(map[int]struct{})
+
+	for i, p := range probsDiv {
 		newProb := p.Problem
 		newProb.Index = strings.TrimSpace(newProb.Index)
 
 		if err := updateIndex(&newProb, increment); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		if i < len(probs)-1 && probs[i+1].Div < p.Div {
+		if i < len(probsDiv)-1 && probsDiv[i+1].Div < p.Div {
 			// Next problem is from a new contest, update increment.
 			increment = newProb.Index[0] - 'A' + 1
 			if increment >= 26 {
-				return nil, ErrTooManyProblems
+				return nil, nil, ErrTooManyProblems
 			}
 		}
 
-		res = append(res, newProb)
+		contestIDs[p.ContestID] = struct{}{}
+		// Add problem to all contests it was part of.
+		for id := range contestIDs {
+			probs[id] = append(probs[probsDiv[0].ContestID], newProb)
+		}
 	}
 
-	return res, nil
+	probsDiv = probsDiv[:0]
+
+	return probsDiv, probs, nil
 }
 
 func updateIndex(p *codeforces.Problem, increment uint8) error {

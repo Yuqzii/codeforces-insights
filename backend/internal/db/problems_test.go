@@ -68,11 +68,14 @@ func TestCorrectProblemIndices(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := correctProblemIndices(test.input)
+			mp := make(map[int][]codeforces.Problem)
+			_, got, err := correctProblemIndices(test.input, mp)
 			require.Nil(t, err)
 
-			for i, p := range got {
-				assert.Equal(t, test.wants[i], p.Index, "problem %d has wrong index", i)
+			for _, probs := range got {
+				for i, p := range probs {
+					assert.Equal(t, test.wants[i], p.Index, "problem %d has wrong index", i)
+				}
 			}
 		})
 	}

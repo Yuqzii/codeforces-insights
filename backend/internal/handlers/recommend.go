@@ -19,6 +19,7 @@ type RecommendationProvider interface {
 	FindUnsolvedProblems(ctx context.Context, solvedByContest map[int][]*codeforces.Problem) (
 		[]*codeforces.Problem, error)
 	FindSolvedRecentContests(subs []codeforces.Submission, lookback int) map[int][]*codeforces.Problem
+	GetSolvedProblemHashes(ctx context.Context, probs []*codeforces.Problem) ([]int64, error)
 }
 
 type recommendReq struct {
@@ -92,9 +93,19 @@ func (h *Handler) HandleRecommend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Collect all already solved problems into a set.
+	allSolvedProbs := make([]*codeforces.Problem, len(data.AcceptedSubs))
+	for i := range data.AcceptedSubs {
+		allSolvedProbs[i] = &data.AcceptedSubs[i].Problem
+	}
+	solvedHashes, err := h.rec.GetSolvedProblemHashes(ctx, allSolvedProbs)
+	if err != nil {
+		http.Error(w, "Failure hashing solved problems", http.StatusInternalServerError)
+		log.Printf("Error hashing solved problems: %v\n", err)
+		return
+	}
+
 	disallowedProbs := make(map[int64]struct{})
-	for _, sub := range data.AcceptedSubs {
-		hash := sub.Problem.Hash()
+	for _, hash := range solvedHashes {
 		disallowedProbs[hash] = struct{}{}
 	}
 

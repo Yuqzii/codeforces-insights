@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"slices"
+	"sort"
 	"strings"
 	"sync"
 
@@ -16,7 +17,7 @@ import (
 )
 
 type ProblemRepository interface {
-	GetProblemsFromContest(ctx context.Context, id int) ([]codeforces.Problem, error)
+	GetProblemsFromContests(ctx context.Context, ids []int) (map[int][]codeforces.Problem, error)
 	// Should return all problems matching at least one tag.
 	GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
 		[]codeforces.Problem, error)
@@ -116,7 +117,7 @@ func (r *recommender) FindUnsolvedProblems(ctx context.Context,
 				continue
 			}
 
-			if errors.Is(err, db.ErrNoProblemsForContest) {
+			if errors.Is(err, db.ErrNoProblemsForContests) {
 				log.Printf("Couldn't find problems from contest %d: %v\n", contestID, err)
 				continue
 			}
@@ -168,6 +169,40 @@ func (r *recommender) FindSolvedRecentContests(subs []codeforces.Submission,
 	return probsByContest
 }
 
+func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codeforces.Problem) ([]int64, error) {
+	contestIDs := make([]int, 0)
+	for _, p := range probs {
+		contestIDs = append(contestIDs, p.ContestID)
+	}
+
+	probsByContest, err := r.probRepo.GetProblemsFromContests(ctx, contestIDs)
+	if err != nil {
+		return nil, fmt.Errorf("getting problems from contests %v: %w", contestIDs, err)
+	}
+
+	hashes := make([]int64, len(probs))
+
+	for i, p := range probs {
+		actualProbs, ok := probsByContest[p.ContestID]
+		if !ok {
+			// A solved problem is not stored in DB, could mean the problem is from a gym.
+			// Should be fine to ignore, as any valid problem for recommendation should have been
+			// returned anyways.
+			continue
+		}
+
+		// Find actual problem index.
+		j := sort.Search(len(actualProbs), func(i int) bool {
+			return actualProbs[i].Index >= p.Index
+		})
+
+		actualProb := actualProbs[j]
+		hashes[i] = actualProb.Hash()
+	}
+
+	return hashes, nil
+}
+
 // _𜰾𜰱‾ used as a scalar by contestID such that newer problems gets recommended more
 func sigmoid(x float64) float64 {
 	const (
@@ -181,10 +216,11 @@ func sigmoid(x float64) float64 {
 func (r *recommender) findFirstUnsolvedProblem(ctx context.Context, contestID int,
 	indices []string) (*codeforces.Problem, error) {
 
-	allProbs, err := r.probRepo.GetProblemsFromContest(ctx, contestID)
+	probMap, err := r.probRepo.GetProblemsFromContests(ctx, []int{contestID})
 	if err != nil {
 		return nil, fmt.Errorf("getting problems to contest %d: %w", contestID, err)
 	}
+	allProbs := probMap[contestID]
 
 	if len(indices) > len(allProbs) {
 		return nil, ErrInvalidIndices
