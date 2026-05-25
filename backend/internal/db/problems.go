@@ -197,7 +197,7 @@ type probWithDiv struct {
 
 // Converts []probWithDiv to []codeforces.Problem and updates their indices,
 // in case of multiple contests sharing problems.
-// @param probs Slice of probWithDiv, must be sorted by div descending, and then by index ascending.
+// @param probsDiv Slice of probWithDiv, must be sorted by div descending, and then by index ascending.
 func correctProblemIndices(probsDiv []probWithDiv, probs map[int][]codeforces.Problem) (
 	[]probWithDiv, map[int][]codeforces.Problem, error) {
 
