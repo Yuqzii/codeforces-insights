@@ -14,11 +14,11 @@ type mockProblemRepository struct {
 	mock.Mock
 }
 
-func (m *mockProblemRepository) GetProblemsFromContest(ctx context.Context, id int) (
-	[]codeforces.Problem, error) {
+func (m *mockProblemRepository) GetProblemsFromContests(ctx context.Context, ids []int) (
+	map[int][]codeforces.Problem, error) {
 
-	args := m.Called(id)
-	return args.Get(0).([]codeforces.Problem), args.Error(1)
+	args := m.Called(ids)
+	return args.Get(0).(map[int][]codeforces.Problem), args.Error(1)
 }
 
 func (m *mockProblemRepository) GetProblemsWithTags(ctx context.Context, tags []string, minRat, maxRat int) (
@@ -113,23 +113,25 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Tags:      []string{"dp", "brute force"},
 		}
 
-		mockCall := m.On("GetProblemsFromContest", 1).Return([]codeforces.Problem{
-			{
-				Name:      "Impossible Problem",
-				ContestID: 1,
-				Index:     "D",
-				Tags:      []string{"dp", "brute force"},
-			}, {
-				Name:      "More Possible Problem",
-				ContestID: 1,
-				Index:     "B",
-				Tags:      []string{"dp", "brute force"},
-			}, {
-				Name:      "Super Easy Problem",
-				ContestID: 1,
-				Index:     "A",
-				Tags:      []string{"dp", "brute force"},
-			}, expected,
+		mockCall := m.On("GetProblemsFromContests", []int{1}).Return(map[int][]codeforces.Problem{
+			1: {
+				{
+					Name:      "Impossible Problem",
+					ContestID: 1,
+					Index:     "D",
+					Tags:      []string{"dp", "brute force"},
+				}, {
+					Name:      "More Possible Problem",
+					ContestID: 1,
+					Index:     "B",
+					Tags:      []string{"dp", "brute force"},
+				}, {
+					Name:      "Super Easy Problem",
+					ContestID: 1,
+					Index:     "A",
+					Tags:      []string{"dp", "brute force"},
+				}, expected,
+			},
 		}, nil)
 		defer mockCall.Unset()
 
@@ -147,34 +149,36 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Tags:      []string{"graph", "dsu"},
 		}
 
-		mockCall := m.On("GetProblemsFromContest", 42).Return([]codeforces.Problem{
-			{
-				Name:      "Kniv og Gaffel (Easy version)",
-				ContestID: 42,
-				Index:     "C1",
-				Tags:      []string{"graph", "dsu"},
-			}, {
-				Name:      "You should solve this",
-				ContestID: 42,
-				Index:     "A",
-				Tags:      []string{"greedy", "brute force"},
-			}, {
-				Name:      "You should also solve this",
-				ContestID: 42,
-				Index:     "B",
-				Tags:      []string{"greedy", "brute force"},
-			},
-			expected,
-			{
-				Name:      "Is this possible? (Easy)",
-				ContestID: 42,
-				Index:     "D1",
-				Tags:      []string{"greedy", "brute force"},
-			}, {
-				Name:      "Is this possible? (Hard)",
-				ContestID: 42,
-				Index:     "D2",
-				Tags:      []string{"greedy", "brute force"},
+		mockCall := m.On("GetProblemsFromContests", []int{42}).Return(map[int][]codeforces.Problem{
+			42: {
+				{
+					Name:      "Kniv og Gaffel (Easy version)",
+					ContestID: 42,
+					Index:     "C1",
+					Tags:      []string{"graph", "dsu"},
+				}, {
+					Name:      "You should solve this",
+					ContestID: 42,
+					Index:     "A",
+					Tags:      []string{"greedy", "brute force"},
+				}, {
+					Name:      "You should also solve this",
+					ContestID: 42,
+					Index:     "B",
+					Tags:      []string{"greedy", "brute force"},
+				},
+				expected,
+				{
+					Name:      "Is this possible? (Easy)",
+					ContestID: 42,
+					Index:     "D1",
+					Tags:      []string{"greedy", "brute force"},
+				}, {
+					Name:      "Is this possible? (Hard)",
+					ContestID: 42,
+					Index:     "D2",
+					Tags:      []string{"greedy", "brute force"},
+				},
 			},
 		}, nil)
 		defer mockCall.Unset()
@@ -193,24 +197,26 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 			Tags:      []string{"graph", "dsu"},
 		}
 
-		mockCall := m.On("GetProblemsFromContest", 42).Return([]codeforces.Problem{
-			{
-				Name:      "Kniv og Gaffel (Easy version)",
-				ContestID: 42,
-				Index:     "C1",
-				Tags:      []string{"graph", "dsu"},
-			}, {
-				Name:      "You should solve this",
-				ContestID: 42,
-				Index:     "A",
-				Tags:      []string{"greedy", "brute force"},
-			}, {
-				Name:      "You should also solve this",
-				ContestID: 42,
-				Index:     "B",
-				Tags:      []string{"greedy", "brute force"},
+		mockCall := m.On("GetProblemsFromContests", []int{42}).Return(map[int][]codeforces.Problem{
+			42: {
+				{
+					Name:      "Kniv og Gaffel (Easy version)",
+					ContestID: 42,
+					Index:     "C1",
+					Tags:      []string{"graph", "dsu"},
+				}, {
+					Name:      "You should solve this",
+					ContestID: 42,
+					Index:     "A",
+					Tags:      []string{"greedy", "brute force"},
+				}, {
+					Name:      "You should also solve this",
+					ContestID: 42,
+					Index:     "B",
+					Tags:      []string{"greedy", "brute force"},
+				},
+				expected,
 			},
-			expected,
 		}, nil)
 		defer mockCall.Unset()
 
