@@ -15,6 +15,13 @@ var ErrContestNotInList = errors.New("contest is not in Codeforces's list")
 func (f *fetcher) FetchContest(ctx context.Context, contest *codeforces.Contest) error {
 	contestants, _, err := f.contestProvider.GetContestStandings(ctx, contest.ID)
 	if err != nil {
+		if contestIsOld(contest) && errors.Is(err, codeforces.ErrContestNotFound) {
+			// This is likely a contest whose standings are not publicly available,
+			// but basic contest info still shows up in the contest.list endpoint.
+			_, err = f.contestRepo.UpsertContest(ctx, contest)
+			return err
+		}
+
 		return fmt.Errorf("getting contest standings: %w", err)
 	}
 
