@@ -53,30 +53,35 @@ func main() {
 
 	if *fetchContests {
 		log.Println("Finding unfetched contests")
-		contestIDs, err := f.FindContestsToUpdate(context.Background(), *maxContestsAge)
+		contests, err := f.FindContestsToUpdate(context.Background(), *maxContestsAge)
 		if err != nil {
 			log.Fatalf("Failed to find contests to update: %v\n", err)
 		}
 
-		if *maxContestUpdates != -1 && *maxContestUpdates < len(contestIDs) {
+		if *maxContestUpdates != -1 && *maxContestUpdates < len(contests) {
 			// Limit updates to maxContestUpdates.
-			contestIDs = contestIDs[:*maxContestUpdates]
+			contests = contests[:*maxContestUpdates]
 		}
 
 		if *contestIDToFetch != -1 {
-			contestIDs = contestIDs[:0]
-			contestIDs = append(contestIDs, *contestIDToFetch)
+			contest, err := f.FindSpecificContest(context.Background(), *contestIDToFetch)
+			if err != nil {
+				log.Fatalf("Failed to find contest %d: %v", *contestIDToFetch, err)
+			}
+
+			contests = contests[:0]
+			contests = append(contests, &contest)
 		}
 
-		log.Printf("Starting fetching for %d contests\n", len(contestIDs))
+		log.Printf("Starting fetching for %d contests\n", len(contests))
 		failCnt := 0
 
 		f := fetcher.New(cfClient, db, cfClient, db, db)
 
 		i := 0
 		curFail := 0
-		for i < len(contestIDs) {
-			err := f.FetchContest(context.Background(), contestIDs[i])
+		for i < len(contests) {
+			err := f.FetchContest(context.Background(), contests[i])
 			shouldContinue := true
 			if err != nil {
 				if errors.Is(err, codeforces.ErrRatingChangesUnavailable) {
@@ -86,18 +91,22 @@ func main() {
 					if curFail <= *retryCount {
 						// Try fetching current contest again.
 						shouldContinue = false
-						log.Printf("Fetching contest %d failed, retrying: %v\n", contestIDs[i], err)
+						log.Printf("Fetching contest %d failed, retrying: %v\n", contests[i].ID, err)
 					} else {
 						failCnt++
 						log.Printf("Fetching contest %d exceeded retry limit (%d): %v\n",
-							contestIDs[i], *retryCount, err)
+							contests[i].ID, *retryCount, err)
 					}
+				} else if errors.Is(err, fetcher.ErrNoStandings) {
+					log.Printf("Fetched contest %d (%d/%d), but standings were not available\n",
+						contests[i].ID, i+1, len(contests),
+					)
 				} else {
 					failCnt++
-					log.Printf("Failed to fetch contest %d: %v\n", contestIDs[i], err)
+					log.Printf("Failed to fetch contest %d: %v\n", contests[i].ID, err)
 				}
 			} else {
-				log.Printf("Successfully fetched contest %d (%d/%d)\n", contestIDs[i], i+1, len(contestIDs))
+				log.Printf("Successfully fetched contest %d (%d/%d)\n", contests[i].ID, i+1, len(contests))
 			}
 
 			if shouldContinue {
@@ -106,7 +115,7 @@ func main() {
 			}
 		}
 
-		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(contestIDs)-failCnt, len(contestIDs))
+		outputStr := fmt.Sprintf("Fetched %d/%d contests", len(contests)-failCnt, len(contests))
 		log.Println(outputStr)
 	}
 
