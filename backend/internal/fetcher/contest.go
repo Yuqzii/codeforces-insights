@@ -10,7 +10,10 @@ import (
 	"github.com/yuqzii/codeforces-insights/internal/db"
 )
 
-var ErrContestNotInList = errors.New("contest is not in Codeforces's list")
+var (
+	ErrContestNotInList = errors.New("contest is not in Codeforces's list")
+	ErrNoStandings      = errors.New("no standings available")
+)
 
 func (f *fetcher) FetchContest(ctx context.Context, contest *codeforces.Contest) error {
 	contestants, _, err := f.contestProvider.GetContestStandings(ctx, contest.ID)
@@ -19,7 +22,12 @@ func (f *fetcher) FetchContest(ctx context.Context, contest *codeforces.Contest)
 			// This is likely a contest whose standings are not publicly available,
 			// but basic contest info still shows up in the contest.list endpoint.
 			_, err = f.contestRepo.UpsertContest(ctx, contest)
-			return err
+
+			if err != nil {
+				return fmt.Errorf("upserting contest without standings: %w", err)
+			}
+
+			return ErrNoStandings
 		}
 
 		return fmt.Errorf("getting contest standings: %w", err)

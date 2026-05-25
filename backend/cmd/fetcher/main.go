@@ -97,6 +97,10 @@ func main() {
 						log.Printf("Fetching contest %d exceeded retry limit (%d): %v\n",
 							contests[i].ID, *retryCount, err)
 					}
+				} else if errors.Is(err, fetcher.ErrNoStandings) {
+					log.Printf("Fetched contest %d (%d/%d), but standings were not available\n",
+						contests[i].ID, i+1, len(contests),
+					)
 				} else {
 					failCnt++
 					log.Printf("Failed to fetch contest %d: %v\n", contests[i].ID, err)
