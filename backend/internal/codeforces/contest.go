@@ -33,7 +33,12 @@ type Contest struct {
 	Phase     string    `json:"phase"`
 }
 
-var ErrNoStandings = errors.New("could not find standings")
+var (
+	ErrNoStandings     = errors.New("could not find standings")
+	ErrContestNotFound = errors.New("contest not found")
+
+	contestNotFoundRegex = regexp.MustCompile(`Contest with id \d+ not found`)
+)
 
 func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant, *Contest, error) {
 	endpoint := "contest.standings?"
@@ -71,6 +76,12 @@ func (c *client) GetContestStandings(ctx context.Context, id int) ([]Contestant,
 	}
 
 	if apiResp.Status != "OK" {
+		if contestNotFoundRegex.MatchString(apiResp.Comment) {
+			return nil, nil, fmt.Errorf("%w: %w: %s", ErrCodeforcesReturnedFail,
+				ErrContestNotFound, apiResp.Comment,
+			)
+		}
+
 		return nil, nil, fmt.Errorf("%w: %s", ErrCodeforcesReturnedFail, apiResp.Comment)
 	}
 
