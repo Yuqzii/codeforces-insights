@@ -38,9 +38,8 @@ func New(repo ProblemRepository) *recommender {
 }
 
 var (
-	ErrNoUnsolvedProblem   = errors.New("there are no unsolved problems for this contest")
-	ErrInvalidIndices      = errors.New("given problem indices are invalid")
-	ErrNoProblemsInContest = errors.New("no problems returned for this contest")
+	ErrNoUnsolvedProblem = errors.New("there are no unsolved problems for this contest")
+	ErrInvalidIndices    = errors.New("given problem indices are invalid")
 )
 
 // Converts all the problems tags into a vector, and compares the direction of this vector
@@ -186,7 +185,10 @@ func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codef
 	for i, p := range probs {
 		actualProbs, ok := probsByContest[p.ContestID]
 		if !ok {
-			return nil, fmt.Errorf("accessing contest %d problems: %w", p.ContestID, ErrNoProblemsInContest)
+			// A solved problem is not stored in DB, could mean the problem is from a gym.
+			// Should be fine to ignore, as any valid problem for recommendation should have been
+			// returned anyways.
+			continue
 		}
 
 		// Find actual problem index.
