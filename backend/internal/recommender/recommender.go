@@ -255,8 +255,14 @@ func (r *recommender) getIdxOfTag(tag string) int {
 	}
 
 	r.mu.Lock()
-	r.tagToIndex[tag] = len(r.tagToIndex)
+	idx, ok = r.tagToIndex[tag]
+	// Recheck existence ir case another goroutine already gave it an index,
+	// while we were acquiring the lock.
+	if !ok {
+		idx = len(r.tagToIndex)
+		r.tagToIndex[tag] = idx
+	}
 	r.mu.Unlock()
 
-	return r.tagToIndex[tag]
+	return idx
 }

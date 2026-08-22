@@ -2,7 +2,9 @@ package recommender
 
 import (
 	"context"
+	"runtime"
 	"slices"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,6 +28,46 @@ func (m *mockProblemRepository) GetProblemsWithTags(ctx context.Context, tags []
 
 	args := m.Called(tags)
 	return args.Get(0).([]codeforces.Problem), args.Error(1)
+}
+
+func TestGetIdxOfTagConcurrentFirstUse(t *testing.T) {
+	previousMaxProcs := runtime.GOMAXPROCS(1)
+	t.Cleanup(func() {
+		runtime.GOMAXPROCS(previousMaxProcs)
+	})
+
+	const workerCount = 128
+
+	r := New(nil)
+	indices := make([]int, workerCount)
+	start := make(chan struct{})
+	var ready sync.WaitGroup
+	var done sync.WaitGroup
+	ready.Add(workerCount)
+	done.Add(workerCount)
+
+	// Queue every lookup behind the write lock so they contend on the same tag's first use.
+	r.mu.Lock()
+	for i := range workerCount {
+		go func() {
+			defer done.Done()
+			<-start
+			ready.Done()
+			indices[i] = r.getIdxOfTag("dp")
+		}()
+	}
+	close(start)
+	ready.Wait()
+	runtime.Gosched()
+	r.mu.Unlock()
+	done.Wait()
+
+	for i, idx := range indices {
+		if idx != 0 {
+			t.Fatalf("worker %d got tag index %d, want 0", i, idx)
+		}
+	}
+	assert.Equal(t, map[string]int{"dp": 0}, r.tagToIndex)
 }
 
 func TestRecommend(t *testing.T) {
