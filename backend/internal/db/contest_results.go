@@ -148,13 +148,12 @@ func (db *db) GetContestResultsFromHandleTx(ctx context.Context, q Querier, hand
 		return nil, fmt.Errorf("querying contest_results with handle '%s': %w", handle, err)
 	}
 
-	if !rows.Next() {
-		return nil, ErrNoResultsWithHandle
-	}
-
 	contestants, err := scanToContestants(rows)
 	if err != nil {
 		return nil, fmt.Errorf("scanning into contestants: %w", err)
+	}
+	if len(contestants) == 0 {
+		return nil, ErrNoResultsWithHandle
 	}
 
 	return contestants, nil
