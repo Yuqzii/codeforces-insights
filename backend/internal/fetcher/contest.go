@@ -117,7 +117,9 @@ func (f *fetcher) FindContestsToUpdate(ctx context.Context, maxAge time.Duration
 		return nil, fmt.Errorf("finding stale contests: %w", err)
 	}
 	for _, id := range stale {
-		result = append(result, finished[id])
+		if contest, exists := finished[id]; exists {
+			result = append(result, contest)
+		}
 	}
 
 	return result, nil
