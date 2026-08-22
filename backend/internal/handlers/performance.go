@@ -99,9 +99,8 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 			if perfRes.err != nil {
 				http.Error(w, perfRes.err.Error(), http.StatusInternalServerError)
 				log.Printf("Error getting performance: %v\n", perfRes.err)
-				// Cancel context so we don't make unnecessary calculations, and avoids leaking channel
+				// Cancel context so we don't make unnecessary calculations.
 				cancel()
-				close(resChan)
 				return
 			}
 			perf = append(perf, performance{
@@ -153,7 +152,7 @@ func (p *perfManager) worker() {
 		default:
 		}
 
-		contestants, contest, err := p.crp.GetContestResults(context.Background(), job.contestID)
+		contestants, contest, err := p.crp.GetContestResults(job.ctx, job.contestID)
 		if err != nil {
 			if !errors.Is(err, context.Canceled) {
 				job.chn <- perfResult{
@@ -166,9 +165,12 @@ func (p *perfManager) worker() {
 		seed := stats.CalculateSeed(contestants, contest)
 		perf := seed.CalculatePerformance(job.rank, job.rating)
 
-		job.chn <- perfResult{
+		select {
+		case job.chn <- perfResult{
 			performance: perf,
 			timestamp:   job.timestamp,
+		}:
+		case <-job.ctx.Done():
 		}
 	}
 }
