@@ -134,6 +134,10 @@ func (r *recommendReq) validate() error {
 		return errors.New("count must be between 0 and 10")
 	}
 
+	if r.Lookback < 0 {
+		return errors.New("lookback must be non-negative")
+	}
+
 	if len(r.AcceptedSubs) == 0 {
 		return errors.New("submissions cannot be empty")
 	}
