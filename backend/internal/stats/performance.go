@@ -15,6 +15,12 @@ const (
 	ratingOffset int     = -minRating
 	eloScale     float64 = 400
 
+	// MinPerformanceRating and MaxPerformanceRating bound the excluded rating accepted by
+	// CalculatePerformance. rankToRating probes [minRating+1, maxRating-1], and eloWinProb
+	// supports rating differences from -ratingRange through ratingRange.
+	MinPerformanceRating = minRating - 1
+	MaxPerformanceRating = maxRating + 1
+
 	avgRatingWeight float64 = 0.4
 	div1Rating      int     = 1300
 	div2Rating      int     = 1175
