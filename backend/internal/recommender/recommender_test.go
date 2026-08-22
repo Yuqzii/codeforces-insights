@@ -227,6 +227,61 @@ func TestFindFirstUnsolvedProblem(t *testing.T) {
 	})
 }
 
+func TestGetSolvedProblemHashesIgnoresUnstoredIndices(t *testing.T) {
+	tests := []struct {
+		name          string
+		storedIndices []string
+		solvedIndices []string
+		expected      []string
+	}{
+		{
+			name:          "index greater than all stored indices",
+			storedIndices: []string{"A", "B"},
+			solvedIndices: []string{"A", "C", "B"},
+			expected:      []string{"A", "B"},
+		},
+		{
+			name:          "index missing between stored indices",
+			storedIndices: []string{"A", "C"},
+			solvedIndices: []string{"A", "B", "C"},
+			expected:      []string{"A", "C"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			const contestID = 42
+			m := new(mockProblemRepository)
+			r := New(m)
+
+			storedProblems := make([]codeforces.Problem, len(tt.storedIndices))
+			for i, index := range tt.storedIndices {
+				storedProblems[i] = codeforces.Problem{ContestID: contestID, Index: index}
+			}
+			solvedProblems := make([]*codeforces.Problem, len(tt.solvedIndices))
+			contestIDs := make([]int, len(tt.solvedIndices))
+			for i, index := range tt.solvedIndices {
+				solvedProblems[i] = &codeforces.Problem{ContestID: contestID, Index: index}
+				contestIDs[i] = contestID
+			}
+			expectedHashes := make([]int64, len(tt.expected))
+			for i, index := range tt.expected {
+				expectedHashes[i] = codeforces.HashProblemIndex(contestID, index)
+			}
+
+			m.On("GetProblemsFromContests", contestIDs).Return(map[int][]codeforces.Problem{
+				contestID: storedProblems,
+			}, nil).Once()
+
+			actual, err := r.GetSolvedProblemHashes(context.Background(), solvedProblems)
+
+			assert.NoError(t, err)
+			assert.Equal(t, expectedHashes, actual)
+			m.AssertExpectations(t)
+		})
+	}
+}
+
 func TestFindSolvedRecentContests(t *testing.T) {
 	m := new(mockProblemRepository)
 	r := New(m)

@@ -223,7 +223,7 @@ func correctProblemIndices(probsDiv []probWithDiv, probs map[int][]codeforces.Pr
 		contestIDs[p.ContestID] = struct{}{}
 		// Add problem to all contests it was part of.
 		for id := range contestIDs {
-			probs[id] = append(probs[probsDiv[0].ContestID], newProb)
+			probs[id] = append(probs[id], newProb)
 		}
 	}
 

@@ -180,9 +180,9 @@ func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codef
 		return nil, fmt.Errorf("getting problems from contests %v: %w", contestIDs, err)
 	}
 
-	hashes := make([]int64, len(probs))
+	hashes := make([]int64, 0, len(probs))
 
-	for i, p := range probs {
+	for _, p := range probs {
 		actualProbs, ok := probsByContest[p.ContestID]
 		if !ok {
 			// A solved problem is not stored in DB, could mean the problem is from a gym.
@@ -196,8 +196,9 @@ func (r *recommender) GetSolvedProblemHashes(ctx context.Context, probs []*codef
 			return actualProbs[i].Index >= p.Index
 		})
 
-		actualProb := actualProbs[j]
-		hashes[i] = actualProb.Hash()
+		if j < len(actualProbs) && actualProbs[j].Index == p.Index {
+			hashes = append(hashes, actualProbs[j].Hash())
+		}
 	}
 
 	return hashes, nil
