@@ -205,6 +205,7 @@ func (c *client) receiversCancelled(endpoint string) bool {
 			return false
 		}
 	}
+	delete(c.receivers, endpoint)
 	return true
 }
 
