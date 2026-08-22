@@ -7,7 +7,7 @@ async function cfFetch(endpoint, signal) {
 		if (data.status !== "OK") throw new Error(`Codeforces not OK: ${data.comment}`);
 		return data.result;
 	} catch (err) {
-		if (err.name === "AbortError") return;
+		if (err.name === "AbortError") throw err;
 		console.error("Codeforces request failed:", err);
 		throw err;
 	}
@@ -55,7 +55,7 @@ export async function getPerformance(handle, ratingHistory, signal) {
 		const data = await resp.json();
 		return data;
 	} catch (err) {
-		if (err.name === "AbortError") return;
+		if (err.name === "AbortError") throw err;
 		throw err;
 	}
 }
@@ -67,7 +67,7 @@ export async function getPercentile(rating, signal) {
 		const data = await resp.json();
 		return data;
 	} catch (err) {
-		if (err.name === "AbortError") return;
+		if (err.name === "AbortError") throw err;
 		throw err;
 	}
 }
@@ -105,7 +105,7 @@ export async function getRecommendedProblems(count, ratingRange, lookback, solve
 		const data = await resp.json();
 		return data;
 	} catch (err) {
-		if (err.name === "AbortError") return;
+		if (err.name === "AbortError") throw err;
 		throw err;
 	}
 }

@@ -60,10 +60,11 @@ export async function updateAnalytics(handle, signal) {
 	});
 
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
-		handleUserInfo(info);
+		handleUserInfo(info, signal);
 		toggleContentVisibility(userDetailsEl, true);
 		sessionStorage.setItem("userInfo", JSON.stringify(info));
 	}).catch(err => {
+		if (err.name === "AbortError") throw err;
 		toggleContentVisibility(userDetailsEl, false);
 		showError(err, userDetailsEl);
 
@@ -78,6 +79,7 @@ export async function updateAnalytics(handle, signal) {
 
 		return solved;
 	}).catch(err => {
+		if (err.name === "AbortError") throw err;
 		toggleContentVisibility(solvedTagsEl, false);
 		showError(err, solvedTagsEl);
 		toggleContentVisibility(solvedRatingsEl, false);
@@ -93,6 +95,7 @@ export async function updateAnalytics(handle, signal) {
 		handleRatingHistory(handle, ratings, signal);
 		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	}).catch(err => {
+		if (err.name === "AbortError") return;
 		toggleContentVisibility(ratingHistoryEl, false);
 		showError(err, ratingHistoryEl);
 	});
@@ -101,6 +104,7 @@ export async function updateAnalytics(handle, signal) {
 	Promise.all([userInfoTask, submissionTask]).then(([, solved]) => {
 		recommendProblems(solved);
 	}).catch(err => {
+		if (err.name === "AbortError") return;
 		clearProblemContainer();
 		showError(err, problemContainer);
 	});
@@ -152,6 +156,7 @@ function handleRatingHistory(handle, ratings, signal) {
 		updatePerformance(perf)
 		sessionStorage.setItem("performance", JSON.stringify(perf));
 	}).catch(err => {
+		if (err.name === "AbortError") return;
 		// Show error without hiding the other content, as we still have some information to display.
 		showError(err, ratingHistoryEl);
 	});
@@ -165,6 +170,7 @@ function handleUserInfo(userInfo, signal) {
 		getPercentile(userInfo.rating, signal).then(percentile => {
 			percentileElem.textContent = `${(percentile * 100).toFixed(2)}%`;
 		}).catch(err => {
+			if (err.name === "AbortError") return;
 			showError(err, userDetailsEl);
 		});
 		percentileElem.classList.add("glow-text", "weight-600");
