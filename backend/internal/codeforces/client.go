@@ -149,6 +149,7 @@ func (c *client) sendRequest(endpoint string) error {
 		c.sendErrToReceivers(err, endpoint)
 		return fmt.Errorf("requesting '%s' from Codeforces: %w", endpoint, err)
 	}
+	defer resp.Body.Close() // nolint:errcheck
 
 	if resp.StatusCode >= 500 && resp.StatusCode < 600 {
 		err = fmt.Errorf("%w: %s", ErrCFServerProblem, resp.Status)
@@ -157,7 +158,6 @@ func (c *client) sendRequest(endpoint string) error {
 	}
 
 	body, err := io.ReadAll(resp.Body)
-	resp.Body.Close() // nolint:errcheck
 	if err != nil {
 		c.sendErrToReceivers(err, endpoint)
 		return fmt.Errorf("reading '%s' response body: %w", endpoint, err)
