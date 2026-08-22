@@ -10,6 +10,92 @@ import (
 	"github.com/yuqzii/codeforces-insights/internal/codeforces"
 )
 
+func TestGetContestResultsFromHandle(t *testing.T) {
+	ctx := context.Background()
+	columns := []string{"rank", "old_rating", "new_rating", "points", "id", "contest_id", "handles"}
+
+	tests := []struct {
+		name string
+		want []codeforces.Contestant
+	}{
+		{
+			name: "one result",
+			want: []codeforces.Contestant{
+				{
+					Rank:          1,
+					OldRating:     2100,
+					NewRating:     2200,
+					Points:        3400,
+					ID:            10,
+					ContestID:     100,
+					MemberHandles: []string{"tourist"},
+				},
+			},
+		},
+		{
+			name: "multiple results",
+			want: []codeforces.Contestant{
+				{
+					Rank:          1,
+					OldRating:     2100,
+					NewRating:     2200,
+					Points:        3400,
+					ID:            10,
+					ContestID:     100,
+					MemberHandles: []string{"tourist"},
+				},
+				{
+					Rank:          2,
+					OldRating:     2200,
+					NewRating:     2250,
+					Points:        3200,
+					ID:            20,
+					ContestID:     200,
+					MemberHandles: []string{"tourist", "teammate"},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mock, db := setupMockDB(t)
+			rows := pgxmock.NewRows(columns)
+			for _, contestant := range tt.want {
+				rows.AddRow(
+					contestant.Rank,
+					contestant.OldRating,
+					contestant.NewRating,
+					contestant.Points,
+					contestant.ID,
+					contestant.ContestID,
+					contestant.MemberHandles,
+				)
+			}
+			mock.ExpectQuery(`WITH matching_results AS`).
+				WithArgs("tourist").
+				WillReturnRows(rows)
+
+			got, err := db.GetContestResultsFromHandle(ctx, "Tourist")
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+			assert.NoError(t, mock.ExpectationsWereMet())
+		})
+	}
+
+	t.Run("no results", func(t *testing.T) {
+		mock, db := setupMockDB(t)
+		mock.ExpectQuery(`WITH matching_results AS`).
+			WithArgs("nobody").
+			WillReturnRows(pgxmock.NewRows(columns))
+
+		got, err := db.GetContestResultsFromHandle(ctx, "Nobody")
+		assert.ErrorIs(t, err, ErrNoResultsWithHandle)
+		assert.Nil(t, got)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
 func TestInsertContestResultsTx(t *testing.T) {
 	ctx := context.Background()
 	mock, db := setupMockDB(t)
