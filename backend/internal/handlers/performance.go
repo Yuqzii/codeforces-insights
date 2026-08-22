@@ -160,7 +160,7 @@ func (p *perfManager) worker() {
 					err: err,
 				}
 			}
-			return
+			continue
 		}
 
 		seed := stats.CalculateSeed(contestants, contest)
