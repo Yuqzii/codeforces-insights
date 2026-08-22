@@ -77,6 +77,7 @@ export function recommendProblems(solved) {
 
 		window.scrollTo({ top: scrollY, behavior: "instant" });
 	}).catch(err => {
+		if (err.name === "AbortError") return;
 		showError(err, problemContainer);
 	});
 }
