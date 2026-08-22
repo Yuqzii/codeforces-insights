@@ -35,6 +35,11 @@ type perfResult struct {
 	err         error
 }
 
+type perfReq struct {
+	Handle  string                    `json:"handle"`
+	Ratings []codeforces.RatingChange `json:"ratingHistory"`
+}
+
 func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxPerfRequestSize)
 	defer r.Body.Close() //nolint:errcheck
@@ -50,13 +55,14 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data struct {
-		Handle  string                    `json:"handle"`
-		Ratings []codeforces.RatingChange `json:"ratingHistory"`
-	}
+	var data perfReq
 	if err = json.Unmarshal(body, &data); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	if err = data.validate(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	ctx, cancel := context.WithCancel(r.Context())
@@ -171,4 +177,16 @@ func (p *perfManager) worker() {
 			timestamp:   job.timestamp,
 		}
 	}
+}
+
+func (r *perfReq) validate() error {
+	for _, rating := range r.Ratings {
+		if rating.OldRating < stats.MinPerformanceRating ||
+			rating.OldRating > stats.MaxPerformanceRating {
+
+			return errors.New("oldRating is out of range")
+		}
+	}
+
+	return nil
 }
