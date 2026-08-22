@@ -256,6 +256,14 @@ function updatePerformance(performance) {
 }
 
 function loadData() {
+	const savedInfo = sessionStorage.getItem("userInfo");
+	if (savedInfo) {
+		const info = JSON.parse(savedInfo);
+		handleUserInfo(info);
+
+		setSearchValues(info.handle);
+	}
+
 	const savedSolved = sessionStorage.getItem("solvedProblems");
 	if (savedSolved) {
 		const solved = JSON.parse(savedSolved);
@@ -264,14 +272,6 @@ function loadData() {
 	}
 	solvedTags.dataLoaded = true;
 	solvedRatings.dataLoaded = true;
-
-	const savedInfo = sessionStorage.getItem("userInfo");
-	if (savedInfo) {
-		const info = JSON.parse(savedInfo);
-		handleUserInfo(info);
-
-		setSearchValues(info.handle);
-	}
 
 	const savedRatings = sessionStorage.getItem("ratingHistory");
 	if (savedRatings) {
