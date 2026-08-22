@@ -7,8 +7,7 @@ async function cfFetch(endpoint, signal) {
 		if (data.status !== "OK") throw new Error(`Codeforces not OK: ${data.comment}`);
 		return data.result;
 	} catch (err) {
-		if (err.name === "AbortError") throw err;
-		console.error("Codeforces request failed:", err);
+		if (err.name !== "AbortError") console.error("Codeforces request failed:", err);
 		throw err;
 	}
 }
@@ -41,35 +40,25 @@ export async function getProblems(tags, signal) {
 }
 
 export async function getPerformance(handle, ratingHistory, signal) {
-	try {
-		const reqData = {
-			handle: handle,
-			ratingHistory: ratingHistory
-		};
-		const resp = await fetch(`${process.env.API_URL}/performance`, {
-			method: "POST",
-			body: JSON.stringify(reqData),
-			signal: signal,
-		});
-		if (!resp.ok) throw new Error(`performance response not ok: ${await resp.text()}`);
-		const data = await resp.json();
-		return data;
-	} catch (err) {
-		if (err.name === "AbortError") throw err;
-		throw err;
-	}
+	const reqData = {
+		handle: handle,
+		ratingHistory: ratingHistory
+	};
+	const resp = await fetch(`${process.env.API_URL}/performance`, {
+		method: "POST",
+		body: JSON.stringify(reqData),
+		signal: signal,
+	});
+	if (!resp.ok) throw new Error(`performance response not ok: ${await resp.text()}`);
+	const data = await resp.json();
+	return data;
 }
 
 export async function getPercentile(rating, signal) {
-	try {
-		const resp = await fetch(`${process.env.API_URL}/percentile/${rating}`, { signal });
-		if (!resp.ok) throw new Error(`percentile response not ok: ${await resp.text()}`);
-		const data = await resp.json();
-		return data;
-	} catch (err) {
-		if (err.name === "AbortError") throw err;
-		throw err;
-	}
+	const resp = await fetch(`${process.env.API_URL}/percentile/${rating}`, { signal });
+	if (!resp.ok) throw new Error(`percentile response not ok: ${await resp.text()}`);
+	const data = await resp.json();
+	return data;
 }
 
 export async function getRecommendedProblems(count, ratingRange, lookback, solved, signal) {
@@ -88,26 +77,21 @@ export async function getRecommendedProblems(count, ratingRange, lookback, solve
 
 	const compressed = stream.pipeThrough(new CompressionStream("gzip"));
 
-	try {
-		const resp = await fetch(`${process.env.API_URL}/recommend`, {
-			method: "POST",
-			headers: {
-				"Content-Encoding": "gzip",
-				"Content-Type": "application/json",
-			},
-			body: await new Response(compressed).blob(),
-			signal: signal,
-		});
+	const resp = await fetch(`${process.env.API_URL}/recommend`, {
+		method: "POST",
+		headers: {
+			"Content-Encoding": "gzip",
+			"Content-Type": "application/json",
+		},
+		body: await new Response(compressed).blob(),
+		signal: signal,
+	});
 
-		if (!resp.ok)
-			throw new Error(`recommend response not ok: ${await resp.text()}`);
+	if (!resp.ok)
+		throw new Error(`recommend response not ok: ${await resp.text()}`);
 
-		const data = await resp.json();
-		return data;
-	} catch (err) {
-		if (err.name === "AbortError") throw err;
-		throw err;
-	}
+	const data = await resp.json();
+	return data;
 }
 
 // Removes unnecessary properties of submissions for more efficient data transfer.
