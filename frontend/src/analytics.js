@@ -262,7 +262,8 @@ function updatePerformance(performance) {
 }
 
 function loadData() {
-	const savedInfo = sessionStorage.getItem("userInfo");
+	const hasDeepLinkHandle = Boolean(new URLSearchParams(window.location.search).get("handle")?.trim());
+	const savedInfo = hasDeepLinkHandle ? null : sessionStorage.getItem("userInfo");
 	if (savedInfo) {
 		const info = JSON.parse(savedInfo);
 		handleUserInfo(info);
@@ -270,7 +271,7 @@ function loadData() {
 		setSearchValues(info.handle);
 	}
 
-	const savedSolved = sessionStorage.getItem("solvedProblems");
+	const savedSolved = hasDeepLinkHandle ? null : sessionStorage.getItem("solvedProblems");
 	if (savedSolved) {
 		const solved = JSON.parse(savedSolved);
 		handleSolved(solved);
@@ -279,13 +280,13 @@ function loadData() {
 	solvedTags.dataLoaded = true;
 	solvedRatings.dataLoaded = true;
 
-	const savedRatings = sessionStorage.getItem("ratingHistory");
+	const savedRatings = hasDeepLinkHandle ? null : sessionStorage.getItem("ratingHistory");
 	if (savedRatings) {
 		const ratings = JSON.parse(savedRatings);
 		updateRatingChanges(ratings);
 	}
 
-	const savedPerformance = sessionStorage.getItem("performance");
+	const savedPerformance = hasDeepLinkHandle ? null : sessionStorage.getItem("performance");
 	if (savedPerformance) {
 		const perf = JSON.parse(savedPerformance);
 		updatePerformance(perf);

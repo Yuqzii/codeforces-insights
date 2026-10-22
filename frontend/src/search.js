@@ -49,6 +49,16 @@ export function listenForSearch() {
 
 		analyzeUser(handle);
 	});
+
+	const handle = new URLSearchParams(window.location.search).get("handle")?.trim();
+	if (!handle) return;
+
+	setSearchValues(handle);
+	showMain();
+	main.scrollIntoView({
+		behavior: "smooth"
+	});
+	analyzeUser(handle);
 }
 
 export function setSearchValues(handle) {
