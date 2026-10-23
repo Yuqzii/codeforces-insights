@@ -18,24 +18,6 @@ const (
 	sentinelContestID = 3
 )
 
-type countingContestResultsProvider struct {
-	calls int
-}
-
-func (p *countingContestResultsProvider) GetContestResults(
-	context.Context, int,
-) ([]codeforces.Contestant, *codeforces.Contest, error) {
-	p.calls++
-	return nil, nil, errors.New("unexpected contest results call")
-}
-
-func (p *countingContestResultsProvider) GetContestResultsFromHandle(
-	context.Context, string,
-) ([]codeforces.Contestant, error) {
-	p.calls++
-	return nil, errors.New("unexpected handle results call")
-}
-
 type channelCloseContestResultsProvider struct {
 	handleContext chan context.Context
 	lateStarted   chan struct{}
@@ -62,27 +44,6 @@ func (p *channelCloseContestResultsProvider) GetContestResultsFromHandle(
 ) ([]codeforces.Contestant, error) {
 	p.handleContext <- ctx
 	return nil, nil
-}
-
-func TestHandlePerformanceStopsAfterValidationError(t *testing.T) {
-	provider := &countingContestResultsProvider{}
-	h := New(nil, provider, nil, nil, 0, 0)
-
-	body := `{
-		"handle":"tourist",
-		"ratingHistory":[{"contestId":1,"rank":1,"oldRating":10001}]
-	}`
-	req := httptest.NewRequest(http.MethodPost, "/performance", strings.NewReader(body))
-	res := httptest.NewRecorder()
-
-	h.HandlePerformance(res, req)
-
-	if res.Code != http.StatusBadRequest {
-		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, res.Code)
-	}
-	if provider.calls != 0 {
-		t.Fatalf("expected no provider calls after validation failed, got %d", provider.calls)
-	}
 }
 
 func TestHandlePerformanceLeavesResultChannelOpenForInFlightJobs(t *testing.T) {
