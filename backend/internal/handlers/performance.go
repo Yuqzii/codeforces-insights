@@ -63,6 +63,7 @@ func (h *Handler) HandlePerformance(w http.ResponseWriter, r *http.Request) {
 
 	if err = data.validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	ctx, cancel := context.WithCancel(r.Context())
