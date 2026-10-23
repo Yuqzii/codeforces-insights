@@ -262,15 +262,20 @@ function updatePerformance(performance) {
 }
 
 function loadData() {
+	const requestedHandle = new URLSearchParams(window.location.search).get("handle")?.trim();
 	const savedInfo = sessionStorage.getItem("userInfo");
+	const info = savedInfo ? JSON.parse(savedInfo) : null;
+	const cachedHandle = typeof info?.handle === "string" ? info.handle.trim() : null;
+	const cacheMatchesHandle = !requestedHandle || cachedHandle === requestedHandle;
 	if (savedInfo) {
-		const info = JSON.parse(savedInfo);
-		handleUserInfo(info);
+		if (cacheMatchesHandle) {
+			handleUserInfo(info);
 
-		setSearchValues(info.handle);
+			setSearchValues(info.handle);
+		}
 	}
 
-	const savedSolved = sessionStorage.getItem("solvedProblems");
+	const savedSolved = cacheMatchesHandle ? sessionStorage.getItem("solvedProblems") : null;
 	if (savedSolved) {
 		const solved = JSON.parse(savedSolved);
 		handleSolved(solved);
@@ -279,13 +284,13 @@ function loadData() {
 	solvedTags.dataLoaded = true;
 	solvedRatings.dataLoaded = true;
 
-	const savedRatings = sessionStorage.getItem("ratingHistory");
+	const savedRatings = cacheMatchesHandle ? sessionStorage.getItem("ratingHistory") : null;
 	if (savedRatings) {
 		const ratings = JSON.parse(savedRatings);
 		updateRatingChanges(ratings);
 	}
 
-	const savedPerformance = sessionStorage.getItem("performance");
+	const savedPerformance = cacheMatchesHandle ? sessionStorage.getItem("performance") : null;
 	if (savedPerformance) {
 		const perf = JSON.parse(savedPerformance);
 		updatePerformance(perf);

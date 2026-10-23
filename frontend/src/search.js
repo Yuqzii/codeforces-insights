@@ -36,6 +36,7 @@ export function listenForSearch() {
 			behavior: "smooth"
 		});
 
+		updateHandleInURL(handle);
 		analyzeUser(handle);
 	});
 
@@ -47,13 +48,30 @@ export function listenForSearch() {
 
 		heroInput.value = handle;
 
+		updateHandleInURL(handle);
 		analyzeUser(handle);
 	});
+
+	const handle = new URLSearchParams(window.location.search).get("handle")?.trim();
+	if (!handle) return;
+
+	setSearchValues(handle);
+	showMain();
+	main.scrollIntoView({
+		behavior: "smooth"
+	});
+	analyzeUser(handle);
 }
 
 export function setSearchValues(handle) {
 	heroInput.value = handle;
 	navInput.value = handle;
+}
+
+function updateHandleInURL(handle) {
+	const url = new URL(window.location.href);
+	url.searchParams.set("handle", handle);
+	window.history.replaceState(null, "", url.toString());
 }
 
 function analyzeUser(handle) {
