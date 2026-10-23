@@ -36,6 +36,7 @@ export function listenForSearch() {
 			behavior: "smooth"
 		});
 
+		updateHandleInURL(handle);
 		analyzeUser(handle);
 	});
 
@@ -47,6 +48,7 @@ export function listenForSearch() {
 
 		heroInput.value = handle;
 
+		updateHandleInURL(handle);
 		analyzeUser(handle);
 	});
 
@@ -64,6 +66,12 @@ export function listenForSearch() {
 export function setSearchValues(handle) {
 	heroInput.value = handle;
 	navInput.value = handle;
+}
+
+function updateHandleInURL(handle) {
+	const url = new URL(window.location.href);
+	url.searchParams.set("handle", handle);
+	window.history.replaceState(null, "", url.toString());
 }
 
 function analyzeUser(handle) {
