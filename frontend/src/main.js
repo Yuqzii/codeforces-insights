@@ -47,12 +47,6 @@ window.addEventListener("scroll", () => {
 		navbar.classList.remove("scrolled");
 });
 
-window.addEventListener("load", () => {
-	const hasAnalysed = sessionStorage.getItem("hasAnalysed");
-	if (hasAnalysed)
-		showMain();
-});
-
 
 function setTheme(theme) {
 	root.classList.remove(localStorage.getItem("theme"));

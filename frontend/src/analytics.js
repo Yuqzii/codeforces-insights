@@ -1,7 +1,6 @@
 import { SolvedTags, SolvedRatings, RatingHistory, hideLoader, showLoader, getRatingColor } from "./charts.js";
 import { getPercentile, getPerformance, getRatingHistory, getSubmissions, getUserInfo } from "./api.js";
 import { clearProblemContainer, problemContainer, recommendProblems, setRatingRange } from "./recommendation.js";
-import { setSearchValues } from "./search.js";
 import { showError, toggleContentVisibility } from "./error.js"
 
 const toggleOtherTags = document.getElementById("toggle-other-tags");
@@ -62,7 +61,6 @@ export async function updateAnalytics(handle, signal) {
 	const userInfoTask = getUserInfo(handle, signal).then(info => {
 		handleUserInfo(info, signal);
 		toggleContentVisibility(userDetailsEl, true);
-		sessionStorage.setItem("userInfo", JSON.stringify(info));
 	}).catch(err => {
 		if (err.name === "AbortError") throw err;
 		toggleContentVisibility(userDetailsEl, false);
@@ -74,8 +72,6 @@ export async function updateAnalytics(handle, signal) {
 	const submissionTask = getSubmissions(handle, signal).then(submissions => {
 		const solved = filterSolved(submissions);
 		handleSolved(solved);
-
-		sessionStorage.setItem("solvedProblems", JSON.stringify(solved));
 
 		return solved;
 	}).catch(err => {
@@ -93,7 +89,6 @@ export async function updateAnalytics(handle, signal) {
 
 	getRatingHistory(handle, signal).then(ratings => {
 		handleRatingHistory(handle, ratings, signal);
-		sessionStorage.setItem("ratingHistory", JSON.stringify(ratings));
 	}).catch(err => {
 		if (err.name === "AbortError") return;
 		toggleContentVisibility(ratingHistoryEl, false);
@@ -109,8 +104,6 @@ export async function updateAnalytics(handle, signal) {
 		showError(err, problemContainer);
 	});
 }
-
-window.addEventListener("load", loadData);
 
 function handleSolved(solved) {
 	solved.sort((a, b) => {
@@ -154,7 +147,6 @@ function handleRatingHistory(handle, ratings, signal) {
 
 	getPerformance(handle, perfRequestData, signal).then(perf => {
 		updatePerformance(perf)
-		sessionStorage.setItem("performance", JSON.stringify(perf));
 	}).catch(err => {
 		if (err.name === "AbortError") return;
 		// Show error without hiding the other content, as we still have some information to display.
@@ -259,42 +251,4 @@ function updatePerformance(performance) {
 	ratingHistory.updatePerfomanceData(performance);
 	ratingHistory.loading = false;
 	ratingHistory.updateChart();
-}
-
-function loadData() {
-	const requestedHandle = new URLSearchParams(window.location.search).get("handle")?.trim();
-	const savedInfo = sessionStorage.getItem("userInfo");
-	const info = savedInfo ? JSON.parse(savedInfo) : null;
-	const cachedHandle = typeof info?.handle === "string" ? info.handle.trim() : null;
-	const cacheMatchesHandle = !requestedHandle || cachedHandle === requestedHandle;
-	if (savedInfo) {
-		if (cacheMatchesHandle) {
-			handleUserInfo(info);
-
-			setSearchValues(info.handle);
-		}
-	}
-
-	const savedSolved = cacheMatchesHandle ? sessionStorage.getItem("solvedProblems") : null;
-	if (savedSolved) {
-		const solved = JSON.parse(savedSolved);
-		handleSolved(solved);
-		recommendProblems(solved);
-	}
-	solvedTags.dataLoaded = true;
-	solvedRatings.dataLoaded = true;
-
-	const savedRatings = cacheMatchesHandle ? sessionStorage.getItem("ratingHistory") : null;
-	if (savedRatings) {
-		const ratings = JSON.parse(savedRatings);
-		updateRatingChanges(ratings);
-	}
-
-	const savedPerformance = cacheMatchesHandle ? sessionStorage.getItem("performance") : null;
-	if (savedPerformance) {
-		const perf = JSON.parse(savedPerformance);
-		updatePerformance(perf);
-	}
-
-	ratingHistory.dataLoaded = true;
 }
