@@ -79,5 +79,4 @@ function analyzeUser(handle) {
 	controller = new AbortController();
 
 	updateAnalytics(handle, controller.signal);
-	sessionStorage.setItem("hasAnalysed", "true");
 }

@@ -22,7 +22,6 @@ const animDuration = 750; // In milliseconds.
 export class SolvedTags {
 	N = 10;
 	loading = true;
-	dataLoaded = false;
 	#showOtherTags = false;
 	#tags = [];
 	#counts = [];
@@ -73,11 +72,7 @@ export class SolvedTags {
 			},
 			options: {
 				animation: {
-					duration: this.dataLoaded ? animDuration : 0,
-					onComplete: (anim) => {
-						if (this.dataLoaded)
-							anim.chart.options.animation.duration = animDuration;
-					}
+					duration: animDuration
 				},
 				plugins: {
 					legend: {
@@ -108,7 +103,6 @@ export class SolvedTags {
 
 export class SolvedRatings {
 	loading = true;
-	dataLoaded = false;
 	#show800 = true;
 	#chart;
 	#data;
@@ -156,11 +150,7 @@ export class SolvedRatings {
 					}
 				},
 				animation: {
-					duration: this.dataLoaded ? animDuration : 0,
-					onComplete: (anim) => {
-						if (this.dataLoaded)
-							anim.chart.options.animation.duration = animDuration;
-					}
+					duration: animDuration
 				},
 				maintainAspectRatio: false,
 				responsive: true
@@ -196,7 +186,6 @@ export class SolvedRatings {
 
 export class RatingHistory {
 	loading = true;
-	dataLoaded = false;
 	#chart;
 	#ratingData = { ratings: new Array(), labels: new Array() };
 	#performanceData = { performance: new Array(), timestamps: new Array() };
@@ -270,11 +259,7 @@ export class RatingHistory {
 					}
 				},
 				animation: {
-					duration: this.dataLoaded ? animDuration : 0,
-					onComplete: (anim) => {
-						if (this.dataLoaded)
-							anim.chart.options.animation.duration = animDuration;
-					}
+					duration: animDuration
 				},
 				maintainAspectRatio: false,
 				responsive: true
